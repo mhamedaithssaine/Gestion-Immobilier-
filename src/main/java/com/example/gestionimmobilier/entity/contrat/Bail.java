@@ -2,6 +2,7 @@ package com.example.gestionimmobilier.entity.contrat;
 
 import jakarta.persistence.Entity;
 
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "baux")
 @Getter
 @Setter
 @NoArgsConstructor

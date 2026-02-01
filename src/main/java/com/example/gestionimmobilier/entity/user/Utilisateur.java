@@ -3,16 +3,7 @@ package com.example.gestionimmobilier.entity.user;
 import com.example.gestionimmobilier.entity.base.BaseEntity;
 import com.example.gestionimmobilier.entity.enums.Role;
 
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +14,7 @@ import lombok.experimental.SuperBuilder;
 import java.util.List;
 
 @Entity
+@Table(name = "utilisateurs")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
@@ -40,7 +32,7 @@ public abstract class Utilisateur extends BaseEntity {
     private String nom;
     private String prenom;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
             name = "utilisateur_roles",
             joinColumns = @JoinColumn(name = "utilisateur_id")

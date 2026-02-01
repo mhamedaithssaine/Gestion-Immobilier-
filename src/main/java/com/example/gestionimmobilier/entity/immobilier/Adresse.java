@@ -1,8 +1,6 @@
 package com.example.gestionimmobilier.entity.immobilier;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +11,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
+@Table(name =  "adresses")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,10 +21,18 @@ public class Adresse {
 
     @Id
     @GeneratedValue
+    @org.hibernate.annotations.UuidGenerator
     private UUID id;
 
+    @Column(nullable = false)
     private String rue;
+
+    @Column(nullable = false)
     private String ville;
+
+    @Column(name = "code_postal", nullable = false)
     private String codePostal;
+
+    @Column(nullable = false)
     private String pays;
 }

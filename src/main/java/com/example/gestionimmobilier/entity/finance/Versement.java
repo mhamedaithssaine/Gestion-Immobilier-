@@ -5,10 +5,7 @@ import com.example.gestionimmobilier.entity.contrat.Bail;
 import com.example.gestionimmobilier.entity.enums.ModeVersement;
 import com.example.gestionimmobilier.entity.user.Proprietaire;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "versements")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,18 +25,27 @@ import java.time.LocalDateTime;
 @SuperBuilder
 public class Versement extends BaseEntity {
 
+    @Column(name = "date_versement", nullable = false)
     private LocalDateTime dateVersement;
+
+    @Column(nullable = false)
     private BigDecimal montant;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ModeVersement mode;
 
+    @Column(name = "reference_paiement", unique = true)
     private String referencePaiement;
+
+    @Column(nullable = false)
     private boolean valide;
 
     @ManyToOne
+    @JoinColumn(name = "bail_id", nullable = false)
     private Bail bail;
 
     @ManyToOne
+    @JoinColumn(name = "proprietaire_id", nullable = false)
     private Proprietaire proprietaire;
 }

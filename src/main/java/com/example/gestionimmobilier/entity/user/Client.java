@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 import java.math.BigDecimal;
 
 @Entity
+@Table(name = "clients")
 @Getter
 @Setter
 @NoArgsConstructor

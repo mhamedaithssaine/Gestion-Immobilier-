@@ -4,18 +4,7 @@ import com.example.gestionimmobilier.entity.base.BaseEntity;
 import com.example.gestionimmobilier.entity.enums.StatutBien;
 import com.example.gestionimmobilier.entity.user.Proprietaire;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
+@Table(name = "biens_immobiliers")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
@@ -53,8 +43,10 @@ public abstract class BienImmobilier extends BaseEntity {
     private List<String> images;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "adresse_id", nullable = false)
     private Adresse adresse;
 
     @ManyToOne
+    @JoinColumn(name = "proprietaire_id", nullable = false)
     private Proprietaire proprietaire;
 }

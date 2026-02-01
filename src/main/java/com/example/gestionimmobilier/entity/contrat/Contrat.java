@@ -5,12 +5,7 @@ import com.example.gestionimmobilier.entity.immobilier.BienImmobilier;
 import com.example.gestionimmobilier.entity.user.Client;
 import com.example.gestionimmobilier.entity.user.Proprietaire;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "contrats")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
@@ -36,11 +32,14 @@ public abstract class Contrat extends BaseEntity {
     private String documentUrl;
 
     @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
     @ManyToOne
+    @JoinColumn(name = "proprietaire_id", nullable = false)
     private Proprietaire proprietaire;
 
     @OneToOne
+    @JoinColumn(name = "bien_id", nullable = false)
     private BienImmobilier bien;
 }
