@@ -1,30 +1,21 @@
-version: "3.8"
-
 services:
   postgres:
     image: postgres:16
-    container_name: postgres-gestion-immobilier
-    restart: unless-stopped
+    container_name: postgres-immobilier
+    restart: always
     environment:
       POSTGRES_DB: gestion_immobilier_db
       POSTGRES_USER: immobilier
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: Mhamed123
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U immobilier"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - immobilier-net
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: postgres-gestion-immobilier-pgAdmin
-    restart: unless-stopped
+    container_name: pgadmin-immobilier
+    restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
@@ -32,12 +23,6 @@ services:
       - "5050:80"
     depends_on:
       - postgres
-    networks:
-      - immobilier-net
 
 volumes:
   postgres_data:
-
-networks:
-  immobilier-net:
-    driver: bridge
