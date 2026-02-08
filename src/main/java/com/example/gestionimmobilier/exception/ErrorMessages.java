@@ -34,4 +34,8 @@ public final class ErrorMessages {
     // --- Erreur serveur (500) ---
     public static final String ERREUR_SERVEUR = "Erreur interne du serveur";
     public static final String MESSAGE_ERREUR_INTERNE = "Une erreur technique s'est produite. Veuillez réessayer plus tard.";
+
+    // --- Token expiré / invalide ---
+    public static final String TOKEN_EXPIRE = "Token expiré ou invalide";
+    public static final String MESSAGE_TOKEN_EXPIRE = "Votre session a expiré. Veuillez vous reconnecter pour obtenir un nouveau token.";
 }

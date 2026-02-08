@@ -26,11 +26,17 @@ public abstract class Utilisateur extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String keycloakId;
 
+    @Column(name = "username", unique = true)
+    private String username;
+
     @Column(nullable = false, unique = true)
     private String email;
 
-    private String nom;
-    private String prenom;
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(

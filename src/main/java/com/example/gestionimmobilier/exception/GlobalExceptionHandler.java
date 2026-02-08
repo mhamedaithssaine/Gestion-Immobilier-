@@ -142,15 +142,15 @@ public class GlobalExceptionHandler {
             AccessDeniedException ex,
             WebRequest request) {
 
-    ErrorResponse errorResponse = ErrorResponse.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.FORBIDDEN.value())
-            .error(ErrorMessages.ACCES_REFUSE)
-            .message(ErrorMessages.MESSAGE_FORBIDDEN)
-            .path(getPath(request))
-            .build();
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.FORBIDDEN.value())
+                .error(ErrorMessages.ACCES_REFUSE)
+                .message(ErrorMessages.MESSAGE_FORBIDDEN)
+                .path(getPath(request))
+                .build();
 
-    return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
 
