@@ -2,6 +2,7 @@ package com.example.gestionimmobilier.service;
 
 import com.example.gestionimmobilier.config.KeycloakAdminProperties;
 import com.example.gestionimmobilier.dto.keycloack.KeycloakUserResponse;
+import com.example.gestionimmobilier.exception.ResourceNotFoundException;
 import com.example.gestionimmobilier.exception.ValidationException;
 import com.example.gestionimmobilier.mapper.KeycloakUserMapper;
 import com.example.gestionimmobilier.models.entity.user.Utilisateur;
@@ -248,5 +249,34 @@ public class KeycloakAdminService {
         return realmRoles.stream()
                 .filter(r -> roleName.equals(r.get("name")))
                 .findFirst();
+    }
+
+    private String buildUserUrl(String keycloakUserId) {
+        return buildUsersUrl() + "/" + keycloakUserId;
+    }
+
+    public void setUserEnabled(String keycloakUserId, boolean enabled) {
+        String token = getAdminToken();
+        String url = buildUserUrl(keycloakUserId);
+
+        HttpEntity<Void> getRequest = new HttpEntity<>(buildAuthHeaders(token));
+        ResponseEntity<Map<String, Object>> getResponse = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                getRequest,
+                new ParameterizedTypeReference<>() {}
+        );
+
+        Map<String, Object> user = getResponse.getBody();
+        if (user == null) {
+            throw new ResourceNotFoundException("Utilisateur introuvable dans Keycloak");
+        }
+
+        user.put("enabled", enabled);
+
+        HttpHeaders headers = buildAuthHeaders(token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> putRequest = new HttpEntity<>(user, headers);
+        restTemplate.exchange(url, HttpMethod.PUT, putRequest, Void.class);
     }
 }

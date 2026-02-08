@@ -2,6 +2,7 @@ package com.example.gestionimmobilier.controller;
 
 import com.example.gestionimmobilier.dto.api.reponse.ApiRetour;
 import com.example.gestionimmobilier.dto.user.AssignRolesRequest;
+import com.example.gestionimmobilier.dto.user.UpdateUserEnabledRequest;
 import com.example.gestionimmobilier.dto.user.UtilisateurResponse;
 import com.example.gestionimmobilier.service.KeycloakAdminService;
 import com.example.gestionimmobilier.service.UserService;
@@ -39,5 +40,16 @@ public class KeycloakUserController {
             @RequestBody @Valid AssignRolesRequest request) {
         UtilisateurResponse user = userService.assignRoles(id, request.roles());
         return ResponseEntity.ok(ApiRetour.success("Rôles attribués avec succès", user));
+    }
+
+    @PutMapping("/users/{id}/enabled")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiRetour<UtilisateurResponse>> updateUserEnabled(
+            @PathVariable UUID id,
+            @RequestBody @Valid UpdateUserEnabledRequest request) {
+        UtilisateurResponse user = userService.updateUserEnabled(id, request.enabled());
+        return ResponseEntity.ok(ApiRetour.success(
+                request.enabled() ? "Utilisateur activé avec succès" : "Utilisateur désactivé avec succès",
+                user));
     }
 }

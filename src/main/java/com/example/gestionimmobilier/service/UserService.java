@@ -50,4 +50,14 @@ public class UserService {
 
         return userMapper.toResponse(utilisateur);
     }
+
+    @Transactional
+    public UtilisateurResponse updateUserEnabled(UUID userId, boolean enabled) {
+        Utilisateur utilisateur = utilisateurRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.UTILISATEUR_INTROUVABLE));
+
+        keycloakAdminService.setUserEnabled(utilisateur.getKeycloakId(), enabled);
+
+        return userMapper.toResponse(utilisateur);
+    }
 }
