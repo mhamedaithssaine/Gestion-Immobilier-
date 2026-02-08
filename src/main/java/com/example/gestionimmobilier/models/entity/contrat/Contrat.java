@@ -1,9 +1,9 @@
-package com.example.gestionimmobilier.entity.contrat;
+package com.example.gestionimmobilier.models.entity.contrat;
 
-import com.example.gestionimmobilier.entity.base.BaseEntity;
-import com.example.gestionimmobilier.entity.immobilier.BienImmobilier;
-import com.example.gestionimmobilier.entity.user.Client;
-import com.example.gestionimmobilier.entity.user.Proprietaire;
+import com.example.gestionimmobilier.models.entity.base.BaseEntity;
+import com.example.gestionimmobilier.models.entity.immobilier.BienImmobilier;
+import com.example.gestionimmobilier.models.entity.user.Client;
+import com.example.gestionimmobilier.models.entity.user.Proprietaire;
 
 import jakarta.persistence.*;
 

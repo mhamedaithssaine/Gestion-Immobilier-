@@ -1,7 +1,7 @@
-package com.example.gestionimmobilier.entity.user;
+package com.example.gestionimmobilier.models.entity.user;
 
-import com.example.gestionimmobilier.entity.base.BaseEntity;
-import com.example.gestionimmobilier.entity.enums.Role;
+import com.example.gestionimmobilier.models.entity.base.BaseEntity;
+import com.example.gestionimmobilier.models.enums.Role;
 
 import jakarta.persistence.*;
 

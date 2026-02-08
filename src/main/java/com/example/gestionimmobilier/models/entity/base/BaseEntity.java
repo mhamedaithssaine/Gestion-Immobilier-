@@ -1,4 +1,4 @@
-package com.example.gestionimmobilier.entity.base;
+package com.example.gestionimmobilier.models.entity.base;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;

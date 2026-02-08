@@ -1,4 +1,4 @@
-package com.example.gestionimmobilier.entity.user;
+package com.example.gestionimmobilier.models.entity.user;
 
 import jakarta.persistence.Entity;
 
