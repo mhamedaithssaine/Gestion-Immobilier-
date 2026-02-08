@@ -1,7 +1,7 @@
-package com.example.gestionimmobilier.entity.intervention;
+package com.example.gestionimmobilier.models.entity.intervention;
 
-import com.example.gestionimmobilier.entity.base.BaseEntity;
-import com.example.gestionimmobilier.entity.immobilier.BienImmobilier;
+import com.example.gestionimmobilier.models.entity.base.BaseEntity;
+import com.example.gestionimmobilier.models.entity.immobilier.BienImmobilier;
 
 import jakarta.persistence.*;
 

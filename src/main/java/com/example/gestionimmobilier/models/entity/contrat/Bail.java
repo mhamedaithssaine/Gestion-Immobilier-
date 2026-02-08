@@ -1,4 +1,4 @@
-package com.example.gestionimmobilier.entity.contrat;
+package com.example.gestionimmobilier.models.entity.contrat;
 
 import jakarta.persistence.Entity;
 

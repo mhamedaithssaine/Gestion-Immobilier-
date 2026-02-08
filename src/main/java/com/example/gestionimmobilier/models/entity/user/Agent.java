@@ -1,7 +1,6 @@
-package com.example.gestionimmobilier.models.entity.immobilier;
+package com.example.gestionimmobilier.models.entity.user;
 
 import jakarta.persistence.Entity;
-
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,14 +9,14 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "appartements")
+@Table(name = "agents")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Appartement extends BienImmobilier {
+public class Agent extends Utilisateur {
 
-    private int etage;
-    private boolean ascenseur;
+    private String matricule;
+    private String agenceNom;
 }

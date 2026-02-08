@@ -1,7 +1,7 @@
-package com.example.gestionimmobilier.entity.user;
+package com.example.gestionimmobilier.models.entity.user;
 
-import com.example.gestionimmobilier.entity.base.BaseEntity;
-import com.example.gestionimmobilier.entity.enums.Role;
+import com.example.gestionimmobilier.models.entity.base.BaseEntity;
+import com.example.gestionimmobilier.models.enums.Role;
 
 import jakarta.persistence.*;
 
@@ -26,11 +26,17 @@ public abstract class Utilisateur extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String keycloakId;
 
+    @Column(name = "username", unique = true)
+    private String username;
+
     @Column(nullable = false, unique = true)
     private String email;
 
-    private String nom;
-    private String prenom;
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(

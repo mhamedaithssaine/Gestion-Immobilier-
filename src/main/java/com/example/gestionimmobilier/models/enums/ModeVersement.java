@@ -1,4 +1,4 @@
-package com.example.gestionimmobilier.entity.enums;
+package com.example.gestionimmobilier.models.enums;
 
 public enum ModeVersement {
     CASH,

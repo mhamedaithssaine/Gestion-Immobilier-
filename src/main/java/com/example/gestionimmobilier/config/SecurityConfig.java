@@ -21,16 +21,18 @@ import java.util.stream.Collectors;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
         http 
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests (auth -> auth
-        .requestMatchers("/api/public/**","actuator/health").permitAll()
+        .requestMatchers("/api/public/**","/actuator/health").permitAll()
         .anyRequest().authenticated())
         .oauth2ResourceServer(oauth2 -> oauth2
         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+        .authenticationEntryPoint(customAuthenticationEntryPoint)
         );
 
         return http.build();
