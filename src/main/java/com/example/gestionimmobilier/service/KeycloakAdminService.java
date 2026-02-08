@@ -2,6 +2,7 @@ package com.example.gestionimmobilier.service;
 
 import com.example.gestionimmobilier.config.KeycloakAdminProperties;
 import com.example.gestionimmobilier.dto.keycloack.KeycloakUserResponse;
+import com.example.gestionimmobilier.exception.ValidationException;
 import com.example.gestionimmobilier.mapper.KeycloakUserMapper;
 import com.example.gestionimmobilier.models.entity.user.Utilisateur;
 import com.example.gestionimmobilier.models.enums.Role;
@@ -182,5 +183,70 @@ public class KeycloakAdminService {
             throw new RuntimeException("Impossible d'obtenir le token admin Keycloak");
         }
         return (String) tokenResponse.get("access_token");
+    }
+
+    public List<Map<String,Object>> getRealmRoles(){
+        String token = getAdminToken();
+        String url = props.getServerUrl() + "/admin/realms/" + props.getRealmUsers() + "/roles";
+        HttpEntity<Void> request = new HttpEntity<>(buildAuthHeaders(token));
+        ResponseEntity<List<Map<String,Object>>> response = restTemplate.exchange(url, HttpMethod.GET, request, new ParameterizedTypeReference<>() {}
+        );
+
+        return Optional.ofNullable(response.getBody()).orElse(List.of());
+    }
+
+    // Assigne les rôles à un utilisateur Keycloak
+    @Transactional
+    public void assignRolesToUser(String keycloakUserId, List<Role> roles) {
+        if (roles == null || roles.isEmpty()) {
+            throw new ValidationException("La liste des rôles ne peut pas être vide");
+        }
+
+        List<Map<String, Object>> realmRoles = getRealmRoles();
+        List<Map<String, Object>> rolesToAssign = roles.stream()
+                .map(Role::name)
+                .map(roleName -> findRealmRoleByName(realmRoles, roleName))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+
+        if (rolesToAssign.isEmpty()) {
+            throw new ValidationException("Aucun rôle valide trouvé dans Keycloak pour: " + roles);
+        }
+
+        String token = getAdminToken();
+        String url = buildUserRolesUrl(keycloakUserId);
+        HttpHeaders headers = buildAuthHeaders(token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // 1. Supprimer les rôles actuels
+        List<Map<String, Object>> currentRoles = getKeycloakUserRoles(keycloakUserId);
+        if (!currentRoles.isEmpty()) {
+            HttpEntity<List<Map<String, Object>>> deleteRequest = new HttpEntity<>(currentRoles, headers);
+            restTemplate.exchange(url, HttpMethod.DELETE, deleteRequest, Void.class);
+        }
+
+        // 2. Attribuer les nouveaux rôles
+        HttpEntity<List<Map<String, Object>>> postRequest = new HttpEntity<>(rolesToAssign, headers);
+        restTemplate.exchange(url, HttpMethod.POST, postRequest, Void.class);
+    }
+
+    private List<Map<String, Object>> getKeycloakUserRoles(String keycloakUserId) {
+        String token = getAdminToken();
+        String url = buildUserRolesUrl(keycloakUserId);
+        HttpEntity<Void> request = new HttpEntity<>(buildAuthHeaders(token));
+        ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                new ParameterizedTypeReference<>() {}
+        );
+        return Optional.ofNullable(response.getBody()).orElse(List.of());
+    }
+
+    private Optional<Map<String, Object>> findRealmRoleByName(List<Map<String, Object>> realmRoles, String roleName) {
+        return realmRoles.stream()
+                .filter(r -> roleName.equals(r.get("name")))
+                .findFirst();
     }
 }
