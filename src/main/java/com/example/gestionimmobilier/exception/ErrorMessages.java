@@ -10,6 +10,7 @@ public final class ErrorMessages {
     public static final String VALIDATION_ECHEC = "Échec de la validation";
     public static final String DONNEES_INVALIDES = "Les données fournies sont invalides. Vérifiez les champs indiqués.";
     public static final String REQUETE_INVALIDE = "Requête invalide";
+    public static final String JSON_INVALIDE = "Le format JSON du corps de la requête est invalide. Utilisez des guillemets doubles pour les clés et les chaînes.";
 
     // --- Authentification / Autorisation ---
     public static final String NON_AUTORISE = "Non autorisé";
@@ -26,6 +27,7 @@ public final class ErrorMessages {
     public static final String CONTRAT_INTROUVABLE = "Le contrat demandé n'existe pas ou a été supprimé.";
     public static final String BAIL_INTROUVABLE = "Le bail demandé n'existe pas ou a été supprimé.";
     public static final String INTERVENTION_INTROUVABLE = "L'intervention demandée n'existe pas ou a été supprimée.";
+    public static final String UTILISATEUR_INTROUVABLE = "L'utilisateur demandé n'existe pas ou a été supprimé.";
 
     // --- Règle métier (422) ---
     public static final String VIOLATION_REGLE_METIER = "Violation d'une règle métier";
@@ -34,6 +36,10 @@ public final class ErrorMessages {
     // --- Erreur serveur (500) ---
     public static final String ERREUR_SERVEUR = "Erreur interne du serveur";
     public static final String MESSAGE_ERREUR_INTERNE = "Une erreur technique s'est produite. Veuillez réessayer plus tard.";
+
+    // --- Méthode HTTP (405) ---
+    public static final String METHODE_NON_AUTORISEE = "Méthode non autorisée";
+    public static final String MESSAGE_METHODE_NON_AUTORISEE = "La méthode HTTP utilisée n'est pas supportée pour cette ressource.";
 
     // --- Token expiré / invalide ---
     public static final String TOKEN_EXPIRE = "Token expiré ou invalide";

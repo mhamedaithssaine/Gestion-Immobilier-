@@ -1,12 +1,17 @@
 package com.example.gestionimmobilier.service;
 
 import com.example.gestionimmobilier.dto.user.UtilisateurResponse;
+import com.example.gestionimmobilier.exception.ErrorMessages;
+import com.example.gestionimmobilier.exception.ResourceNotFoundException;
 import com.example.gestionimmobilier.mapper.UserMapper;
+import com.example.gestionimmobilier.models.entity.user.Utilisateur;
+import com.example.gestionimmobilier.models.enums.Role;
 import com.example.gestionimmobilier.repository.UtilisateurRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -31,5 +36,18 @@ public class UserService {
         return utilisateurRepository.findAll().stream()
                 .map(userMapper::toResponse)
                 .toList();
+    }
+
+    @Transactional
+    public UtilisateurResponse assignRoles(UUID userId, List<Role> roles) {
+        Utilisateur utilisateur = utilisateurRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.UTILISATEUR_INTROUVABLE));
+
+        keycloakAdminService.assignRolesToUser(utilisateur.getKeycloakId(), roles);
+
+        utilisateur.setRoles(roles);
+        utilisateurRepository.save(utilisateur);
+
+        return userMapper.toResponse(utilisateur);
     }
 }
