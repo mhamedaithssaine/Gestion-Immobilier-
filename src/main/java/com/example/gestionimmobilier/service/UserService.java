@@ -1,8 +1,10 @@
 package com.example.gestionimmobilier.service;
 
+import com.example.gestionimmobilier.dto.user.CreateUserRequest;
 import com.example.gestionimmobilier.dto.user.UtilisateurResponse;
 import com.example.gestionimmobilier.exception.ErrorMessages;
 import com.example.gestionimmobilier.exception.ResourceNotFoundException;
+import com.example.gestionimmobilier.exception.ValidationException;
 import com.example.gestionimmobilier.mapper.UserMapper;
 import com.example.gestionimmobilier.models.entity.user.Utilisateur;
 import com.example.gestionimmobilier.models.enums.Role;
@@ -60,4 +62,28 @@ public class UserService {
 
         return userMapper.toResponse(utilisateur);
     }
+
+    @Transactional
+    public UtilisateurResponse createUser(CreateUserRequest request) {
+        if (request.roles() == null || request.roles().isEmpty()) {
+            throw new ValidationException(ErrorMessages.AUCUN_ROLE_VALIDE);
+        }
+
+        String keycloakUserId = keycloakAdminService.createUserInKeycloak(
+                request.username(),
+                request.email(),
+                request.firstName(),
+                request.lastName(),
+                request.password(),
+                request.roles()
+        );
+
+        keycloakAdminService.syncUserByKeycloakId(keycloakUserId);
+
+        Utilisateur utilisateur = utilisateurRepository.findByKeycloakId(keycloakUserId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.UTILISATEUR_INTROUVABLE));
+
+        return userMapper.toResponse(utilisateur);
+    }
+
 }

@@ -10,5 +10,6 @@ public record KeycloakUserResponse(
         String firstName,
         String lastName,
         boolean enabled,
+        boolean emailVerified,
         Long createdTimestamp
 ) {}

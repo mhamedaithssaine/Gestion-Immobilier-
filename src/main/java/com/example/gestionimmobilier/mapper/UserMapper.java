@@ -12,6 +12,7 @@ import java.util.List;
 public interface UserMapper {
 
     @Mapping(target = "type", expression = "java(getType(utilisateur))")
+    @Mapping(target = "emailVerified", expression = "java(utilisateur.isEmailVerified())")
     UtilisateurResponse toResponse(Utilisateur utilisateur);
 
     default String getType(Utilisateur u) {

@@ -21,6 +21,7 @@ public interface KeycloakUserMapper {
                 .firstName(response.firstName())
                 .lastName(response.lastName())
                 .roles(roles)
+                .emailVerified(response.emailVerified())
                 .build();
         return c;
     }
@@ -33,6 +34,7 @@ public interface KeycloakUserMapper {
                 .firstName(response.firstName())
                 .lastName(response.lastName())
                 .roles(roles)
+                .emailVerified(response.emailVerified())
                 .build();
     }
 
@@ -44,6 +46,7 @@ public interface KeycloakUserMapper {
                 .firstName(response.firstName())
                 .lastName(response.lastName())
                 .roles(roles)
+                .emailVerified(response.emailVerified())
                 .build();
     }
 
@@ -55,6 +58,7 @@ public interface KeycloakUserMapper {
                 .firstName(response.firstName())
                 .lastName(response.lastName())
                 .roles(roles)
+                .emailVerified(response.emailVerified())
                 .build();
     }
 }

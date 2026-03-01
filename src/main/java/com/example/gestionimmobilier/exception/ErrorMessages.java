@@ -27,7 +27,6 @@ public final class ErrorMessages {
     public static final String CONTRAT_INTROUVABLE = "Le contrat demandé n'existe pas ou a été supprimé.";
     public static final String BAIL_INTROUVABLE = "Le bail demandé n'existe pas ou a été supprimé.";
     public static final String INTERVENTION_INTROUVABLE = "L'intervention demandée n'existe pas ou a été supprimée.";
-    public static final String UTILISATEUR_INTROUVABLE = "L'utilisateur demandé n'existe pas ou a été supprimé.";
 
     // --- Règle métier (422) ---
     public static final String VIOLATION_REGLE_METIER = "Violation d'une règle métier";
@@ -44,4 +43,12 @@ public final class ErrorMessages {
     // --- Token expiré / invalide ---
     public static final String TOKEN_EXPIRE = "Token expiré ou invalide";
     public static final String MESSAGE_TOKEN_EXPIRE = "Votre session a expiré. Veuillez vous reconnecter pour obtenir un nouveau token.";
+
+    // --- Utilisateur ---
+    public static final String UTILISATEUR_INTROUVABLE = "L'utilisateur demandé n'existe pas ou a été supprimé.";
+    public static final String UTILISATEUR_EXISTE_DEJA = "Un utilisateur avec ce nom ou cet email existe déjà.";
+    public static final String UTILISATEUR_INTROUVABLE_KEYCLOAK = "Utilisateur introuvable dans Keycloak.";
+    public static final String LISTE_ROLES_VIDE = "La liste des rôles ne peut pas être vide.";
+    public static final String AUCUN_ROLE_VALIDE = "Au moins un rôle doit être attribué.";
+    public static final String ERREUR_ID_KEYCLOAK = "Impossible de récupérer l'ID du nouvel utilisateur Keycloak.";
 }
