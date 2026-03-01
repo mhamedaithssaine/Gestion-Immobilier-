@@ -45,4 +45,7 @@ public abstract class Utilisateur extends BaseEntity {
     )
     @Enumerated(EnumType.STRING)
     private List<Role> roles;
+
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = true;
 }

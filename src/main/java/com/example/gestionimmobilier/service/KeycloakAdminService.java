@@ -2,7 +2,7 @@ package com.example.gestionimmobilier.service;
 
 import com.example.gestionimmobilier.config.KeycloakAdminProperties;
 import com.example.gestionimmobilier.dto.keycloack.KeycloakUserResponse;
-import com.example.gestionimmobilier.exception.ValidationException;
+import com.example.gestionimmobilier.exception.*;
 import com.example.gestionimmobilier.mapper.KeycloakUserMapper;
 import com.example.gestionimmobilier.models.entity.user.Utilisateur;
 import com.example.gestionimmobilier.models.enums.Role;
@@ -13,13 +13,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.example.gestionimmobilier.exception.ErrorMessages.UTILISATEUR_EXISTE_DEJA;
 
 @Service
 public class KeycloakAdminService {
@@ -113,6 +117,7 @@ public class KeycloakAdminService {
         u.setFirstName(kcUser.firstName());
         u.setLastName(kcUser.lastName());
         u.setRoles(roles);
+        u.setEmailVerified(kcUser.emailVerified());
         return u;
     }
 
@@ -199,7 +204,7 @@ public class KeycloakAdminService {
     @Transactional
     public void assignRolesToUser(String keycloakUserId, List<Role> roles) {
         if (roles == null || roles.isEmpty()) {
-            throw new ValidationException("La liste des rôles ne peut pas être vide");
+            throw new ValidationException(ErrorMessages.LISTE_ROLES_VIDE);
         }
 
         List<Map<String, Object>> realmRoles = getRealmRoles();
@@ -211,7 +216,7 @@ public class KeycloakAdminService {
                 .toList();
 
         if (rolesToAssign.isEmpty()) {
-            throw new ValidationException("Aucun rôle valide trouvé dans Keycloak pour: " + roles);
+            throw new ValidationException(ErrorMessages.AUCUN_ROLE_VALIDE + roles);
         }
 
         String token = getAdminToken();
@@ -249,4 +254,131 @@ public class KeycloakAdminService {
                 .filter(r -> roleName.equals(r.get("name")))
                 .findFirst();
     }
+
+    private String buildUserUrl(String keycloakUserId) {
+        return buildUsersUrl() + "/" + keycloakUserId;
+    }
+
+    public void setUserEnabled(String keycloakUserId, boolean enabled) {
+        String token = getAdminToken();
+        String url = buildUserUrl(keycloakUserId);
+
+        HttpEntity<Void> getRequest = new HttpEntity<>(buildAuthHeaders(token));
+        ResponseEntity<Map<String, Object>> getResponse = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                getRequest,
+                new ParameterizedTypeReference<>() {}
+        );
+
+        Map<String, Object> user = getResponse.getBody();
+        if (user == null) {
+            throw new ResourceNotFoundException(ErrorMessages.UTILISATEUR_INTROUVABLE_KEYCLOAK);
+        }
+
+        user.put("enabled", enabled);
+
+        HttpHeaders headers = buildAuthHeaders(token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> putRequest = new HttpEntity<>(user, headers);
+        restTemplate.exchange(url, HttpMethod.PUT, putRequest, Void.class);
+    }
+
+
+    public String createUserInKeycloak(String username, String email, String firstName, String lastName, String password, List<Role> roles) {
+        if (roles == null || roles.isEmpty()) {
+            throw new ValidationException(ErrorMessages.AUCUN_ROLE_VALIDE);
+        }
+
+        String token = getAdminToken();
+        String url = buildUsersUrl();
+        HttpHeaders headers = buildAuthHeaders(token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> userBody = Map.of(
+                "username", username,
+                "email", email,
+                "firstName", firstName,
+                "lastName", lastName,
+                "enabled", true,
+                "emailVerified", true
+        );
+
+        HttpEntity<Map<String, Object>> createRequest = new HttpEntity<>(userBody, headers);
+        ResponseEntity<Void> createResponse;
+        try {
+            createResponse = restTemplate.exchange(url, HttpMethod.POST, createRequest, Void.class);
+        } catch (HttpClientErrorException.Conflict e) {
+            throw new BusinessRuleException(UTILISATEUR_EXISTE_DEJA);
+        }
+
+        URI location = createResponse.getHeaders().getLocation();
+        if (location == null) {
+            throw new InternalServerException(ErrorMessages.ERREUR_ID_KEYCLOAK);
+        }
+        String path = location.getPath();
+        String keycloakUserId = path.substring(path.lastIndexOf('/') + 1);
+
+        String resetPasswordUrl = buildUserUrl(keycloakUserId) + "/reset-password";
+        Map<String, Object> credentials = Map.of(
+                "type", "password",
+                "value", password,
+                "temporary", false
+        );
+        HttpEntity<Map<String, Object>> passwordRequest = new HttpEntity<>(credentials, headers);
+        restTemplate.exchange(resetPasswordUrl, HttpMethod.PUT, passwordRequest, Void.class);
+
+        assignRolesToUser(keycloakUserId, roles);
+
+        return keycloakUserId;
+    }
+
+
+    @Transactional
+    public void syncUserByKeycloakId(String keycloakUserId) {
+        String token = getAdminToken();
+        String url = buildUserUrl(keycloakUserId);
+        HttpEntity<Void> request = new HttpEntity<>(buildAuthHeaders(token));
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                new ParameterizedTypeReference<>() {}
+        );
+        Map<String, Object> kcUser = response.getBody();
+        if (kcUser == null) {
+            throw new ResourceNotFoundException(ErrorMessages.UTILISATEUR_INTROUVABLE_KEYCLOAK);
+        }
+
+        KeycloakUserResponse kcUserResponse = mapToKeycloakUserResponse(kcUser);
+        List<Role> roles = getUserRealmRoles(keycloakUserId);
+        syncUser(kcUserResponse, roles);
+    }
+
+    private void syncUser(KeycloakUserResponse kcUser, List<Role> roles) {
+        Optional<Utilisateur> existing = utilisateurRepository.findByKeycloakId(kcUser.id());
+        Utilisateur utilisateur = existing
+                .map(u -> updateFromKeycloak(u, kcUser, roles))
+                .orElseGet(() -> createFromKeycloak(kcUser, roles));
+        utilisateurRepository.save(utilisateur);
+    }
+
+    private KeycloakUserResponse mapToKeycloakUserResponse(Map<String, Object> m) {
+        Object emailVerifiedObj = m.get("emailVerified");
+        if (emailVerifiedObj == null) {
+            emailVerifiedObj = m.get("email_verified");
+        }
+        boolean emailVerified = Boolean.TRUE.equals(emailVerifiedObj);
+        return new KeycloakUserResponse(
+                (String) m.get("id"),
+                (String) m.get("username"),
+                (String) m.get("email"),
+                (String) m.get("firstName"),
+                (String) m.get("lastName"),
+                Boolean.TRUE.equals(m.get("enabled")),
+                emailVerified,
+                m.get("createdTimestamp") != null ? ((Number) m.get("createdTimestamp")).longValue() : null
+        );
+    }
+
 }

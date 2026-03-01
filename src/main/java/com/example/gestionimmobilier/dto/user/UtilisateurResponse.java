@@ -13,5 +13,6 @@ public record UtilisateurResponse(
         String firstName,
         String lastName,
         List<Role> roles,
-        String type
+        String type,
+        boolean emailVerified
 ) {}
