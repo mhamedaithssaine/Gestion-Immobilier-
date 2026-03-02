@@ -2,14 +2,19 @@ package com.example.gestionimmobilier.service;
 
 import com.example.gestionimmobilier.dto.immobilier.AdresseRequest;
 import com.example.gestionimmobilier.dto.immobilier.BienResponse;
+import com.example.gestionimmobilier.dto.immobilier.CreateAppartementRequest;
 import com.example.gestionimmobilier.dto.immobilier.CreateBienRequest;
+import com.example.gestionimmobilier.dto.immobilier.CreateMaisonRequest;
 import com.example.gestionimmobilier.exception.ErrorMessages;
 import com.example.gestionimmobilier.exception.ForbiddenException;
 import com.example.gestionimmobilier.exception.InternalServerException;
 import com.example.gestionimmobilier.exception.ResourceNotFoundException;
+import com.example.gestionimmobilier.exception.ValidationException;
 import com.example.gestionimmobilier.mapper.BienMapper;
 import com.example.gestionimmobilier.models.entity.immobilier.Adresse;
+import com.example.gestionimmobilier.models.entity.immobilier.Appartement;
 import com.example.gestionimmobilier.models.entity.immobilier.BienImmobilier;
+import com.example.gestionimmobilier.models.entity.immobilier.Maison;
 import com.example.gestionimmobilier.models.entity.user.Proprietaire;
 import com.example.gestionimmobilier.models.entity.user.Utilisateur;
 import com.example.gestionimmobilier.repository.AdresseRepository;
@@ -60,6 +65,51 @@ public class BienService {
             bien = bienImmobilierRepository.save(bien);
         }
 
+        return bienMapper.toBienResponse(bien);
+    }
+
+    @Transactional
+    public BienResponse modifierBien(UUID bienId, String keycloakId, CreateBienRequest request, MultipartFile[] images) {
+        Proprietaire proprietaire = getProprietaireByKeycloakId(keycloakId);
+
+        BienImmobilier bien = bienImmobilierRepository
+                .findByIdAndProprietaire(bienId, proprietaire)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BIEN_INTROUVABLE));
+
+        bien.setTitre(request.getTitre());
+        bien.setSurface(request.getSurface());
+        bien.setPrixBase(request.getPrixBase());
+        bien.setStatut(request.getStatut());
+
+        AdresseRequest adrReq = request.getAdresse();
+        if (bien.getAdresse() == null) {
+            Adresse adresse = mapAdresse(adrReq);
+            adresse = adresseRepository.save(adresse);
+            bien.setAdresse(adresse);
+        } else {
+            bien.getAdresse().setRue(adrReq.rue());
+            bien.getAdresse().setVille(adrReq.ville());
+            bien.getAdresse().setCodePostal(adrReq.codePostal());
+            bien.getAdresse().setPays(adrReq.pays());
+        }
+
+        if (bien instanceof Appartement appartement && request instanceof CreateAppartementRequest reqApp) {
+            appartement.setEtage(reqApp.getEtage());
+            appartement.setAscenseur(reqApp.isAscenseur());
+        } else if (bien instanceof Maison maison && request instanceof CreateMaisonRequest reqMaison) {
+            Double terrain = reqMaison.getSurfaceTerrain() != null ? reqMaison.getSurfaceTerrain() : 0.0;
+            maison.setSurfaceTerrain(terrain);
+            maison.setGarage(reqMaison.isGarage());
+        } else {
+            throw new ValidationException("Le type du bien (APPARTEMENT/MAISON) ne correspond pas au bien existant.");
+        }
+
+        if (images != null && images.length > 0) {
+            List<String> paths = fileStorageService.storeBienImages(bien.getId(), images);
+            bien.setImages(paths);
+        }
+
+        bien = bienImmobilierRepository.save(bien);
         return bienMapper.toBienResponse(bien);
     }
 
