@@ -45,6 +45,14 @@ public ResponseEntity<ApiRetour<BienResponse>> creerBienJson(@RequestBody @Valid
         return ResponseEntity.ok(ApiRetour.success("Bien immobilier modifié avec succès", bien));
     }
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_PROPRIETAIRE')")
+    public ResponseEntity<ApiRetour<Void>> supprimerBien(@PathVariable UUID id) {
+        String keycloakId = getCurrentKeycloakId();
+        bienService.supprimerBien(id, keycloakId);
+        return ResponseEntity.ok(ApiRetour.<Void>success("Bien immobilier supprimé avec succès"));
+    }
+
     private String getCurrentKeycloakId() {
         return ((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getSubject();
     }

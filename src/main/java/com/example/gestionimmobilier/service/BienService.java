@@ -101,7 +101,7 @@ public class BienService {
             maison.setSurfaceTerrain(terrain);
             maison.setGarage(reqMaison.isGarage());
         } else {
-            throw new ValidationException("Le type du bien (APPARTEMENT/MAISON) ne correspond pas au bien existant.");
+            throw new ValidationException(ErrorMessages.BIEN_TYPE_INCOMPATIBLE);
         }
 
         if (images != null && images.length > 0) {
@@ -111,6 +111,17 @@ public class BienService {
 
         bien = bienImmobilierRepository.save(bien);
         return bienMapper.toBienResponse(bien);
+    }
+
+    @Transactional
+    public void supprimerBien(UUID bienId, String keycloakId) {
+        Proprietaire proprietaire = getProprietaireByKeycloakId(keycloakId);
+
+        BienImmobilier bien = bienImmobilierRepository
+                .findByIdAndProprietaire(bienId, proprietaire)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BIEN_INTROUVABLE));
+
+        bienImmobilierRepository.delete(bien);
     }
 
     private Proprietaire getProprietaireByKeycloakId(String keycloakId) {
