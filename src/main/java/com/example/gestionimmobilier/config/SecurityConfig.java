@@ -28,7 +28,7 @@ public class SecurityConfig {
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests (auth -> auth
-        .requestMatchers("/api/public/**","/actuator/health").permitAll()
+        .requestMatchers("/api/public/**", "/actuator/health", "/uploads/**").permitAll()
         .anyRequest().authenticated())
         .oauth2ResourceServer(oauth2 -> oauth2
         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))

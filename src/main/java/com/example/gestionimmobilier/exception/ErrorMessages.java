@@ -51,4 +51,11 @@ public final class ErrorMessages {
     public static final String LISTE_ROLES_VIDE = "La liste des rôles ne peut pas être vide.";
     public static final String AUCUN_ROLE_VALIDE = "Au moins un rôle doit être attribué.";
     public static final String ERREUR_ID_KEYCLOAK = "Impossible de récupérer l'ID du nouvel utilisateur Keycloak.";
+
+    // --- Bien immobilier / Images ---
+    public static final String REPERTOIRE_STOCKAGE_IMPOSSIBLE = "Impossible de créer le répertoire de stockage des fichiers.";
+    public static final String REPERTOIRE_BIEN_IMAGES_IMPOSSIBLE = "Impossible de créer le répertoire du bien pour les images.";
+    public static final String IMAGE_ENREGISTREMENT_ECHEC = "Erreur lors de l'enregistrement de l'image.";
+    public static final String IMAGES_UPLOAD_ECHEC = "Erreur lors de l'enregistrement des images.";
+    public static final String REFERENCE_UNIQUE_IMPOSSIBLE = "Impossible de générer une référence unique pour le bien.";
 }
