@@ -59,4 +59,5 @@ public final class ErrorMessages {
     public static final String IMAGES_UPLOAD_ECHEC = "Erreur lors de l'enregistrement des images.";
     public static final String REFERENCE_UNIQUE_IMPOSSIBLE = "Impossible de générer une référence unique pour le bien.";
     public static final String BIEN_TYPE_INCOMPATIBLE = "Le type du bien (APPARTEMENT/MAISON) ne correspond pas au bien existant.";
+    public static final String IDENTITE_PROPRIETAIRE_REQUISE = "L'identité du propriétaire est requise pour lister les biens.";
 }

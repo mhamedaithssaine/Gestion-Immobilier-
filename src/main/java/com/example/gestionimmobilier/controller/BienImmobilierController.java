@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -24,6 +25,14 @@ public class BienImmobilierController {
 
     public BienImmobilierController(BienService bienService) {
         this.bienService = bienService;
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_PROPRIETAIRE')")
+    public ResponseEntity<ApiRetour<List<BienResponse>>> listerMesBiens() {
+        String keycloakId = getCurrentKeycloakId();
+        List<BienResponse> biens = bienService.listerBiens(keycloakId);
+        return ResponseEntity.ok(ApiRetour.success("Liste des biens", biens));
     }
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
