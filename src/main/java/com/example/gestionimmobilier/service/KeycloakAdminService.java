@@ -284,6 +284,12 @@ public class KeycloakAdminService {
         restTemplate.exchange(url, HttpMethod.PUT, putRequest, Void.class);
     }
 
+    public void deleteUserInKeycloak(String keycloakUserId) {
+        String token = getAdminToken();
+        String url = buildUserUrl(keycloakUserId);
+        HttpEntity<Void> request = new HttpEntity<>(buildAuthHeaders(token));
+        restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
+    }
 
     public String createUserInKeycloak(String username, String email, String firstName, String lastName, String password, List<Role> roles) {
         if (roles == null || roles.isEmpty()) {
