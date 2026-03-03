@@ -124,6 +124,17 @@ public class BienService {
         bienImmobilierRepository.delete(bien);
     }
 
+    public BienResponse getBienById(UUID bienId, String keycloakId) {
+        if (keycloakId == null || keycloakId.isBlank()) {
+            throw new ValidationException(ErrorMessages.IDENTITE_PROPRIETAIRE_REQUISE);
+        }
+        Proprietaire proprietaire = getProprietaireByKeycloakId(keycloakId);
+        BienImmobilier bien = bienImmobilierRepository
+                .findByIdAndProprietaire(bienId, proprietaire)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BIEN_INTROUVABLE));
+        return bienMapper.toBienResponse(bien);
+    }
+
     public List<BienResponse> listerBiens(String keycloakId) {
         if (keycloakId == null || keycloakId.isBlank()) {
             throw new ValidationException(ErrorMessages.IDENTITE_PROPRIETAIRE_REQUISE);

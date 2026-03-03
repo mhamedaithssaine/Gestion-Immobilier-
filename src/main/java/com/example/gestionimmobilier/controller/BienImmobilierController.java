@@ -35,6 +35,14 @@ public class BienImmobilierController {
         return ResponseEntity.ok(ApiRetour.success("Liste des biens", biens));
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_PROPRIETAIRE')")
+    public ResponseEntity<ApiRetour<BienResponse>> getBienById(@PathVariable UUID id) {
+        String keycloakId = getCurrentKeycloakId();
+        BienResponse bien = bienService.getBienById(id, keycloakId);
+        return ResponseEntity.ok(ApiRetour.success("Détail du bien", bien));
+    }
+
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasAuthority('ROLE_PROPRIETAIRE')")
 public ResponseEntity<ApiRetour<BienResponse>> creerBienJson(@RequestBody @Valid CreateBienRequest data) {
