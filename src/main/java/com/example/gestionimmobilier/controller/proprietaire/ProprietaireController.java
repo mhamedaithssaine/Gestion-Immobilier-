@@ -1,9 +1,11 @@
 package com.example.gestionimmobilier.controller.proprietaire;
 
 import com.example.gestionimmobilier.dto.api.reponse.ApiRetour;
+import com.example.gestionimmobilier.dto.immobilier.BienResponse;
 import com.example.gestionimmobilier.dto.user.CreateProprietaireRequest;
 import com.example.gestionimmobilier.dto.user.ProprietaireResponse;
 import com.example.gestionimmobilier.dto.user.UpdateProprietaireRequest;
+import com.example.gestionimmobilier.service.BienService;
 import com.example.gestionimmobilier.service.proprietaire.ProprietaireService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -18,9 +20,11 @@ import java.util.UUID;
 public class ProprietaireController {
 
     private final ProprietaireService proprietaireService;
+    private final BienService bienService;
 
-    public ProprietaireController(ProprietaireService proprietaireService) {
+    public ProprietaireController(ProprietaireService proprietaireService, BienService bienService) {
         this.proprietaireService = proprietaireService;
+        this.bienService = bienService;
     }
 
     @PostMapping
@@ -46,5 +50,14 @@ public class ProprietaireController {
     public ResponseEntity<ApiRetour<Void>> supprimerProprietaire(@PathVariable UUID id) {
         proprietaireService.deleteProprietaire(id);
         return ResponseEntity.ok(ApiRetour.<Void>success("Propriétaire supprimé avec succès"));
+    }
+
+    @PutMapping("/{proprietaireId}/biens/{bienId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiRetour<BienResponse>> associerBienAProprietaire(
+            @PathVariable UUID proprietaireId,
+            @PathVariable UUID bienId) {
+        BienResponse bien = bienService.associerBienAProprietaire(bienId, proprietaireId);
+        return ResponseEntity.ok(ApiRetour.success("Bien associé au propriétaire avec succès", bien));
     }
 }

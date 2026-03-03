@@ -174,4 +174,20 @@ public class BienService {
         return ref;
     }
 
+    @Transactional
+    public BienResponse associerBienAProprietaire(UUID bienId, UUID proprietaireId) {
+        BienImmobilier bien = bienImmobilierRepository.findById(bienId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BIEN_INTROUVABLE));
+
+        Utilisateur utilisateur = utilisateurRepository.findById(proprietaireId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.PROPRIETAIRE_INTROUVABLE));
+
+        if (!(utilisateur instanceof Proprietaire proprietaire)) {
+            throw new ValidationException(ErrorMessages.PROPRIETAIRE_INTROUVABLE);
+        }
+
+        bien.setProprietaire(proprietaire);
+        bien = bienImmobilierRepository.save(bien);
+        return bienMapper.toBienResponse(bien);
+    }
 }
