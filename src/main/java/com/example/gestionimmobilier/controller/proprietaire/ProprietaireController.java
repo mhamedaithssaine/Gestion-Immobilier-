@@ -40,6 +40,11 @@ public class ProprietaireController {
         ProprietaireResponse proprietaire = proprietaireService.updateProprietaire(id, request);
         return ResponseEntity.ok(ApiRetour.success("Propriétaire modifié avec succès", proprietaire));
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiRetour<Void>> supprimerProprietaire(@PathVariable UUID id) {
+        proprietaireService.deleteProprietaire(id);
+        return ResponseEntity.ok(ApiRetour.<Void>success("Propriétaire supprimé avec succès"));
+    }
 }
-
-

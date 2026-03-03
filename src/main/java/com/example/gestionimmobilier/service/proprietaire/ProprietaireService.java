@@ -92,6 +92,18 @@ public class ProprietaireService {
         utilisateurRepository.save(proprietaire);
         return userMapper.toProprietaireResponse(proprietaire);
     }
+
+    @Transactional
+    public void deleteProprietaire(UUID id) {
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.PROPRIETAIRE_INTROUVABLE));
+
+        if (!(utilisateur instanceof Proprietaire proprietaire)) {
+            throw new ResourceNotFoundException(ErrorMessages.PROPRIETAIRE_INTROUVABLE);
+        }
+
+        String keycloakId = proprietaire.getKeycloakId();
+        utilisateurRepository.delete(proprietaire);
+        keycloakAdminService.deleteUserInKeycloak(keycloakId);
+    }
 }
-
-
