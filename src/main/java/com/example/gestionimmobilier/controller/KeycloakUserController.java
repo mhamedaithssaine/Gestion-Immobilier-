@@ -64,4 +64,5 @@ public class KeycloakUserController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiRetour.success("Utilisateur créé avec succès", user));
     }
+
 }

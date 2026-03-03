@@ -85,5 +85,4 @@ public class UserService {
 
         return userMapper.toResponse(utilisateur);
     }
-
 }
