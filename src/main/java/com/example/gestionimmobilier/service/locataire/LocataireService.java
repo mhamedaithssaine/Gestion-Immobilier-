@@ -84,4 +84,18 @@ public class LocataireService {
         utilisateurRepository.save(client);
         return userMapper.toLocataireResponse(client);
     }
+
+    @Transactional
+    public void deleteLocataire(UUID id) {
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.CLIENT_INTROUVABLE));
+
+        if (!(utilisateur instanceof Client client)) {
+            throw new ResourceNotFoundException(ErrorMessages.CLIENT_INTROUVABLE);
+        }
+
+        String keycloakId = client.getKeycloakId();
+        utilisateurRepository.delete(client);
+        keycloakAdminService.deleteUserInKeycloak(keycloakId);
+    }
 }

@@ -40,4 +40,11 @@ public class LocataireController {
         LocataireResponse locataire = locataireService.updateLocataire(id, request);
         return ResponseEntity.ok(ApiRetour.success("Locataire modifié avec succès", locataire));
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiRetour<Void>> supprimerLocataire(@PathVariable UUID id) {
+        locataireService.deleteLocataire(id);
+        return ResponseEntity.ok(ApiRetour.<Void>success("Locataire supprimé avec succès"));
+    }
 }
