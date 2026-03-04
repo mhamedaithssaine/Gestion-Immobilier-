@@ -316,6 +316,12 @@ public class KeycloakAdminService {
             createResponse = restTemplate.exchange(url, HttpMethod.POST, createRequest, Void.class);
         } catch (HttpClientErrorException.Conflict e) {
             throw new BusinessRuleException(UTILISATEUR_EXISTE_DEJA);
+        } catch (HttpClientErrorException.BadRequest e) {
+            String body = e.getResponseBodyAsString();
+            if (body != null && (body.contains("error-username-invalid-character") || body.contains("\"field\":\"username\""))) {
+                throw new ValidationException(ErrorMessages.USERNAME_INVALIDE);
+            }
+            throw new ValidationException(ErrorMessages.DONNEES_INVALIDES);
         }
 
         URI location = createResponse.getHeaders().getLocation();

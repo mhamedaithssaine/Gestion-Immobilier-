@@ -48,6 +48,7 @@ public final class ErrorMessages {
     public static final String UTILISATEUR_INTROUVABLE = "L'utilisateur demandé n'existe pas ou a été supprimé.";
     public static final String UTILISATEUR_EXISTE_DEJA = "Un utilisateur avec ce nom ou cet email existe déjà.";
     public static final String UTILISATEUR_INTROUVABLE_KEYCLOAK = "Utilisateur introuvable dans Keycloak.";
+    public static final String USERNAME_INVALIDE = "Nom d'utilisateur invalide. Utilisez uniquement des lettres, chiffres, '_' ou '-' (sans espaces).";
     public static final String LISTE_ROLES_VIDE = "La liste des rôles ne peut pas être vide.";
     public static final String AUCUN_ROLE_VALIDE = "Au moins un rôle doit être attribué.";
     public static final String ERREUR_ID_KEYCLOAK = "Impossible de récupérer l'ID du nouvel utilisateur Keycloak.";

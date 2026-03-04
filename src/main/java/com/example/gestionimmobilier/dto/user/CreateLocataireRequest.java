@@ -1,15 +1,14 @@
 package com.example.gestionimmobilier.dto.user;
 
-import com.example.gestionimmobilier.models.enums.Role;
+import com.example.gestionimmobilier.models.enums.StatutDossier;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-import java.util.List;
+import java.math.BigDecimal;
 
-public record CreateUserRequest(
+public record CreateLocataireRequest(
         @NotBlank(message = "Le nom d'utilisateur est requis")
         @Size(min = 2, max = 100)
         @Pattern(
@@ -34,6 +33,7 @@ public record CreateUserRequest(
         @Size(min = 6, message = "Le mot de passe doit contenir au moins 6 caractères")
         String password,
 
-        @NotNull(message = "Au moins un rôle doit être attribué")
-        List<Role> roles
+        BigDecimal budgetMax,
+
+        StatutDossier statutDossier
 ) {}
