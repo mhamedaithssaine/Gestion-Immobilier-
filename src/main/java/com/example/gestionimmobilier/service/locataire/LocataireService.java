@@ -2,6 +2,7 @@ package com.example.gestionimmobilier.service.locataire;
 
 import com.example.gestionimmobilier.dto.user.CreateLocataireRequest;
 import com.example.gestionimmobilier.dto.user.LocataireResponse;
+import com.example.gestionimmobilier.dto.user.UpdateLocataireRequest;
 import com.example.gestionimmobilier.exception.ErrorMessages;
 import com.example.gestionimmobilier.exception.ResourceNotFoundException;
 import com.example.gestionimmobilier.mapper.UserMapper;
@@ -62,5 +63,25 @@ public class LocataireService {
         }
 
         throw new ResourceNotFoundException(ErrorMessages.UTILISATEUR_INTROUVABLE);
+    }
+
+    @Transactional
+    public LocataireResponse updateLocataire(UUID id, UpdateLocataireRequest request) {
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.CLIENT_INTROUVABLE));
+
+        if (!(utilisateur instanceof Client client)) {
+            throw new ResourceNotFoundException(ErrorMessages.CLIENT_INTROUVABLE);
+        }
+
+        if (request.budgetMax() != null) {
+            client.setBudgetMax(request.budgetMax());
+        }
+        if (request.statutDossier() != null) {
+            client.setStatutDossier(request.statutDossier());
+        }
+
+        utilisateurRepository.save(client);
+        return userMapper.toLocataireResponse(client);
     }
 }
