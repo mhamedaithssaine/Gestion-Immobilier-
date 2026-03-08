@@ -61,4 +61,15 @@ public final class ErrorMessages {
     public static final String REFERENCE_UNIQUE_IMPOSSIBLE = "Impossible de générer une référence unique pour le bien.";
     public static final String BIEN_TYPE_INCOMPATIBLE = "Le type du bien (APPARTEMENT/MAISON) ne correspond pas au bien existant.";
     public static final String IDENTITE_PROPRIETAIRE_REQUISE = "L'identité du propriétaire est requise pour lister les biens.";
+
+    // --- Contrat / Bail ---
+    public static final String UTILISATEUR_N_EST_PAS_AGENT = "L'utilisateur choisi n'est pas un agent.";
+    public static final String BIEN_N_APPARTIENT_PAS_PROPRIETAIRE = "Le bien n'appartient pas à ce propriétaire.";
+    public static final String CONTRAT_NON_MODIFIABLE = "Un contrat résilié ou terminé ne peut pas être modifié.";
+    public static final String CONTRAT_DEJA_RESILIE = "Ce contrat est déjà résilié ou terminé.";
+    public static final String MANDAT_INTROUVABLE = "Le mandat demandé n'existe pas ou a été supprimé.";
+    public static final String MANDAT_DEJA_RESILIE = "Ce mandat est déjà résilié ou terminé.";
+    public static final String BIEN_DEJA_SOUS_MANDAT_ACTIF = "Ce bien a déjà un mandat actif.";
+    public static final String BIEN_DEJA_LIE_CONTRAT = "Ce bien est déjà lié à un contrat de location. Un seul contrat par bien est autorisé.";
+    public static final String CONTRAINTE_VIOLATION = "Opération impossible : contrainte non respectée (ex. doublon).";
 }

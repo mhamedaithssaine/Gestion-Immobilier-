@@ -13,10 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Mapper entité → DTO pour les biens. Utilise le polymorphisme :
- * chaque sous-type d'entité est mappé vers le DTO de réponse correspondant.
- */
+
 @Component
 public class BienMapper {
 
@@ -31,9 +28,7 @@ public class BienMapper {
         );
     }
 
-    /**
-     * Mappe un bien vers la réponse polymorphe appropriée (OOP : selon le type réel de l'entité).
-     */
+   
     public BienResponse toBienResponse(BienImmobilier bien) {
         if (bien == null) return null;
         if (bien instanceof Appartement appartement) {

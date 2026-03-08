@@ -34,6 +34,5 @@ public record CreateLocataireRequest(
         String password,
 
         BigDecimal budgetMax,
-
         StatutDossier statutDossier
 ) {}
