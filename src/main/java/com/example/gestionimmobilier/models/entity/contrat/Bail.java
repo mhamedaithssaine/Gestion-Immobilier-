@@ -1,7 +1,9 @@
 package com.example.gestionimmobilier.models.entity.contrat;
 
+import com.example.gestionimmobilier.models.enums.StatutBail;
 import jakarta.persistence.Entity;
-
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,4 +28,7 @@ public class Bail extends Contrat {
 
     private BigDecimal loyerHC;
     private BigDecimal charges;
+
+    @Enumerated(EnumType.STRING)
+    private StatutBail statut;
 }
