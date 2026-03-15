@@ -118,6 +118,7 @@ public class KeycloakAdminService {
         u.setLastName(kcUser.lastName());
         u.setRoles(roles);
         u.setEmailVerified(kcUser.emailVerified());
+        u.setEnabled(kcUser.enabled());
         return u;
     }
 
@@ -200,7 +201,6 @@ public class KeycloakAdminService {
         return Optional.ofNullable(response.getBody()).orElse(List.of());
     }
 
-    // Assigne les rôles à un utilisateur Keycloak
     @Transactional
     public void assignRolesToUser(String keycloakUserId, List<Role> roles) {
         if (roles == null || roles.isEmpty()) {
@@ -224,14 +224,12 @@ public class KeycloakAdminService {
         HttpHeaders headers = buildAuthHeaders(token);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // 1. Supprimer les rôles actuels
         List<Map<String, Object>> currentRoles = getKeycloakUserRoles(keycloakUserId);
         if (!currentRoles.isEmpty()) {
             HttpEntity<List<Map<String, Object>>> deleteRequest = new HttpEntity<>(currentRoles, headers);
             restTemplate.exchange(url, HttpMethod.DELETE, deleteRequest, Void.class);
         }
 
-        // 2. Attribuer les nouveaux rôles
         HttpEntity<List<Map<String, Object>>> postRequest = new HttpEntity<>(rolesToAssign, headers);
         restTemplate.exchange(url, HttpMethod.POST, postRequest, Void.class);
     }
@@ -291,7 +289,13 @@ public class KeycloakAdminService {
         restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
     }
 
+    
     public String createUserInKeycloak(String username, String email, String firstName, String lastName, String password, List<Role> roles) {
+        return createUserInKeycloak(username, email, firstName, lastName, password, roles, true);
+    }
+
+    
+    public String createUserInKeycloak(String username, String email, String firstName, String lastName, String password, List<Role> roles, boolean enabled) {
         if (roles == null || roles.isEmpty()) {
             throw new ValidationException(ErrorMessages.AUCUN_ROLE_VALIDE);
         }
@@ -306,7 +310,7 @@ public class KeycloakAdminService {
                 "email", email,
                 "firstName", firstName,
                 "lastName", lastName,
-                "enabled", true,
+                "enabled", enabled,
                 "emailVerified", true
         );
 

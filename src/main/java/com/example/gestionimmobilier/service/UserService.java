@@ -59,6 +59,8 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.UTILISATEUR_INTROUVABLE));
 
         keycloakAdminService.setUserEnabled(utilisateur.getKeycloakId(), enabled);
+        utilisateur.setEnabled(enabled);
+        utilisateurRepository.save(utilisateur);
 
         return userMapper.toResponse(utilisateur);
     }
