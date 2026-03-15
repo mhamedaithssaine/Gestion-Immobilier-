@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -82,7 +83,8 @@ public class ContratService {
                 throw new ValidationException(ErrorMessages.UTILISATEUR_N_EST_PAS_AGENT);
             }
         } else {
-            agent = mandatRepository.findByBien_IdAndStatut(bien.getId(), StatutMandat.ACTIF)
+            agent = Optional.ofNullable(bien.getMandat())
+                    .filter(m -> m.getStatut() == StatutMandat.ACTIF)
                     .map(MandatDeGestion::getAgent)
                     .orElse(null);
         }

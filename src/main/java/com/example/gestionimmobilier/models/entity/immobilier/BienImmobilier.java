@@ -1,6 +1,7 @@
 package com.example.gestionimmobilier.models.entity.immobilier;
 
 import com.example.gestionimmobilier.models.entity.base.BaseEntity;
+import com.example.gestionimmobilier.models.entity.contrat.MandatDeGestion;
 import com.example.gestionimmobilier.models.enums.StatutBien;
 import com.example.gestionimmobilier.models.entity.user.Proprietaire;
 
@@ -49,4 +50,8 @@ public abstract class BienImmobilier extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "proprietaire_id", nullable = false)
     private Proprietaire proprietaire;
+
+    
+    @OneToOne(mappedBy = "bien", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    private MandatDeGestion mandat;
 }
