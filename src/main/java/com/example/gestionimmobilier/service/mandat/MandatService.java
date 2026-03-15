@@ -52,6 +52,9 @@ public class MandatService {
         if (!(uAgent instanceof Agent agent)) {
             throw new ValidationException(ErrorMessages.UTILISATEUR_N_EST_PAS_AGENT);
         }
+        if (!agent.isEnabled()) {
+            throw new ValidationException(ErrorMessages.AGENT_NON_ACTIVE_POUR_MANDAT);
+        }
 
         if (!bien.getProprietaire().getId().equals(proprietaire.getId())) {
             throw new ValidationException(ErrorMessages.BIEN_N_APPARTIENT_PAS_PROPRIETAIRE);

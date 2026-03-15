@@ -11,4 +11,8 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, UUID> 
     Optional<Utilisateur> findByKeycloakId(String keycloakId);
 
     boolean existsByKeycloakId(String keycloakId);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByUsername(String username);
 }

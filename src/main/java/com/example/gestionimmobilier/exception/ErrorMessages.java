@@ -70,6 +70,16 @@ public final class ErrorMessages {
     public static final String MANDAT_INTROUVABLE = "Le mandat demandé n'existe pas ou a été supprimé.";
     public static final String MANDAT_DEJA_RESILIE = "Ce mandat est déjà résilié ou terminé.";
     public static final String BIEN_DEJA_SOUS_MANDAT_ACTIF = "Ce bien a déjà un mandat actif.";
+    public static final String AGENT_NON_ACTIVE_POUR_MANDAT = "L'agent doit être activé (agence approuvée) pour pouvoir être assigné à un mandat.";
     public static final String BIEN_DEJA_LIE_CONTRAT = "Ce bien est déjà lié à un contrat de location. Un seul contrat par bien est autorisé.";
     public static final String CONTRAINTE_VIOLATION = "Opération impossible : contrainte non respectée (ex. doublon).";
+
+    // --- Agence ---
+    public static final String AGENCE_INTROUVABLE = "L'agence demandée n'existe pas ou a été supprimée.";
+    public static final String AGENCE_EMAIL_DEJA_UTILISE = "Une agence avec cet email est déjà inscrite.";
+    public static final String AGENCE_DEJA_ACTIVE = "Cette agence est déjà active.";
+    public static final String AGENCE_NON_ACTIVE = "Seules les agences actives peuvent effectuer cette action.";
+    public static final String AGENCE_EMAIL_PERSONNEL_NON_ACCEPTE = "Un email professionnel (entreprise) est requis. Les adresses personnelles (gmail, yahoo, etc.) ne sont pas acceptées.";
+    public static final String AGENCE_CONTACT_EMAIL_DEJA_UTILISE = "Un compte existe déjà avec cet email pour le contact de l'agence.";
+    public static final String AGENCE_CONTACT_USERNAME_DEJA_UTILISE = "Un compte existe déjà avec ce nom d'utilisateur.";
 }

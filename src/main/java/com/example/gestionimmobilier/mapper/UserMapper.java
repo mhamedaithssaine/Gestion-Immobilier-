@@ -17,6 +17,7 @@ public interface UserMapper {
 
     @Mapping(target = "type", expression = "java(getType(utilisateur))")
     @Mapping(target = "emailVerified", expression = "java(utilisateur.isEmailVerified())")
+    @Mapping(target = "enabled", expression = "java(utilisateur.isEnabled())")
     UtilisateurResponse toResponse(Utilisateur utilisateur);
 
     @Mapping(target = "type", expression = "java(getType(proprietaire))")

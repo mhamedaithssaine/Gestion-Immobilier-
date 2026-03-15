@@ -82,7 +82,6 @@ public class ContratService {
                 throw new ValidationException(ErrorMessages.UTILISATEUR_N_EST_PAS_AGENT);
             }
         } else {
-            // Scénario 1 : bien sous mandat actif → prendre l'agent du mandat
             agent = mandatRepository.findByBien_IdAndStatut(bien.getId(), StatutMandat.ACTIF)
                     .map(MandatDeGestion::getAgent)
                     .orElse(null);
@@ -92,7 +91,7 @@ public class ContratService {
             throw new ValidationException(ErrorMessages.BIEN_N_APPARTIENT_PAS_PROPRIETAIRE);
         }
 
-        if (bailRepository.existsByBien_Id(bien.getId())) {
+        if (bailRepository.existsByBien_IdAndStatutIn(bien.getId(), List.of(StatutBail.ACTIF, StatutBail.EN_ATTENTE))) {
             throw new ValidationException(ErrorMessages.BIEN_DEJA_LIE_CONTRAT);
         }
 

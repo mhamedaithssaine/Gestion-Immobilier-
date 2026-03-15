@@ -14,5 +14,6 @@ public record UtilisateurResponse(
         String lastName,
         List<Role> roles,
         String type,
-        boolean emailVerified
+        boolean emailVerified,
+        boolean enabled
 ) {}

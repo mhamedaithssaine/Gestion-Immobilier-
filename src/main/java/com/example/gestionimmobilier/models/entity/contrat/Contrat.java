@@ -44,7 +44,7 @@ public abstract class Contrat extends BaseEntity {
     @JoinColumn(name = "agent_id", nullable = true)
     private Agent agent;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "bien_id", nullable = false)
     private BienImmobilier bien;
 }
