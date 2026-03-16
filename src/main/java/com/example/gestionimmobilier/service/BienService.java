@@ -33,7 +33,6 @@ public class BienService {
     private final UtilisateurRepository utilisateurRepository;
     private final AdresseRepository adresseRepository;
     private final BienImmobilierRepository bienImmobilierRepository;
-    private final FileStorageService fileStorageService;
     private final CloudStorageService cloudStorageService;
     private final BienMapper bienMapper;
 
@@ -45,7 +44,6 @@ public class BienService {
         this.utilisateurRepository = utilisateurRepository;
         this.adresseRepository = adresseRepository;
         this.bienImmobilierRepository = bienImmobilierRepository;
-        this.fileStorageService = fileStorageService;
         this.cloudStorageService = cloudStorageService;
         this.bienMapper = bienMapper;
     }

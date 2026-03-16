@@ -3,7 +3,6 @@ package com.example.gestionimmobilier.mapper;
 import com.example.gestionimmobilier.dto.keycloack.KeycloakUserResponse;
 import com.example.gestionimmobilier.models.entity.user.*;
 import com.example.gestionimmobilier.models.enums.Role;
-import com.example.gestionimmobilier.models.enums.StatutDossier;
 import org.mapstruct.Mapper;
 
 

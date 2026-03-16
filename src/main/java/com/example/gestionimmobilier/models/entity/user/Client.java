@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import com.example.gestionimmobilier.models.entity.user.Utilisateur;
 
 import java.math.BigDecimal;
 

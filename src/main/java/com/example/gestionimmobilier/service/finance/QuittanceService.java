@@ -22,7 +22,6 @@ import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.UUID;
 
 @Service
 public class QuittanceService {
