@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -96,5 +97,14 @@ public class VersementService {
                 q != null ? q.getReferenceQuittance() : null,
                 q != null ? q.getUrlPdf() : null
         );
+    }
+
+    public List<VersementResponse> getVersementsByContrat(UUID contratId) {
+
+        List<Versement> versements = versementRepository.findByBailId(contratId);
+
+        return versements.stream()
+                .map(v -> toResponse(v, null))
+                .toList();
     }
 }
