@@ -34,16 +34,19 @@ public class BienService {
     private final AdresseRepository adresseRepository;
     private final BienImmobilierRepository bienImmobilierRepository;
     private final FileStorageService fileStorageService;
+    private final CloudStorageService cloudStorageService;
     private final BienMapper bienMapper;
 
     public BienService(UtilisateurRepository utilisateurRepository,AdresseRepository adresseRepository,
                        BienImmobilierRepository bienImmobilierRepository,
                        FileStorageService fileStorageService,
+                       CloudStorageService cloudStorageService,
                        BienMapper bienMapper) {
         this.utilisateurRepository = utilisateurRepository;
         this.adresseRepository = adresseRepository;
         this.bienImmobilierRepository = bienImmobilierRepository;
         this.fileStorageService = fileStorageService;
+        this.cloudStorageService = cloudStorageService;
         this.bienMapper = bienMapper;
     }
 
@@ -60,8 +63,9 @@ public class BienService {
         bien = bienImmobilierRepository.save(bien);
 
         if (images != null && images.length > 0) {
-            List<String> paths = fileStorageService.storeBienImages(bien.getId(), images);
-            bien.setImages(paths);
+            // Upload to Cloudinary; fallback to local storage if needed later
+            List<String> urls = cloudStorageService.uploadBienImages(bien.getId(), images);
+            bien.setImages(urls);
             bien = bienImmobilierRepository.save(bien);
         }
 
@@ -105,8 +109,8 @@ public class BienService {
         }
 
         if (images != null && images.length > 0) {
-            List<String> paths = fileStorageService.storeBienImages(bien.getId(), images);
-            bien.setImages(paths);
+            List<String> urls = cloudStorageService.uploadBienImages(bien.getId(), images);
+            bien.setImages(urls);
         }
 
         bien = bienImmobilierRepository.save(bien);

@@ -72,6 +72,7 @@ public final class ErrorMessages {
     public static final String BIEN_DEJA_SOUS_MANDAT_ACTIF = "Ce bien a déjà un mandat actif.";
     public static final String AGENT_NON_ACTIVE_POUR_MANDAT = "L'agent doit être activé (agence approuvée) pour pouvoir être assigné à un mandat.";
     public static final String BIEN_DEJA_LIE_CONTRAT = "Ce bien est déjà lié à un contrat de location. Un seul contrat par bien est autorisé.";
+    public static final String BIEN_NON_DISPONIBLE_POUR_LOCATION = "Seul un bien disponible peut faire l'objet d'un nouveau contrat de location.";
     public static final String CONTRAINTE_VIOLATION = "Opération impossible : contrainte non respectée (ex. doublon).";
 
     // --- Agence ---
@@ -82,4 +83,12 @@ public final class ErrorMessages {
     public static final String AGENCE_EMAIL_PERSONNEL_NON_ACCEPTE = "Un email professionnel (entreprise) est requis. Les adresses personnelles (gmail, yahoo, etc.) ne sont pas acceptées.";
     public static final String AGENCE_CONTACT_EMAIL_DEJA_UTILISE = "Un compte existe déjà avec cet email pour le contact de l'agence.";
     public static final String AGENCE_CONTACT_USERNAME_DEJA_UTILISE = "Un compte existe déjà avec ce nom d'utilisateur.";
+
+    // --- Versement / Quittance ---
+    public static final String CONTRAT_ACTIF_REQUIS_VERSEMENT = "Seul un contrat actif peut recevoir un versement.";
+    public static final String VERSEMENT_REFERENCE_DEJA_UTILISEE = "Cette référence de paiement est déjà utilisée.";
+    public static final String VERSEMENT_INTROUVABLE = "Le versement demandé n'existe pas ou a été supprimé.";
+    public static final String QUITTANCE_GENERATION_ECHEC = "Erreur lors de la génération de la quittance PDF.";
+    public static final String QUITTANCE_DEJA_GENEREE = "Une quittance existe déjà pour ce versement.";
+    public static final String PREUVE_PAIEMENT_ENREGISTREMENT_ECHEC = "Erreur lors de l'enregistrement de la preuve de paiement.";
 }
