@@ -1,4 +1,4 @@
-package com.example.gestionimmobilier.dto.api.reponse;
+package com.example.gestionimmobilier.dto.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

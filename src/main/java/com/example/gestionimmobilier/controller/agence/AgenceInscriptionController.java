@@ -1,6 +1,6 @@
 package com.example.gestionimmobilier.controller.agence;
 
-import com.example.gestionimmobilier.dto.api.reponse.ApiRetour;
+import com.example.gestionimmobilier.dto.api.response.ApiRetour;
 import com.example.gestionimmobilier.dto.agence.AgenceResponse;
 import com.example.gestionimmobilier.dto.agence.CreateAgenceRequest;
 import com.example.gestionimmobilier.service.agence.AgenceService;

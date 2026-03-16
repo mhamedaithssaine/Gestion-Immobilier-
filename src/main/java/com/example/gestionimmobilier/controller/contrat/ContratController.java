@@ -1,6 +1,6 @@
 package com.example.gestionimmobilier.controller.contrat;
 
-import com.example.gestionimmobilier.dto.api.reponse.ApiRetour;
+import com.example.gestionimmobilier.dto.api.response.ApiRetour;
 import com.example.gestionimmobilier.dto.contrat.ContratResponse;
 import com.example.gestionimmobilier.dto.contrat.CreateContratRequest;
 import com.example.gestionimmobilier.dto.contrat.UpdateContratRequest;

@@ -1,6 +1,6 @@
 package com.example.gestionimmobilier.controller.mandat;
 
-import com.example.gestionimmobilier.dto.api.reponse.ApiRetour;
+import com.example.gestionimmobilier.dto.api.response.ApiRetour;
 import com.example.gestionimmobilier.dto.contrat.CreateMandatRequest;
 import com.example.gestionimmobilier.dto.contrat.MandatResponse;
 import com.example.gestionimmobilier.models.enums.StatutMandat;

@@ -1,9 +1,9 @@
 package com.example.gestionimmobilier.controller;
 
-import com.example.gestionimmobilier.dto.api.reponse.ApiRetour;
 import com.example.gestionimmobilier.dto.immobilier.BienResponse;
 import com.example.gestionimmobilier.dto.immobilier.CreateBienRequest;
 import com.example.gestionimmobilier.service.BienService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,7 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.example.gestionimmobilier.dto.api.response.ApiRetour;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,6 +51,27 @@ public ResponseEntity<ApiRetour<BienResponse>> creerBienJson(@RequestBody @Valid
     return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiRetour.success("Bien immobilier créé avec succès", bien));
 }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAuthority('ROLE_PROPRIETAIRE')")
+    public ResponseEntity<ApiRetour<BienResponse>> creerBienMultipart(
+            @RequestPart("data") String data,
+            @RequestPart(value = "images", required = false) MultipartFile[] images
+    ) throws Exception {
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        CreateBienRequest request =
+                mapper.readValue(data, CreateBienRequest.class);
+
+        String keycloakId = getCurrentKeycloakId();
+
+        BienResponse bien = bienService.creerBien(keycloakId, request, images);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiRetour.success("Bien immobilier créé avec succès", bien));
+    }
+
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('ROLE_PROPRIETAIRE')")
