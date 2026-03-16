@@ -1,6 +1,6 @@
 package com.example.gestionimmobilier.controller.finance;
 
-import com.example.gestionimmobilier.dto.api.reponse.ApiRetour;
+import com.example.gestionimmobilier.dto.api.response.ApiRetour;
 import com.example.gestionimmobilier.dto.finance.CreateVersementRequest;
 import com.example.gestionimmobilier.dto.finance.VersementResponse;
 import com.example.gestionimmobilier.service.finance.VersementService;

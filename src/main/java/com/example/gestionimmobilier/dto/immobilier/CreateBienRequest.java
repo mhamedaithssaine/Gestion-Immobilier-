@@ -20,7 +20,7 @@ import java.math.BigDecimal;
  * Le type concret (Appartement / Maison) est déterminé par le polymorphisme JSON
  * via {@link JsonTypeInfo} et reflète l'héritage des entités.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = CreateAppartementRequest.class, name = "APPARTEMENT"),
         @JsonSubTypes.Type(value = CreateMaisonRequest.class, name = "MAISON")

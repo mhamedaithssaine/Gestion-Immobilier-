@@ -1,6 +1,6 @@
 package com.example.gestionimmobilier.controller.proprietaire;
 
-import com.example.gestionimmobilier.dto.api.reponse.ApiRetour;
+import com.example.gestionimmobilier.dto.api.response.ApiRetour;
 import com.example.gestionimmobilier.dto.immobilier.BienResponse;
 import com.example.gestionimmobilier.dto.user.CreateProprietaireRequest;
 import com.example.gestionimmobilier.dto.user.ProprietaireResponse;

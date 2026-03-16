@@ -1,6 +1,6 @@
 package com.example.gestionimmobilier.controller;
 
-import com.example.gestionimmobilier.dto.api.reponse.ApiRetour;
+import com.example.gestionimmobilier.dto.api.response.ApiRetour;
 import com.example.gestionimmobilier.dto.user.AssignRolesRequest;
 import com.example.gestionimmobilier.dto.user.CreateUserRequest;
 import com.example.gestionimmobilier.dto.user.UpdateUserEnabledRequest;

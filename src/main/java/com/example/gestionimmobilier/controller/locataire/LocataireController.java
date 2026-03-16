@@ -1,6 +1,6 @@
 package com.example.gestionimmobilier.controller.locataire;
 
-import com.example.gestionimmobilier.dto.api.reponse.ApiRetour;
+import com.example.gestionimmobilier.dto.api.response.ApiRetour;
 import com.example.gestionimmobilier.dto.user.CreateLocataireRequest;
 import com.example.gestionimmobilier.dto.user.LocataireResponse;
 import com.example.gestionimmobilier.dto.user.UpdateLocataireRequest;
