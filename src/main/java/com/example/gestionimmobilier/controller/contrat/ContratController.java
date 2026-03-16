@@ -4,7 +4,9 @@ import com.example.gestionimmobilier.dto.api.response.ApiRetour;
 import com.example.gestionimmobilier.dto.contrat.ContratResponse;
 import com.example.gestionimmobilier.dto.contrat.CreateContratRequest;
 import com.example.gestionimmobilier.dto.contrat.UpdateContratRequest;
+import com.example.gestionimmobilier.dto.finance.ResteAPayerResponse;
 import com.example.gestionimmobilier.service.contrat.ContratService;
+import com.example.gestionimmobilier.service.finance.VersementService;
 import com.example.gestionimmobilier.models.enums.StatutBail;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,9 +22,11 @@ import java.util.UUID;
 public class ContratController {
 
     private final ContratService contratService;
+    private final VersementService versementService;
 
-    public ContratController(ContratService contratService) {
+    public ContratController(ContratService contratService, VersementService versementService) {
         this.contratService = contratService;
+        this.versementService = versementService;
     }
 
     @PostMapping
@@ -66,6 +70,16 @@ public class ContratController {
     public ResponseEntity<ApiRetour<ContratResponse>> resilierContrat(@PathVariable UUID id) {
         ContratResponse contrat = contratService.resilierContrat(id);
         return ResponseEntity.ok(ApiRetour.success("Contrat résilié avec succès", contrat));
+    }
+
+    @GetMapping("/{id}/reste-a-payer")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_CLIENT')")
+    public ResponseEntity<ApiRetour<ResteAPayerResponse>> getResteAPayer(
+            @PathVariable UUID id,
+            @RequestParam int annee,
+            @RequestParam int mois) {
+        ResteAPayerResponse reste = versementService.getResteAPayer(id, annee, mois);
+        return ResponseEntity.ok(ApiRetour.success("Reste à payer", reste));
     }
 }
 

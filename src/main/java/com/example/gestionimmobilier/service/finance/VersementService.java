@@ -1,6 +1,7 @@
 package com.example.gestionimmobilier.service.finance;
 
 import com.example.gestionimmobilier.dto.finance.CreateVersementRequest;
+import com.example.gestionimmobilier.dto.finance.ResteAPayerResponse;
 import com.example.gestionimmobilier.dto.finance.VersementResponse;
 import com.example.gestionimmobilier.exception.ErrorMessages;
 import com.example.gestionimmobilier.exception.ResourceNotFoundException;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.UUID;
 
@@ -106,5 +109,28 @@ public class VersementService {
         return versements.stream()
                 .map(v -> toResponse(v, null))
                 .toList();
+    }
+
+   
+    public ResteAPayerResponse getResteAPayer(UUID contratId, int annee, int mois) {
+        Bail bail = bailRepository.findById(contratId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BAIL_INTROUVABLE));
+
+        BigDecimal loyerHC = bail.getLoyerHC() != null ? bail.getLoyerHC() : BigDecimal.ZERO;
+        BigDecimal charges = bail.getCharges() != null ? bail.getCharges() : BigDecimal.ZERO;
+        BigDecimal loyerDuMois = loyerHC.add(charges);
+
+        YearMonth ym = YearMonth.of(annee, mois);
+        LocalDateTime debut = ym.atDay(1).atStartOfDay();
+        LocalDateTime fin = ym.atEndOfMonth().atTime(23, 59, 59, 999_000_000);
+
+        List<Versement> versements = versementRepository.findByBailIdAndDateVersementBetween(contratId, debut, fin);
+        BigDecimal totalVersements = versements.stream()
+                .map(Versement::getMontant)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal resteAPayer = loyerDuMois.subtract(totalVersements).max(BigDecimal.ZERO);
+
+        return new ResteAPayerResponse(contratId, annee, mois, loyerDuMois, totalVersements, resteAPayer);
     }
 }

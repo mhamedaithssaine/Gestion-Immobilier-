@@ -1,6 +1,7 @@
 package com.example.gestionimmobilier.controller.proprietaire;
 
 import com.example.gestionimmobilier.dto.api.response.ApiRetour;
+import com.example.gestionimmobilier.dto.finance.HistoriqueFinancierResponse;
 import com.example.gestionimmobilier.dto.immobilier.BienResponse;
 import com.example.gestionimmobilier.dto.user.CreateProprietaireRequest;
 import com.example.gestionimmobilier.dto.user.ProprietaireResponse;
@@ -59,5 +60,12 @@ public class ProprietaireController {
             @PathVariable UUID bienId) {
         BienResponse bien = bienService.associerBienAProprietaire(bienId, proprietaireId);
         return ResponseEntity.ok(ApiRetour.success("Bien associé au propriétaire avec succès", bien));
+    }
+
+    @GetMapping("/{id}/historique-financier")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_PROPRIETAIRE')")
+    public ResponseEntity<ApiRetour<HistoriqueFinancierResponse>> getHistoriqueFinancier(@PathVariable UUID id) {
+        HistoriqueFinancierResponse historique = proprietaireService.getHistoriqueFinancier(id);
+        return ResponseEntity.ok(ApiRetour.success("Historique financier du propriétaire", historique));
     }
 }
