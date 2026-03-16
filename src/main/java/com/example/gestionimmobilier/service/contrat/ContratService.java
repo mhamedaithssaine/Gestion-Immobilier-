@@ -14,6 +14,7 @@ import com.example.gestionimmobilier.mapper.UserMapper;
 import com.example.gestionimmobilier.models.entity.contrat.Bail;
 import com.example.gestionimmobilier.models.entity.contrat.MandatDeGestion;
 import com.example.gestionimmobilier.models.enums.StatutBail;
+import com.example.gestionimmobilier.models.enums.StatutBien;
 import com.example.gestionimmobilier.models.entity.immobilier.BienImmobilier;
 import com.example.gestionimmobilier.models.entity.user.Agent;
 import com.example.gestionimmobilier.models.entity.user.Client;
@@ -83,8 +84,7 @@ public class ContratService {
                 throw new ValidationException(ErrorMessages.UTILISATEUR_N_EST_PAS_AGENT);
             }
         } else {
-            agent = Optional.ofNullable(bien.getMandat())
-                    .filter(m -> m.getStatut() == StatutMandat.ACTIF)
+            agent = mandatRepository.findByBien_IdAndStatut(bien.getId(), StatutMandat.ACTIF)
                     .map(MandatDeGestion::getAgent)
                     .orElse(null);
         }
@@ -95,6 +95,9 @@ public class ContratService {
 
         if (bailRepository.existsByBien_IdAndStatutIn(bien.getId(), List.of(StatutBail.ACTIF, StatutBail.EN_ATTENTE))) {
             throw new ValidationException(ErrorMessages.BIEN_DEJA_LIE_CONTRAT);
+        }
+        if (bien.getStatut() != StatutBien.DISPONIBLE) {
+            throw new ValidationException(ErrorMessages.BIEN_NON_DISPONIBLE_POUR_LOCATION);
         }
 
         String numContrat = "CONTRAT-" + System.currentTimeMillis() + "-" +
@@ -116,6 +119,8 @@ public class ContratService {
                 .build();
 
         bail = bailRepository.save(bail);
+        bien.setStatut(StatutBien.LOUE);
+        bienRepository.save(bien);
         return toContratResponse(bail);
     }
 
@@ -158,6 +163,9 @@ public class ContratService {
         }
         bail.setStatut(StatutBail.RESILIE);
         bail = bailRepository.save(bail);
+        BienImmobilier bien = bail.getBien();
+        bien.setStatut(StatutBien.DISPONIBLE);
+        bienRepository.save(bien);
         return toContratResponse(bail);
     }
 

@@ -58,4 +58,58 @@ public class FileStorageService {
         }
         return storedPaths;
     }
+
+    /**
+     * Stores optional payment proof (image or PDF) for a versement.
+     * @return relative path under upload root, e.g. "versements/{versementId}/preuve.pdf"
+     */
+    public String storeVersementPreuve(UUID versementId, MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+        Path versementDir = rootLocation.resolve("versements").resolve(versementId.toString());
+        try {
+            Files.createDirectories(versementDir);
+        } catch (IOException e) {
+            throw new InternalServerException(ErrorMessages.PREUVE_PAIEMENT_ENREGISTREMENT_ECHEC);
+        }
+        String originalFilename = StringUtils.cleanPath(file.getOriginalFilename() != null ? file.getOriginalFilename() : "preuve");
+        String extension = "";
+        int i = originalFilename.lastIndexOf('.');
+        if (i > 0) extension = originalFilename.substring(i).toLowerCase();
+        if (!extension.equals(".pdf") && !extension.matches("\\.(jpg|jpeg|png|gif|webp)")) {
+            extension = ".pdf";
+        }
+        String filename = "preuve" + extension;
+        Path targetPath = versementDir.resolve(filename);
+        try {
+            Files.copy(file.getInputStream(), targetPath);
+        } catch (IOException e) {
+            throw new InternalServerException(ErrorMessages.PREUVE_PAIEMENT_ENREGISTREMENT_ECHEC);
+        }
+        return "versements/" + versementId + "/" + filename;
+    }
+
+    /**
+     * Stores generated quittance PDF.
+     * @return relative path under upload root, e.g. "quittances/{quittanceId}.pdf"
+     */
+    public String storeQuittancePdf(UUID quittanceId, byte[] pdfBytes) {
+        if (pdfBytes == null || pdfBytes.length == 0) {
+            return null;
+        }
+        Path quittancesDir = rootLocation.resolve("quittances");
+        try {
+            Files.createDirectories(quittancesDir);
+        } catch (IOException e) {
+            throw new InternalServerException(ErrorMessages.REPERTOIRE_STOCKAGE_IMPOSSIBLE);
+        }
+        Path targetPath = quittancesDir.resolve(quittanceId + ".pdf");
+        try {
+            Files.write(targetPath, pdfBytes);
+        } catch (IOException e) {
+            throw new InternalServerException(ErrorMessages.QUITTANCE_GENERATION_ECHEC);
+        }
+        return "quittances/" + quittanceId + ".pdf";
+    }
 }

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Quittance de loyer</title>
+</head>
+<body style="font-family: Arial, sans-serif; font-size: 11pt; margin: 20px;">
+<h1 style="text-align: center; font-size: 16pt;">QUITTANCE DE LOYER</h1>
+<p style="text-align: center; font-weight: bold;">Référence : <span th:text="${q.referenceQuittance}">REF</span></p>
+<p style="text-align: center;">Période : <span th:text="${q.moisLibelle}">mois</span> <span th:text="${q.annee}">année</span></p>
+
+<table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+    <tr>
+        <td style="padding: 6px; border: 1px solid #333; width: 40%;">Adresse du bien loué</td>
+        <td style="padding: 6px; border: 1px solid #333;"><span th:text="${q.adresseBien}">-</span></td>
+    </tr>
+    <tr>
+        <td style="padding: 6px; border: 1px solid #333;">Propriétaire (bailleur)</td>
+        <td style="padding: 6px; border: 1px solid #333;"><span th:text="${q.proprietaireNom}">-</span><br/><span th:text="${q.proprietaireAdresse}">-</span></td>
+    </tr>
+    <tr>
+        <td style="padding: 6px; border: 1px solid #333;">Locataire (prestation)</td>
+        <td style="padding: 6px; border: 1px solid #333;"><span th:text="${q.locataireNom}">-</span><br/><span th:text="${q.locataireAdresse}">-</span></td>
+    </tr>
+    <tr>
+        <td style="padding: 6px; border: 1px solid #333;">Contrat (bail)</td>
+        <td style="padding: 6px; border: 1px solid #333;"><span th:text="${q.numContrat}">-</span></td>
+    </tr>
+</table>
+
+<h2 style="font-size: 12pt; margin-top: 24px;">Détail des sommes</h2>
+<table style="width: 100%; border-collapse: collapse;">
+    <tr>
+        <td style="padding: 6px; border: 1px solid #333;">Loyer hors charges</td>
+        <td style="padding: 6px; border: 1px solid #333; text-align: right;"><span th:text="${q.loyerHC != null ? #numbers.formatDecimal(q.loyerHC, 1, 2) : '-'}">0,00</span> €</td>
+    </tr>
+    <tr>
+        <td style="padding: 6px; border: 1px solid #333;">Charges</td>
+        <td style="padding: 6px; border: 1px solid #333; text-align: right;"><span th:text="${q.charges != null ? #numbers.formatDecimal(q.charges, 1, 2) : '-'}">0,00</span> €</td>
+    </tr>
+    <tr style="font-weight: bold;">
+        <td style="padding: 8px; border: 1px solid #333;">Montant total payé</td>
+        <td style="padding: 8px; border: 1px solid #333; text-align: right;"><span th:text="${q.montantTotal != null ? #numbers.formatDecimal(q.montantTotal, 1, 2) : '-'}">0,00</span> €</td>
+    </tr>
+</table>
+
+<p style="margin-top: 20px;">Paiement reçu le <span th:text="${q.getDateVersementFormatted()}">-</span> par <span th:text="${q.modePaiement}">-</span><span th:if="${q.referencePaiement}" th:text="' (réf. ' + ${q.referencePaiement} + ')'">.</span></p>
+
+<p style="margin-top: 30px; font-size: 9pt; color: #555;">Document généré le <span th:text="${q.getDateGenerationFormatted()}">-</span>. Ce document constitue une quittance de loyer et prouve le paiement pour la période indiquée.</p>
+</body>
+</html>

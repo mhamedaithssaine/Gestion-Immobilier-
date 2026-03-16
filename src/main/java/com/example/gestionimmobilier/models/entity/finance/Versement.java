@@ -38,6 +38,9 @@ public class Versement extends BaseEntity {
     @Column(name = "reference_paiement", unique = true)
     private String referencePaiement;
 
+    @Column(name = "preuve_paiement_url")
+    private String preuvePaiementUrl;
+
     @Column(nullable = false)
     private boolean valide;
 
