@@ -14,6 +14,8 @@ import com.example.gestionimmobilier.models.enums.StatutMandat;
 import com.example.gestionimmobilier.repository.MandatDeGestionRepository;
 import com.example.gestionimmobilier.repository.BienImmobilierRepository;
 import com.example.gestionimmobilier.repository.UtilisateurRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,8 @@ import java.util.UUID;
 
 @Service
 public class MandatService {
+
+    private static final Logger log = LoggerFactory.getLogger(MandatService.class);
 
     private final MandatDeGestionRepository mandatRepository;
     private final BienImmobilierRepository bienRepository;
@@ -38,6 +42,8 @@ public class MandatService {
 
     @Transactional
     public MandatResponse creerMandat(CreateMandatRequest request) {
+        log.info("Création mandat bienId={} proprietaireId={} agentId={} commissionPct={}",
+                request.bienId(), request.proprietaireId(), request.agentId(), request.commissionPct());
         BienImmobilier bien = bienRepository.findById(request.bienId())
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BIEN_INTROUVABLE));
 
@@ -82,6 +88,7 @@ public class MandatService {
                 .build();
 
         mandat = mandatRepository.save(mandat);
+        log.info("Mandat créé id={} numMandat={} statut={}", mandat.getId(), mandat.getNumMandat(), mandat.getStatut());
         return toMandatResponse(mandat);
     }
 
@@ -108,6 +115,7 @@ public class MandatService {
 
     @Transactional
     public MandatResponse resilierMandat(UUID id) {
+        log.info("Résiliation mandat {}", id);
         MandatDeGestion mandat = mandatRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.MANDAT_INTROUVABLE));
         if (mandat.getStatut() == StatutMandat.RESILIE || mandat.getStatut() == StatutMandat.TERMINE) {
@@ -115,6 +123,7 @@ public class MandatService {
         }
         mandat.setStatut(StatutMandat.RESILIE);
         mandat = mandatRepository.save(mandat);
+        log.info("Mandat résilié id={} nouveauStatut={}", mandat.getId(), mandat.getStatut());
         return toMandatResponse(mandat);
     }
 

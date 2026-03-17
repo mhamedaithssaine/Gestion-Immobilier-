@@ -25,6 +25,8 @@ import com.example.gestionimmobilier.repository.BailRepository;
 import com.example.gestionimmobilier.repository.BienImmobilierRepository;
 import com.example.gestionimmobilier.repository.MandatDeGestionRepository;
 import com.example.gestionimmobilier.repository.UtilisateurRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +36,8 @@ import java.util.UUID;
 
 @Service
 public class ContratService {
+
+    private static final Logger log = LoggerFactory.getLogger(ContratService.class);
 
     private final BailRepository bailRepository;
     private final BienImmobilierRepository bienRepository;
@@ -58,6 +62,9 @@ public class ContratService {
 
     @Transactional
     public ContratResponse creerContrat(CreateContratRequest request) {
+        log.info("Création contrat bienId={} proprietaireId={} locataireId={} agentId={}",
+                request.bienId(), request.proprietaireId(), request.locataireId(), request.agentId());
+
         BienImmobilier bien = bienRepository.findById(request.bienId())
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BIEN_INTROUVABLE));
 
@@ -120,6 +127,7 @@ public class ContratService {
         bail = bailRepository.save(bail);
         bien.setStatut(StatutBien.LOUE);
         bienRepository.save(bien);
+        log.info("Contrat créé id={} numContrat={} statut={}", bail.getId(), bail.getNumContrat(), bail.getStatut());
         return toContratResponse(bail);
     }
 
@@ -138,6 +146,8 @@ public class ContratService {
 
     @Transactional
     public ContratResponse modifierContrat(UUID id, UpdateContratRequest request) {
+        log.info("Modification contrat {} (dateDebut={}, dateFin={}, loyerHC={}, charges={})",
+                id, request.dateDebut(), request.dateFin(), request.loyerHC(), request.charges());
         Bail bail = bailRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BAIL_INTROUVABLE));
         if (bail.getStatut() == StatutBail.RESILIE || bail.getStatut() == StatutBail.TERMINE) {
@@ -150,11 +160,13 @@ public class ContratService {
         if (request.dateSignature() != null) bail.setDateSignature(request.dateSignature());
         if (request.documentUrl() != null) bail.setDocumentUrl(request.documentUrl());
         bail = bailRepository.save(bail);
+        log.info("Contrat modifié id={} statut={}", bail.getId(), bail.getStatut());
         return toContratResponse(bail);
     }
 
     @Transactional
     public ContratResponse resilierContrat(UUID id) {
+        log.info("Résiliation contrat {}", id);
         Bail bail = bailRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BAIL_INTROUVABLE));
         if (bail.getStatut() == StatutBail.RESILIE || bail.getStatut() == StatutBail.TERMINE) {
@@ -165,6 +177,7 @@ public class ContratService {
         BienImmobilier bien = bail.getBien();
         bien.setStatut(StatutBien.DISPONIBLE);
         bienRepository.save(bien);
+        log.info("Contrat résilié id={} bienId={} nouveauStatutBien={}", bail.getId(), bien.getId(), bien.getStatut());
         return toContratResponse(bail);
     }
 

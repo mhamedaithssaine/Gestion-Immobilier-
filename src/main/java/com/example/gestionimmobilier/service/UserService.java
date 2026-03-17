@@ -9,6 +9,8 @@ import com.example.gestionimmobilier.mapper.UserMapper;
 import com.example.gestionimmobilier.models.entity.user.Utilisateur;
 import com.example.gestionimmobilier.models.enums.Role;
 import com.example.gestionimmobilier.repository.UtilisateurRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,8 @@ import java.util.UUID;
 
 @Service
 public class UserService {
+
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UtilisateurRepository utilisateurRepository;
     private final KeycloakAdminService keycloakAdminService;
@@ -32,6 +36,7 @@ public class UserService {
 
     @Transactional
     public List<UtilisateurResponse> getUsersFromDatabase(boolean syncFromKeycloak) {
+        log.info("Listing users (syncFromKeycloak={})", syncFromKeycloak);
         if (syncFromKeycloak) {
             keycloakAdminService.syncUsersToDatabase();
         }
@@ -42,6 +47,7 @@ public class UserService {
 
     @Transactional
     public UtilisateurResponse assignRoles(UUID userId, List<Role> roles) {
+        log.info("Assign roles to user {} roles={}", userId, roles);
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.UTILISATEUR_INTROUVABLE));
 
@@ -55,6 +61,7 @@ public class UserService {
 
     @Transactional
     public UtilisateurResponse updateUserEnabled(UUID userId, boolean enabled) {
+        log.info("Update user enabled {} enabled={}", userId, enabled);
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.UTILISATEUR_INTROUVABLE));
 
@@ -67,6 +74,7 @@ public class UserService {
 
     @Transactional
     public UtilisateurResponse createUser(CreateUserRequest request) {
+        log.info("Create user username={} email={} roles={}", request.username(), request.email(), request.roles());
         if (request.roles() == null || request.roles().isEmpty()) {
             throw new ValidationException(ErrorMessages.AUCUN_ROLE_VALIDE);
         }

@@ -17,6 +17,8 @@ import com.example.gestionimmobilier.repository.BienImmobilierRepository;
 import com.example.gestionimmobilier.repository.MandatDeGestionRepository;
 import com.example.gestionimmobilier.repository.VersementRepository;
 import com.example.gestionimmobilier.service.finance.VersementService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -27,6 +29,8 @@ import java.util.UUID;
 
 @Service
 public class DashboardService {
+
+    private static final Logger log = LoggerFactory.getLogger(DashboardService.class);
 
     private final BienImmobilierRepository bienRepository;
     private final VersementRepository versementRepository;
@@ -53,11 +57,13 @@ public class DashboardService {
     }
 
     public NombreBiensDisponiblesResponse getNombreBiensDisponibles() {
+        log.info("Dashboard: nombre biens disponibles");
         long count = bienRepository.countByStatut(StatutBien.DISPONIBLE);
         return new NombreBiensDisponiblesResponse(count);
     }
 
     public BiensLouesVsLibresResponse getBiensLouesVsLibres() {
+        log.info("Dashboard: biens loués vs libres");
         long disponibles = bienRepository.countByStatut(StatutBien.DISPONIBLE);
         long loues = bienRepository.countByStatut(StatutBien.LOUE);
         long vendus = bienRepository.countByStatut(StatutBien.VENDU);
@@ -66,6 +72,7 @@ public class DashboardService {
     }
 
     public RevenusMensuelsResponse getRevenusMensuels(int annee, int mois) {
+        log.info("Dashboard: revenus mensuels annee={} mois={}", annee, mois);
         YearMonth ym = YearMonth.of(annee, mois);
         var debut = ym.atDay(1).atStartOfDay();
         var fin = ym.atEndOfMonth().atTime(23, 59, 59, 999_000_000);
@@ -77,6 +84,7 @@ public class DashboardService {
     }
 
     public LocatairesEnRetardResponse getLocatairesEnRetard(int annee, int mois) {
+        log.info("Dashboard: locataires en retard annee={} mois={}", annee, mois);
         List<Bail> bauxActifs = bailRepository.findByStatutOrderByDateDebutDesc(StatutBail.ACTIF);
         List<LocataireEnRetardLigneResponse> lignes = new ArrayList<>();
         for (Bail bail : bauxActifs) {
@@ -99,6 +107,7 @@ public class DashboardService {
     }
 
     public MandatsGestionStatistiqueResponse getStatistiqueMandatsPourAgence(UUID agenceId) {
+        log.info("Dashboard: stats mandats agenceId={}", agenceId);
         var agence = agenceRepository.findById(agenceId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.AGENCE_INTROUVABLE));
         long actifs = mandatRepository.countByAgent_Agence_IdAndStatut(agenceId, StatutMandat.ACTIF);
@@ -118,6 +127,7 @@ public class DashboardService {
     }
 
     public List<MandatsGestionStatistiqueResponse> getStatistiquesMandatsToutesAgences() {
+        log.info("Dashboard: stats mandats toutes agences");
         List<MandatsGestionStatistiqueResponse> result = new ArrayList<>();
         agenceRepository.findAllByOrderByCreatedAtDesc().forEach(agence ->
                 result.add(getStatistiqueMandatsPourAgence(agence.getId()))
@@ -126,6 +136,7 @@ public class DashboardService {
     }
 
     public MandatsGestionParAgentResponse getStatistiqueMandatsPourAgent(UUID agentId) {
+        log.info("Dashboard: stats mandats agentId={}", agentId);
         Agent agent = agentRepository.findById(agentId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.UTILISATEUR_INTROUVABLE));
         String nomAgent = formatNom(agent.getFirstName(), agent.getLastName());

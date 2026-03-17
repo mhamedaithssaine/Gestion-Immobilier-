@@ -13,6 +13,8 @@ import com.example.gestionimmobilier.models.enums.StatutBail;
 import com.example.gestionimmobilier.repository.BailRepository;
 import com.example.gestionimmobilier.repository.VersementRepository;
 import com.example.gestionimmobilier.service.CloudStorageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +27,8 @@ import java.util.UUID;
 
 @Service
 public class VersementService {
+
+    private static final Logger log = LoggerFactory.getLogger(VersementService.class);
 
     private final VersementRepository versementRepository;
     private final BailRepository bailRepository;
@@ -41,11 +45,13 @@ public class VersementService {
         this.cloudStorageService = cloudStorageService;
     }
 
-    /**
-     * Creates a Versement, optionally stores payment proof file, then automatically generates a Quittance (with PDF).
-     */
+    
     @Transactional
     public VersementResponse createVersement(CreateVersementRequest request, MultipartFile preuvePaiement) {
+        log.info("Création versement pour bail {}", request.bailId());
+        log.info("Montant versement {}", request.montant());
+        log.info("Mode paiement {}", request.mode());
+
         Bail bail = bailRepository.findById(request.bailId())
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BAIL_INTROUVABLE));
 
