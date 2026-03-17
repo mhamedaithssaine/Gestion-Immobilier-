@@ -58,8 +58,15 @@ public class SecurityConfig {
         return roles.stream()
         .filter(String.class::isInstance)
         .map(String.class::cast)
-        .map(SimpleGrantedAuthority::new)
+        .map(this::toAuthority)
         .collect(Collectors.toList());
+    }
+
+    /** S'assure que le rôle a le préfixe ROLE_ pour @PreAuthorize("hasAuthority('ROLE_ADMIN')") etc. */
+    private GrantedAuthority toAuthority(String role) {
+        if (role == null || role.isBlank()) return new SimpleGrantedAuthority("ROLE_USER");
+        String normalized = role.startsWith("ROLE_") ? role : "ROLE_" + role.toUpperCase();
+        return new SimpleGrantedAuthority(normalized);
     }
 
 

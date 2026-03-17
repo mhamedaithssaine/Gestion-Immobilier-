@@ -19,4 +19,10 @@ public interface MandatDeGestionRepository extends JpaRepository<MandatDeGestion
     List<MandatDeGestion> findByBien_IdOrderByDateDebutDesc(UUID bienId);
 
     Optional<MandatDeGestion> findByBien_IdAndStatut(UUID bienId, StatutMandat statut);
+
+    long countByAgent_Agence_Id(UUID agenceId);
+    long countByAgent_Agence_IdAndStatut(UUID agenceId, StatutMandat statut);
+
+    long countByAgent_Id(UUID agentId);
+    long countByAgent_IdAndStatut(UUID agentId, StatutMandat statut);
 }

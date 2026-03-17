@@ -13,4 +13,5 @@ public interface VersementRepository extends JpaRepository<Versement, UUID> {
     List<Versement> findByBailId(UUID bailId);
     List<Versement> findByBailIdAndDateVersementBetween(UUID bailId, LocalDateTime debut, LocalDateTime fin);
     List<Versement> findByProprietaire_IdOrderByDateVersementDesc(UUID proprietaireId);
+    List<Versement> findByDateVersementBetween(LocalDateTime debut, LocalDateTime fin);
 }
