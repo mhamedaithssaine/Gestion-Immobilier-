@@ -1,6 +1,9 @@
 pipeline {
     agent any
 
+    triggers {
+      githubPush()
+    }
     tools {
         maven 'Maven3'    
         jdk 'JDK17'     
@@ -8,7 +11,7 @@ pipeline {
 
     environment {
         SONAR_HOST_URL = 'http://sonarqube:9000'
-        SONAR_TOKEN    = credentials('sonar-token-id') 
+        SONAR_TOKEN    = credentials('sonar-token')
     }
 
     stages {
@@ -17,6 +20,7 @@ pipeline {
                 checkout scm
             }
         }
+
 
         stage('Build & Test') {
             steps {
