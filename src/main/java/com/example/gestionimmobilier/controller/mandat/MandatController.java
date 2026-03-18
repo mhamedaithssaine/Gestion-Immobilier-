@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/admin/mandats")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_AGENT')")
 public class MandatController {
 
     private final MandatService mandatService;
@@ -29,7 +30,6 @@ public class MandatController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<MandatResponse>> creerMandat(
             @RequestBody @Valid CreateMandatRequest request) {
 
@@ -46,7 +46,6 @@ public class MandatController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<List<MandatResponse>>> listerMandats(
             @RequestParam(required = false) StatutMandat statut,
             @RequestParam(required = false) UUID proprietaireId,
@@ -62,7 +61,6 @@ public class MandatController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<MandatResponse>> getMandat(@PathVariable UUID id) {
 
         log.info("Consultation mandat id={}", id);
@@ -74,7 +72,6 @@ public class MandatController {
     }
 
     @PatchMapping("/{id}/resilier")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<MandatResponse>> resilierMandat(@PathVariable UUID id) {
         log.info("Demande résiliation mandat id={}", id);
         MandatResponse mandat = mandatService.resilierMandat(id);

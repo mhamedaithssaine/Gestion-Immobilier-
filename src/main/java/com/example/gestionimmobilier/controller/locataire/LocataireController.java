@@ -15,6 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/locataires")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class LocataireController {
 
     private final LocataireService locataireService;
@@ -24,7 +25,6 @@ public class LocataireController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiRetour<LocataireResponse>> ajouterLocataire(
             @RequestBody @Valid CreateLocataireRequest request) {
         LocataireResponse locataire = locataireService.createLocataire(request);
@@ -33,7 +33,6 @@ public class LocataireController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiRetour<LocataireResponse>> modifierLocataire(
             @PathVariable UUID id,
             @RequestBody @Valid UpdateLocataireRequest request) {
@@ -42,7 +41,6 @@ public class LocataireController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiRetour<Void>> supprimerLocataire(@PathVariable UUID id) {
         locataireService.deleteLocataire(id);
         return ResponseEntity.ok(ApiRetour.<Void>success("Locataire supprimé avec succès"));

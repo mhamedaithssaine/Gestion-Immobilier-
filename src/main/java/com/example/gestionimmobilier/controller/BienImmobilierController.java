@@ -19,6 +19,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/proprietaire/biens")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE')")
 public class BienImmobilierController {
 
     private final BienService bienService;
@@ -28,7 +29,6 @@ public class BienImmobilierController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE')")
     public ResponseEntity<ApiRetour<List<BienResponse>>> listerMesBiens() {
         String keycloakId = getCurrentKeycloakId();
         List<BienResponse> biens = bienService.listerBiens(keycloakId);
@@ -36,15 +36,13 @@ public class BienImmobilierController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE')")
     public ResponseEntity<ApiRetour<BienResponse>> getBienById(@PathVariable UUID id) {
         String keycloakId = getCurrentKeycloakId();
         BienResponse bien = bienService.getBienById(id, keycloakId);
         return ResponseEntity.ok(ApiRetour.success("Détail du bien", bien));
     }
 
-  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE')")
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 public ResponseEntity<ApiRetour<BienResponse>> creerBienJson(@RequestBody @Valid CreateBienRequest data) {
     String keycloakId = getCurrentKeycloakId();
     BienResponse bien = bienService.creerBien(keycloakId, data, new MultipartFile[0]);
@@ -53,7 +51,6 @@ public ResponseEntity<ApiRetour<BienResponse>> creerBienJson(@RequestBody @Valid
 }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE')")
     public ResponseEntity<ApiRetour<BienResponse>> creerBienMultipart(
             @RequestPart("data") String data,
             @RequestPart(value = "images", required = false) MultipartFile[] images
@@ -74,7 +71,6 @@ public ResponseEntity<ApiRetour<BienResponse>> creerBienJson(@RequestBody @Valid
 
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE')")
     public ResponseEntity<ApiRetour<BienResponse>> modifierBien(
             @PathVariable UUID id,
             @RequestBody @Valid CreateBienRequest data) {
@@ -84,7 +80,6 @@ public ResponseEntity<ApiRetour<BienResponse>> creerBienJson(@RequestBody @Valid
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE')")
     public ResponseEntity<ApiRetour<Void>> supprimerBien(@PathVariable UUID id) {
         String keycloakId = getCurrentKeycloakId();
         bienService.supprimerBien(id, keycloakId);

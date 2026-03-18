@@ -19,6 +19,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/contrats")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_AGENT')")
 public class ContratController {
 
     private final ContratService contratService;
@@ -30,7 +31,6 @@ public class ContratController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<ContratResponse>> creerContrat(
             @RequestBody @Valid CreateContratRequest request) {
         ContratResponse contrat = contratService.creerContrat(request);
@@ -39,7 +39,6 @@ public class ContratController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<List<ContratResponse>>> listerContrats(
             @RequestParam(required = false) StatutBail statut,
             @RequestParam(required = false) UUID locataireId) {
@@ -50,14 +49,12 @@ public class ContratController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<ContratResponse>> getContrat(@PathVariable UUID id) {
         ContratResponse contrat = contratService.getContratById(id);
         return ResponseEntity.ok(ApiRetour.success("Détail du contrat", contrat));
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<ContratResponse>> modifierContrat(
             @PathVariable UUID id,
             @RequestBody @Valid UpdateContratRequest request) {
@@ -66,14 +63,13 @@ public class ContratController {
     }
 
     @PatchMapping("/{id}/resilier")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<ContratResponse>> resilierContrat(@PathVariable UUID id) {
         ContratResponse contrat = contratService.resilierContrat(id);
         return ResponseEntity.ok(ApiRetour.success("Contrat résilié avec succès", contrat));
     }
 
     @GetMapping("/{id}/reste-a-payer")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_CLIENT')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_CLIENT')")
     public ResponseEntity<ApiRetour<ResteAPayerResponse>> getResteAPayer(
             @PathVariable UUID id,
             @RequestParam int annee,

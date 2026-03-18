@@ -12,6 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/dashboard")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_AGENT')")
 public class DashboardController {
 
     private final DashboardService dashboardService;
@@ -21,21 +22,18 @@ public class DashboardController {
     }
 
     @GetMapping("/nombre-biens-disponibles")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<NombreBiensDisponiblesResponse>> getNombreBiensDisponibles() {
         NombreBiensDisponiblesResponse data = dashboardService.getNombreBiensDisponibles();
         return ResponseEntity.ok(ApiRetour.success("Nombre de biens disponibles", data));
     }
 
     @GetMapping("/biens-loues-vs-libres")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<BiensLouesVsLibresResponse>> getBiensLouesVsLibres() {
         BiensLouesVsLibresResponse data = dashboardService.getBiensLouesVsLibres();
         return ResponseEntity.ok(ApiRetour.success("Biens loués vs libres", data));
     }
 
     @GetMapping("/revenus-mensuels")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<RevenusMensuelsResponse>> getRevenusMensuels(
             @RequestParam int annee,
             @RequestParam int mois) {
@@ -44,7 +42,6 @@ public class DashboardController {
     }
 
     @GetMapping("/locataires-en-retard")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<LocatairesEnRetardResponse>> getLocatairesEnRetard(
             @RequestParam int annee,
             @RequestParam int mois) {
@@ -60,7 +57,6 @@ public class DashboardController {
     }
 
     @GetMapping("/agences/{id}/mandats-gestion")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<MandatsGestionStatistiqueResponse>> getStatistiqueMandatsAgence(@PathVariable UUID id) {
         MandatsGestionStatistiqueResponse data = dashboardService.getStatistiqueMandatsPourAgence(id);
         return ResponseEntity.ok(ApiRetour.success("Statistiques mandats de gestion pour l'agence", data));
@@ -68,7 +64,6 @@ public class DashboardController {
 
     /** Statistiques des mandats de gestion pour un agent (id = id de l'agent, les mandats sont liés à l'agent). */
     @GetMapping("/agents/{agentId}/mandats-gestion")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<MandatsGestionParAgentResponse>> getStatistiqueMandatsAgent(@PathVariable UUID agentId) {
         MandatsGestionParAgentResponse data = dashboardService.getStatistiqueMandatsPourAgent(agentId);
         return ResponseEntity.ok(ApiRetour.success("Statistiques mandats de gestion pour l'agent", data));

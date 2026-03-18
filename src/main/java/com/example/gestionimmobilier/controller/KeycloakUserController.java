@@ -18,6 +18,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class KeycloakUserController {
 
     private final UserService userService;
@@ -27,7 +28,6 @@ public class KeycloakUserController {
     }
 
     @GetMapping("/users")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiRetour<List<UtilisateurResponse>>> getUsers(
             @RequestParam(defaultValue = "true") boolean sync) {
         List<UtilisateurResponse> users = userService.getUsersFromDatabase(sync);
@@ -36,7 +36,6 @@ public class KeycloakUserController {
 
 
     @PutMapping("/users/{id}/roles")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiRetour<UtilisateurResponse>> assignRoles(
             @PathVariable UUID id,
             @RequestBody @Valid AssignRolesRequest request) {
@@ -45,7 +44,6 @@ public class KeycloakUserController {
     }
 
     @PutMapping("/users/{id}/enabled")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiRetour<UtilisateurResponse>> updateUserEnabled(
             @PathVariable UUID id,
             @RequestBody @Valid UpdateUserEnabledRequest request) {
@@ -57,7 +55,6 @@ public class KeycloakUserController {
 
 
     @PostMapping("/users")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiRetour<UtilisateurResponse>> createUser(
             @RequestBody @Valid CreateUserRequest request) {
         UtilisateurResponse user = userService.createUser(request);

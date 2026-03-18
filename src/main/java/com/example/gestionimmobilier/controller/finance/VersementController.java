@@ -20,6 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/versements")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_AGENT')")
 public class VersementController {
 
     private final VersementService versementService;
@@ -32,11 +33,8 @@ public class VersementController {
         this.objectMapper = objectMapper;
     }
 
-    /**
-     * Création de versement SANS preuve (JSON simple).
-     */
+   
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<VersementResponse>> createVersementJson(
             @RequestBody @Valid CreateVersementRequest request) {
         VersementResponse response = versementService.createVersement(request, null);
@@ -44,11 +42,8 @@ public class VersementController {
                 .body(ApiRetour.success("Versement enregistré et quittance générée", response));
     }
 
-    /**
-     * Création de versement AVEC preuve (multipart/form-data).
-     */
+    
    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
     public ResponseEntity<ApiRetour<VersementResponse>> createVersementMultipart(
             @RequestPart("data") String dataJson,
             @RequestPart(value = "preuvePaiement", required = false) MultipartFile preuvePaiement) {
@@ -66,7 +61,7 @@ public class VersementController {
     }
 
     @GetMapping("/contrats/{contratId}/versements")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_AGENT')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_AGENT', 'ROLE_CLIENT')")
     public ResponseEntity<ApiRetour<List<VersementResponse>>> getVersementsByContrat(
             @PathVariable UUID contratId) {
 

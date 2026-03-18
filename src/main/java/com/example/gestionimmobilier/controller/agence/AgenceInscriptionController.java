@@ -7,6 +7,7 @@ import com.example.gestionimmobilier.service.agence.AgenceService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,7 @@ public class AgenceInscriptionController {
     }
 
     @PostMapping("/inscription")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<ApiRetour<AgenceResponse>> inscrire(
             @RequestBody @Valid CreateAgenceRequest request) {
         AgenceResponse agence = agenceService.inscrire(request);

@@ -18,6 +18,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/proprietaires")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class ProprietaireController {
 
     private final ProprietaireService proprietaireService;
@@ -29,7 +30,6 @@ public class ProprietaireController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiRetour<ProprietaireResponse>> ajouterProprietaire(
             @RequestBody @Valid CreateProprietaireRequest request) {
         ProprietaireResponse proprietaire = proprietaireService.createProprietaire(request);
@@ -38,7 +38,6 @@ public class ProprietaireController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiRetour<ProprietaireResponse>> modifierProprietaire(
             @PathVariable UUID id,
             @RequestBody @Valid UpdateProprietaireRequest request) {
@@ -47,14 +46,12 @@ public class ProprietaireController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiRetour<Void>> supprimerProprietaire(@PathVariable UUID id) {
         proprietaireService.deleteProprietaire(id);
         return ResponseEntity.ok(ApiRetour.<Void>success("Propriétaire supprimé avec succès"));
     }
 
     @PutMapping("/{proprietaireId}/biens/{bienId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiRetour<BienResponse>> associerBienAProprietaire(
             @PathVariable UUID proprietaireId,
             @PathVariable UUID bienId) {
