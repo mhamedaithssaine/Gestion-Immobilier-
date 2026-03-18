@@ -2,16 +2,13 @@ package com.example.gestionimmobilier.service;
 
 import com.example.gestionimmobilier.dto.user.CreateUserRequest;
 import com.example.gestionimmobilier.dto.user.UtilisateurResponse;
-import com.example.gestionimmobilier.exception.ErrorMessages;
 import com.example.gestionimmobilier.exception.ValidationException;
 import com.example.gestionimmobilier.mapper.UserMapper;
 import com.example.gestionimmobilier.models.entity.user.Utilisateur;
 import com.example.gestionimmobilier.models.enums.Role;
 import com.example.gestionimmobilier.repository.UtilisateurRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
