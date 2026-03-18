@@ -32,6 +32,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
+
                 withSonarQubeEnv('sonarqube-server') {
                     sh """
                       mvn sonar:sonar \
