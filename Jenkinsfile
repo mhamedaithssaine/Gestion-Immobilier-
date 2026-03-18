@@ -26,6 +26,7 @@ pipeline {
         stage('Build & Test') {
             steps {
                 sh 'mvn -B clean verify'
+
             }
         }
 
