@@ -1,4 +1,4 @@
-package com.example.gestionimmobilier.service;
+package com.example.gestionimmobilier.service.bienImmobilier;
 
 import com.example.gestionimmobilier.dto.immobilier.AdresseRequest;
 import com.example.gestionimmobilier.dto.immobilier.BienResponse;
@@ -20,6 +20,7 @@ import com.example.gestionimmobilier.models.entity.user.Utilisateur;
 import com.example.gestionimmobilier.repository.AdresseRepository;
 import com.example.gestionimmobilier.repository.BienImmobilierRepository;
 import com.example.gestionimmobilier.repository.UtilisateurRepository;
+import com.example.gestionimmobilier.service.storage.CloudStorageService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +39,6 @@ public class BienService {
 
     public BienService(UtilisateurRepository utilisateurRepository,AdresseRepository adresseRepository,
                        BienImmobilierRepository bienImmobilierRepository,
-                       FileStorageService fileStorageService,
                        CloudStorageService cloudStorageService,
                        BienMapper bienMapper) {
         this.utilisateurRepository = utilisateurRepository;

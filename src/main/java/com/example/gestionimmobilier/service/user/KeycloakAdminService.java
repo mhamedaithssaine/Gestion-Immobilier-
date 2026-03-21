@@ -1,4 +1,4 @@
-package com.example.gestionimmobilier.service;
+package com.example.gestionimmobilier.service.user;
 
 import com.example.gestionimmobilier.config.KeycloakAdminProperties;
 import com.example.gestionimmobilier.dto.keycloack.KeycloakUserResponse;

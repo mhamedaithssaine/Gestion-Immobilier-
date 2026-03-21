@@ -1,7 +1,6 @@
 package com.example.gestionimmobilier.service.finance;
 
 import com.example.gestionimmobilier.dto.finance.QuittancePdfData;
-import com.example.gestionimmobilier.dto.finance.QuittanceResponse;
 import com.example.gestionimmobilier.exception.ErrorMessages;
 import com.example.gestionimmobilier.exception.ValidationException;
 import com.example.gestionimmobilier.models.entity.contrat.Bail;
@@ -11,7 +10,7 @@ import com.example.gestionimmobilier.models.entity.finance.Versement;
 import com.example.gestionimmobilier.models.entity.user.Client;
 import com.example.gestionimmobilier.models.entity.user.Proprietaire;
 import com.example.gestionimmobilier.repository.QuittanceRepository;
-import com.example.gestionimmobilier.service.FileStorageService;
+import com.example.gestionimmobilier.service.storage.FileStorageService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,18 +71,6 @@ public class QuittanceService {
         return quittance;
     }
 
-    public QuittanceResponse toResponse(Quittance q) {
-        return new QuittanceResponse(
-                q.getId(),
-                q.getReferenceQuittance(),
-                q.getMois(),
-                q.getAnnee(),
-                q.getUrlPdf(),
-                q.getDateGeneration(),
-                q.getVersement().getId(),
-                q.getProprietaire().getId()
-        );
-    }
 
     private QuittancePdfData buildPdfData(Versement v, Quittance q) {
         Bail bail = v.getBail();

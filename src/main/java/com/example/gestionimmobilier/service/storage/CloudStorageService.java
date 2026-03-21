@@ -1,4 +1,4 @@
-package com.example.gestionimmobilier.service;
+package com.example.gestionimmobilier.service.storage;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;

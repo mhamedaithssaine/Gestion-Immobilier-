@@ -7,6 +7,7 @@ pipeline {
     tools {
         maven 'Maven3'    
         jdk 'JDK17'
+
     }
 
     environment {
@@ -25,11 +26,13 @@ pipeline {
         stage('Build & Test') {
             steps {
                 sh 'mvn -B clean verify'
+
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
+
                 withSonarQubeEnv('sonarqube-server') {
                     sh """
                       mvn sonar:sonar \

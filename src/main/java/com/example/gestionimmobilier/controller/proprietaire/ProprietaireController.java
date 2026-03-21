@@ -6,7 +6,7 @@ import com.example.gestionimmobilier.dto.immobilier.BienResponse;
 import com.example.gestionimmobilier.dto.user.CreateProprietaireRequest;
 import com.example.gestionimmobilier.dto.user.ProprietaireResponse;
 import com.example.gestionimmobilier.dto.user.UpdateProprietaireRequest;
-import com.example.gestionimmobilier.service.BienService;
+import com.example.gestionimmobilier.service.bienImmobilier.BienService;
 import com.example.gestionimmobilier.service.proprietaire.ProprietaireService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
