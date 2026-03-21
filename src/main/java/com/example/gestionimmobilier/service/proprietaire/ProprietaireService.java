@@ -14,7 +14,7 @@ import com.example.gestionimmobilier.models.entity.user.Utilisateur;
 import com.example.gestionimmobilier.models.enums.Role;
 import com.example.gestionimmobilier.repository.UtilisateurRepository;
 import com.example.gestionimmobilier.repository.VersementRepository;
-import com.example.gestionimmobilier.service.KeycloakAdminService;
+import com.example.gestionimmobilier.service.user.KeycloakAdminService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

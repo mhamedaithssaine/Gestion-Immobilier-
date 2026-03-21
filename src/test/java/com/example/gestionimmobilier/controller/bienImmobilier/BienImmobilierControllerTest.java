@@ -1,7 +1,7 @@
-package com.example.gestionimmobilier.controller;
+package com.example.gestionimmobilier.controller.bienImmobilier;
 
 import com.example.gestionimmobilier.config.CustomAuthenticationEntryPoint;
-import com.example.gestionimmobilier.service.BienService;
+import com.example.gestionimmobilier.service.bienImmobilier.BienService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

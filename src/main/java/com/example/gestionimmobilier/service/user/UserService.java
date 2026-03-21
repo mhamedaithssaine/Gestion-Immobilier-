@@ -1,4 +1,4 @@
-package com.example.gestionimmobilier.service;
+package com.example.gestionimmobilier.service.user;
 
 import com.example.gestionimmobilier.dto.user.CreateUserRequest;
 import com.example.gestionimmobilier.dto.user.UtilisateurResponse;

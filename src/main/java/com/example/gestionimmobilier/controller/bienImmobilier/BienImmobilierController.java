@@ -1,8 +1,8 @@
-package com.example.gestionimmobilier.controller;
+package com.example.gestionimmobilier.controller.bienImmobilier;
 
 import com.example.gestionimmobilier.dto.immobilier.BienResponse;
 import com.example.gestionimmobilier.dto.immobilier.CreateBienRequest;
-import com.example.gestionimmobilier.service.BienService;
+import com.example.gestionimmobilier.service.bienImmobilier.BienService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

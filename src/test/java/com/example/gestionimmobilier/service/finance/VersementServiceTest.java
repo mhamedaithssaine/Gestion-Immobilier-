@@ -8,7 +8,7 @@ import com.example.gestionimmobilier.models.entity.finance.Versement;
 import com.example.gestionimmobilier.models.enums.StatutBail;
 import com.example.gestionimmobilier.repository.BailRepository;
 import com.example.gestionimmobilier.repository.VersementRepository;
-import com.example.gestionimmobilier.service.CloudStorageService;
+import com.example.gestionimmobilier.service.storage.CloudStorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

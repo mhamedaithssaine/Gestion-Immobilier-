@@ -1,12 +1,12 @@
-package com.example.gestionimmobilier.controller;
+package com.example.gestionimmobilier.controller.user;
 
 import com.example.gestionimmobilier.dto.api.response.ApiRetour;
 import com.example.gestionimmobilier.dto.user.AssignRolesRequest;
 import com.example.gestionimmobilier.dto.user.CreateUserRequest;
 import com.example.gestionimmobilier.dto.user.UpdateUserEnabledRequest;
 import com.example.gestionimmobilier.dto.user.UtilisateurResponse;
-import com.example.gestionimmobilier.service.KeycloakAdminService;
-import com.example.gestionimmobilier.service.UserService;
+import com.example.gestionimmobilier.service.user.KeycloakAdminService;
+import com.example.gestionimmobilier.service.user.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

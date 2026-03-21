@@ -19,7 +19,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/contrats")
-@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_AGENT')")
 public class ContratController {
 
     private final ContratService contratService;

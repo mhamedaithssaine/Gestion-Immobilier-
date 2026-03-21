@@ -12,7 +12,7 @@ import com.example.gestionimmobilier.models.enums.StatutAgence;
 import com.example.gestionimmobilier.repository.AgenceRepository;
 import com.example.gestionimmobilier.repository.AgentRepository;
 import com.example.gestionimmobilier.repository.UtilisateurRepository;
-import com.example.gestionimmobilier.service.KeycloakAdminService;
+import com.example.gestionimmobilier.service.user.KeycloakAdminService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
