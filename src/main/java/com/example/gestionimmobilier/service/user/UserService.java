@@ -74,6 +74,11 @@ public class UserService {
 
     @Transactional
     public UtilisateurResponse createUser(CreateUserRequest request) {
+        return createUser(request, true);
+    }
+
+    @Transactional
+    public UtilisateurResponse createUser(CreateUserRequest request, boolean enabled) {
         log.info("Create user username={} email={} roles={}", request.username(), request.email(), request.roles());
         if (request.roles() == null || request.roles().isEmpty()) {
             throw new ValidationException(ErrorMessages.AUCUN_ROLE_VALIDE);
@@ -85,7 +90,8 @@ public class UserService {
                 request.firstName(),
                 request.lastName(),
                 request.password(),
-                request.roles()
+                request.roles(),
+                enabled
         );
 
         keycloakAdminService.syncUserByKeycloakId(keycloakUserId);
