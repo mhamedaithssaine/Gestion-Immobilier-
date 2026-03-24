@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,8 @@ public class KeycloakAdminService {
     private final RestTemplate restTemplate;
     private final UtilisateurRepository utilisateurRepository;
     private final KeycloakUserMapper keycloakUserMapper;
+    private volatile String cachedAdminToken;
+    private volatile Instant cachedAdminTokenExpiresAt;
 
     public KeycloakAdminService(KeycloakAdminProperties props,
                                 RestTemplate restTemplate,
@@ -44,6 +47,9 @@ public class KeycloakAdminService {
     }
 
     public String getAdminToken() {
+        if (isCachedAdminTokenValid()) {
+            return cachedAdminToken;
+        }
         String url = buildTokenUrl();
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(buildTokenBody(), buildFormHeaders());
         ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
@@ -52,12 +58,29 @@ public class KeycloakAdminService {
                 request,
                 new ParameterizedTypeReference<>() {}
         );
-        return extractAccessToken(response.getBody());
+        return extractAndCacheAccessToken(response.getBody());
+    }
+
+    public Map<String, Object> getUserTokenByPassword(String clientId, String username, String password) {
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", "password");
+        body.add("client_id", clientId);
+        body.add("username", username);
+        body.add("password", password);
+        return callRealmTokenEndpoint(body, props.getRealmUsers());
+    }
+
+    public Map<String, Object> refreshUserToken(String clientId, String refreshToken) {
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", "refresh_token");
+        body.add("client_id", clientId);
+        body.add("refresh_token", refreshToken);
+        return callRealmTokenEndpoint(body, props.getRealmUsers());
     }
 
     public List<KeycloakUserResponse> getUsersFromKeycloak() {
         String token = getAdminToken();
-        String url = buildUsersUrl();
+        String url = buildUsersBaseUrl();
         HttpEntity<Void> request = new HttpEntity<>(buildAuthHeaders(token));
         ResponseEntity<List<KeycloakUserResponse>> response = restTemplate.exchange(
                 url,
@@ -69,33 +92,16 @@ public class KeycloakAdminService {
     }
 
     public List<Role> getUserRealmRoles(String keycloakUserId) {
-        String token = getAdminToken();
-        String url = buildUserRolesUrl(keycloakUserId);
-        HttpEntity<Void> request = new HttpEntity<>(buildAuthHeaders(token));
-        ResponseEntity<List<Map<String, String>>> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                new ParameterizedTypeReference<>() {}
-        );
-        return mapToRoles(response.getBody());
+        return mapRoleMappingsToRoles(getUserRealmRoleMappings(keycloakUserId));
     }
 
     @Transactional
     public void syncUsersToDatabase() {
         List<KeycloakUserResponse> keycloakUsers = getUsersFromKeycloak();
         for (KeycloakUserResponse kcUser : keycloakUsers) {
-            syncUser(kcUser);
+            List<Role> roles = getUserRealmRoles(kcUser.id());
+            syncUser(kcUser, roles);
         }
-    }
-
-    private void syncUser(KeycloakUserResponse kcUser) {
-        List<Role> roles = getUserRealmRoles(kcUser.id());
-        Optional<Utilisateur> existing = utilisateurRepository.findByKeycloakId(kcUser.id());
-        Utilisateur utilisateur = existing
-                .map(u -> updateFromKeycloak(u, kcUser, roles))
-                .orElseGet(() -> createFromKeycloak(kcUser, roles));
-        utilisateurRepository.save(utilisateur);
     }
 
     private Utilisateur createFromKeycloak(KeycloakUserResponse kcUser, List<Role> roles) {
@@ -129,13 +135,15 @@ public class KeycloakAdminService {
         return kcUser.username() + "@keycloak.local";
     }
 
-    private List<Role> mapToRoles(List<Map<String, String>> roleMaps) {
-        if (roleMaps == null) {
+    private List<Role> mapRoleMappingsToRoles(List<Map<String, Object>> roleMappings) {
+        if (roleMappings == null) {
             return List.of();
         }
-        return roleMaps.stream()
+        return roleMappings.stream()
                 .map(m -> m.get("name"))
-                .filter(name -> name != null && name.startsWith("ROLE_"))
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .filter(name -> name.startsWith("ROLE_"))
                 .map(this::toRole)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -154,18 +162,34 @@ public class KeycloakAdminService {
         return props.getServerUrl() + "/realms/" + props.getRealm() + "/protocol/openid-connect/token";
     }
 
-    private String buildUsersUrl() {
-        return props.getServerUrl() + "/admin/realms/" + props.getRealmUsers() + "/users";
+    private String getAdminRealmBaseUrl() {
+        return props.getServerUrl() + "/admin/realms/" + props.getRealmUsers();
+    }
+
+    private String buildUsersBaseUrl() {
+        return getAdminRealmBaseUrl() + "/users";
     }
 
     private String buildUserRolesUrl(String userId) {
-        return props.getServerUrl() + "/admin/realms/" + props.getRealmUsers() + "/users/" + userId + "/role-mappings/realm";
+        return buildUserUrl(userId) + "/role-mappings/realm";
     }
 
     private HttpHeaders buildFormHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         return headers;
+    }
+
+    private Map<String, Object> callRealmTokenEndpoint(MultiValueMap<String, String> body, String realm) {
+        String url = props.getServerUrl() + "/realms/" + realm + "/protocol/openid-connect/token";
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, buildFormHeaders());
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                request,
+                new ParameterizedTypeReference<>() {}
+        );
+        return response.getBody();
     }
 
     private HttpHeaders buildAuthHeaders(String token) {
@@ -184,16 +208,28 @@ public class KeycloakAdminService {
         return body;
     }
 
-    private String extractAccessToken(Map<String, Object> tokenResponse) {
+    private String extractAndCacheAccessToken(Map<String, Object> tokenResponse) {
         if (tokenResponse == null || !tokenResponse.containsKey("access_token")) {
             throw new RuntimeException("Impossible d'obtenir le token admin Keycloak");
         }
-        return (String) tokenResponse.get("access_token");
+        String token = (String) tokenResponse.get("access_token");
+        Number expiresIn = (Number) tokenResponse.get("expires_in");
+        long ttl = expiresIn != null ? expiresIn.longValue() : 60L;
+        long safetyBuffer = 10L;
+        cachedAdminToken = token;
+        cachedAdminTokenExpiresAt = Instant.now().plusSeconds(Math.max(1L, ttl - safetyBuffer));
+        return token;
+    }
+
+    private boolean isCachedAdminTokenValid() {
+        return cachedAdminToken != null
+                && cachedAdminTokenExpiresAt != null
+                && Instant.now().isBefore(cachedAdminTokenExpiresAt);
     }
 
     public List<Map<String,Object>> getRealmRoles(){
         String token = getAdminToken();
-        String url = props.getServerUrl() + "/admin/realms/" + props.getRealmUsers() + "/roles";
+        String url = getAdminRealmBaseUrl() + "/roles";
         HttpEntity<Void> request = new HttpEntity<>(buildAuthHeaders(token));
         ResponseEntity<List<Map<String,Object>>> response = restTemplate.exchange(url, HttpMethod.GET, request, new ParameterizedTypeReference<>() {}
         );
@@ -224,7 +260,7 @@ public class KeycloakAdminService {
         HttpHeaders headers = buildAuthHeaders(token);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        List<Map<String, Object>> currentRoles = getKeycloakUserRoles(keycloakUserId);
+        List<Map<String, Object>> currentRoles = getUserRealmRoleMappings(keycloakUserId);
         if (!currentRoles.isEmpty()) {
             HttpEntity<List<Map<String, Object>>> deleteRequest = new HttpEntity<>(currentRoles, headers);
             restTemplate.exchange(url, HttpMethod.DELETE, deleteRequest, Void.class);
@@ -234,7 +270,7 @@ public class KeycloakAdminService {
         restTemplate.exchange(url, HttpMethod.POST, postRequest, Void.class);
     }
 
-    private List<Map<String, Object>> getKeycloakUserRoles(String keycloakUserId) {
+    private List<Map<String, Object>> getUserRealmRoleMappings(String keycloakUserId) {
         String token = getAdminToken();
         String url = buildUserRolesUrl(keycloakUserId);
         HttpEntity<Void> request = new HttpEntity<>(buildAuthHeaders(token));
@@ -254,7 +290,7 @@ public class KeycloakAdminService {
     }
 
     private String buildUserUrl(String keycloakUserId) {
-        return buildUsersUrl() + "/" + keycloakUserId;
+        return buildUsersBaseUrl() + "/" + keycloakUserId;
     }
 
     public void setUserEnabled(String keycloakUserId, boolean enabled) {
@@ -301,7 +337,7 @@ public class KeycloakAdminService {
         }
 
         String token = getAdminToken();
-        String url = buildUsersUrl();
+        String url = buildUsersBaseUrl();
         HttpHeaders headers = buildAuthHeaders(token);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
