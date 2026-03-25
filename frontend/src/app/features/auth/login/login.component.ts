@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs/operators';
 import { getApiErrorMessage } from '../../../core/http/error-message.util';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -21,16 +22,17 @@ export class LoginComponent {
   identifier = '';
   password = '';
 
-  async submit(): Promise<void> {
+  submit(): void {
     this.errorMessage = '';
     this.loading.set(true);
-    try {
-      await this.authService.login(this.identifier.trim(), this.password);
-      await this.router.navigateByUrl('/dashboard');
-    } catch (error) {
-      this.errorMessage = getApiErrorMessage(error, 'Connexion echouee.');
-    } finally {
-      this.loading.set(false);
-    }
+    this.authService
+      .login(this.identifier.trim(), this.password)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: () => void this.router.navigateByUrl('/admin'),
+        error: (error: unknown) => {
+          this.errorMessage = getApiErrorMessage(error, 'Connexion echouee.');
+        }
+      });
   }
 }

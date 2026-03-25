@@ -1,0 +1,190 @@
+.skna-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: min(520px, 70vh);
+}
+
+.skna-hero__light {
+  background: #f1f4f8;
+  padding: clamp(2rem, 5vw, 4rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.skna-hero__title {
+  margin: 0;
+  font-size: clamp(1.5rem, 3.2vw, 2.35rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #002d5d;
+  letter-spacing: -0.02em;
+}
+
+.skna-hero__lead {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: #486581;
+  max-width: 36ch;
+}
+
+.skna-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.skna-hero__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.25rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.skna-hero__btn--primary {
+  background: #e97300;
+  color: #fff;
+  border: 2px solid #e97300;
+}
+
+.skna-hero__btn--primary:hover {
+  background: #d66700;
+  border-color: #d66700;
+}
+
+.skna-hero__btn--outline {
+  background: transparent;
+  color: #002d5d;
+  border: 2px solid #1a7fd4;
+}
+
+.skna-hero__btn--outline:hover {
+  background: rgba(26, 127, 212, 0.08);
+}
+
+.skna-hero__dark {
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(0, 45, 93, 0.92) 0%, rgba(0, 30, 60, 0.95) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  padding: clamp(2rem, 5vw, 4rem);
+}
+
+.skna-hero__dark-inner {
+  max-width: 28rem;
+}
+
+.skna-hero__dark-kicker {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.skna-hero__dark-title {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.skna-hero__dark-text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.skna-welcome {
+  display: flex;
+  justify-content: center;
+  padding: 2.5rem 1.5rem 3rem;
+  background: #fff;
+}
+
+.skna-welcome__card {
+  width: min(420px, 100%);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow:
+    0 4px 24px rgba(0, 45, 93, 0.08),
+    0 0 0 1px rgba(0, 45, 93, 0.06);
+  padding: 1.75rem 1.5rem;
+}
+
+.skna-welcome__title {
+  margin: 0 0 1.5rem;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #002d5d;
+}
+
+.skna-welcome__block {
+  text-align: center;
+}
+
+.skna-welcome__label {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #3d5a80;
+}
+
+.skna-welcome__link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 11rem;
+  padding: 0.55rem 1.25rem;
+  border: 2px solid #1a7fd4;
+  border-radius: 999px;
+  color: #002d5d;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  background: #fff;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.skna-welcome__link-btn:hover {
+  background: rgba(26, 127, 212, 0.06);
+  border-color: #0066cc;
+}
+
+.skna-welcome__rule {
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+  margin: 1.35rem 0;
+}
+
+@media (max-width: 768px) {
+  .skna-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .skna-hero__dark {
+    min-height: 280px;
+  }
+}

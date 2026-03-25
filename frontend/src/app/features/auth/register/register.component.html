@@ -1,46 +1,125 @@
 <main class="auth-page">
-  <section class="card">
-    <h1>Inscription</h1>
-    <p>Cree ton compte (actif apres validation admin).</p>
+  <section class="register-card" aria-labelledby="register-title">
+    <header class="register-card__head">
+      <h1 id="register-title">Créer un compte</h1>
+      <p class="register-card__intro">
+        Renseigne tes informations. Ton compte sera activé après validation par un administrateur.
+      </p>
+    </header>
 
-    <label>
-      Username
-      <input [(ngModel)]="form.username" name="username" autocomplete="username" />
-    </label>
+    <form class="register-form" (ngSubmit)="submit()">
+      <section class="register-section" aria-labelledby="register-sec-identity">
+        <h2 id="register-sec-identity" class="register-section__title">Identité</h2>
+        <div class="register-grid">
+          <div class="register-field">
+            <label class="register-field__label" for="reg-firstName">Prénom</label>
+            <input
+              id="reg-firstName"
+              class="register-field__control"
+              [(ngModel)]="form.firstName"
+              name="firstName"
+              type="text"
+              autocomplete="given-name"
+              required
+            />
+          </div>
+          <div class="register-field">
+            <label class="register-field__label" for="reg-lastName">Nom</label>
+            <input
+              id="reg-lastName"
+              class="register-field__control"
+              [(ngModel)]="form.lastName"
+              name="lastName"
+              type="text"
+              autocomplete="family-name"
+              required
+            />
+          </div>
+        </div>
+      </section>
 
-    <label>
-      Email
-      <input [(ngModel)]="form.email" name="email" type="email" autocomplete="email" />
-    </label>
+      <section class="register-section" aria-labelledby="register-sec-account">
+        <h2 id="register-sec-account" class="register-section__title">Compte</h2>
+        <div class="register-grid register-grid--single">
+          <div class="register-field register-field--full">
+            <label class="register-field__label" for="reg-username">Nom d’utilisateur</label>
+            <input
+              id="reg-username"
+              class="register-field__control"
+              [(ngModel)]="form.username"
+              name="username"
+              type="text"
+              autocomplete="username"
+              required
+            />
+            <span class="register-field__hint">Lettres, chiffres, tiret et underscore uniquement.</span>
+          </div>
+          <div class="register-field register-field--full">
+            <label class="register-field__label" for="reg-email">Adresse e-mail</label>
+            <input
+              id="reg-email"
+              class="register-field__control"
+              [(ngModel)]="form.email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+            />
+          </div>
+        </div>
+      </section>
 
-    <label>
-      Prenom
-      <input [(ngModel)]="form.firstName" name="firstName" autocomplete="given-name" />
-    </label>
+      <section class="register-section" aria-labelledby="register-sec-profile">
+        <h2 id="register-sec-profile" class="register-section__title">Profil &amp; sécurité</h2>
+        <div class="register-grid">
+          <div class="register-field">
+            <label class="register-field__label" for="reg-role">Type de compte</label>
+            <select
+              id="reg-role"
+              class="register-field__control register-field__control--select"
+              [(ngModel)]="form.role"
+              name="role"
+              required
+            >
+              @for (opt of clientRoleOptions; track opt.value) {
+                <option [ngValue]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="register-field">
+            <label class="register-field__label" for="reg-password">Mot de passe</label>
+            <input
+              id="reg-password"
+              class="register-field__control"
+              [(ngModel)]="form.password"
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              required
+              minlength="6"
+            />
+            <span class="register-field__hint">Au moins 6 caractères.</span>
+          </div>
+        </div>
+      </section>
 
-    <label>
-      Nom
-      <input [(ngModel)]="form.lastName" name="lastName" autocomplete="family-name" />
-    </label>
+      @if (errorMessage) {
+        <div class="register-alert register-alert--error" role="alert">{{ errorMessage }}</div>
+      }
+      @if (successMessage) {
+        <div class="register-alert register-alert--success" role="status">{{ successMessage }}</div>
+      }
 
-    <label>
-      Mot de passe
-      <input [(ngModel)]="form.password" name="password" type="password" autocomplete="new-password" />
-    </label>
+      <div class="register-actions">
+        <button type="submit" class="register-submit" [disabled]="loading()">
+          {{ loading() ? 'Envoi en cours…' : 'Créer mon compte' }}
+        </button>
+      </div>
+    </form>
 
-    <button type="button" [disabled]="loading()" (click)="submit()">
-      {{ loading() ? 'Envoi...' : "S'inscrire" }}
-    </button>
-
-    @if (errorMessage) {
-      <p class="error">{{ errorMessage }}</p>
-    }
-    @if (successMessage) {
-      <p class="success">{{ successMessage }}</p>
-    }
-
-    <p class="helper">
-      Deja un compte ? <a routerLink="/login">Connexion</a>
+    <p class="register-footer">
+      Déjà un compte ?
+      <a routerLink="/login">Se connecter</a>
     </p>
   </section>
 </main>

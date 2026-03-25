@@ -11,7 +11,7 @@ export const apiErrorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401 && !req.url.includes('/api/public/')) {
-        void authService.logout();
+        authService.logout();
         void router.navigateByUrl('/login');
       }
       return throwError(() => error);

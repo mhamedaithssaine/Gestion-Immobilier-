@@ -1,0 +1,167 @@
+<div class="admin-page">
+  <header class="admin-page__head">
+    <h1>Vue d’ensemble</h1>
+    <p class="admin-page__intro">
+      Indicateurs issus de l’API <code>/api/admin/dashboard</code> — filtrez la période pour les revenus et les
+      impayés.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="admin-banner admin-banner--error" role="alert">{{ error() }}</div>
+  }
+
+  <section class="admin-filters" aria-label="Filtres période">
+    <div class="admin-filters__group">
+      <label for="adm-mois">Mois</label>
+      <select
+        id="adm-mois"
+        [ngModel]="mois()"
+        (ngModelChange)="mois.set($event); appliquerPeriode()"
+      >
+        @for (opt of moisOptions; track opt.value) {
+          <option [ngValue]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+    <div class="admin-filters__group">
+      <label for="adm-annee">Année</label>
+      <select
+        id="adm-annee"
+        [ngModel]="annee()"
+        (ngModelChange)="annee.set($event); appliquerPeriode()"
+      >
+        @for (y of anneesOptions; track y) {
+          <option [ngValue]="y">{{ y }}</option>
+        }
+      </select>
+    </div>
+    <button type="button" class="admin-filters__btn" (click)="load()" [disabled]="loading()">
+      Actualiser
+    </button>
+  </section>
+
+  @if (loading()) {
+    <p class="admin-loading">Chargement des statistiques…</p>
+  } @else {
+    <div class="admin-kpi-grid">
+      <article class="admin-kpi">
+        <span class="admin-kpi__label">Biens disponibles</span>
+        <strong class="admin-kpi__value">{{ nbDispo() ?? '—' }}</strong>
+        <span class="admin-kpi__hint">GET /nombre-biens-disponibles</span>
+      </article>
+      <article class="admin-kpi">
+        <span class="admin-kpi__label">Revenus du mois</span>
+        <strong class="admin-kpi__value">{{ formatMoney(revenus()?.revenusMensuels) }}</strong>
+        <span class="admin-kpi__hint">{{ mois() }}/{{ annee() }}</span>
+      </article>
+      <article class="admin-kpi">
+        <span class="admin-kpi__label">Locataires en retard</span>
+        <strong class="admin-kpi__value">{{ retard()?.locataires?.length ?? 0 }}</strong>
+        <span class="admin-kpi__hint">Sur la période choisie</span>
+      </article>
+      <article class="admin-kpi">
+        <span class="admin-kpi__label">Répartition biens</span>
+        @if (biensRatio(); as br) {
+          <div class="admin-kpi__bars" aria-hidden="true">
+            <div
+              class="admin-kpi__bar admin-kpi__bar--dispo"
+              [style.flex]="br.disponibles || 0.001"
+            ></div>
+            <div class="admin-kpi__bar admin-kpi__bar--loue" [style.flex]="br.loues || 0.001"></div>
+            <div class="admin-kpi__bar admin-kpi__bar--vendu" [style.flex]="br.vendus || 0.001"></div>
+            <div
+              class="admin-kpi__bar admin-kpi__bar--compromis"
+              [style.flex]="br.sousCompromis || 0.001"
+            ></div>
+          </div>
+          <ul class="admin-kpi__legend">
+            <li><span class="dot dispo"></span> Dispo {{ br.disponibles }} ({{ pct(br.disponibles, totalBiens(br)) }}%)</li>
+            <li><span class="dot loue"></span> Loués {{ br.loues }}</li>
+            <li><span class="dot vendu"></span> Vendus {{ br.vendus }}</li>
+            <li><span class="dot compromis"></span> Sous compromis {{ br.sousCompromis }}</li>
+          </ul>
+        } @else {
+          <strong class="admin-kpi__value">—</strong>
+        }
+      </article>
+    </div>
+
+    @if (isAdmin()) {
+      <section class="admin-panel">
+        <div class="admin-panel__head">
+          <h2>Mandats de gestion par agence</h2>
+          <input
+            type="search"
+            class="admin-panel__search"
+            placeholder="Filtrer par nom d’agence…"
+            [ngModel]="filterMandats()"
+            (ngModelChange)="filterMandats.set($event)"
+          />
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Agence</th>
+                <th>Total</th>
+                <th>Actifs</th>
+                <th>En attente</th>
+                <th>Résiliés</th>
+                <th>Terminés</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of mandatsFiltres(); track row.agenceId) {
+                <tr>
+                  <td>{{ row.nomAgence }}</td>
+                  <td>{{ row.totalMandats }}</td>
+                  <td>{{ row.mandatsActifs }}</td>
+                  <td>{{ row.mandatsEnAttente }}</td>
+                  <td>{{ row.mandatsResilies }}</td>
+                  <td>{{ row.mandatsTermines }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6">Aucune agence ou aucun résultat pour ce filtre.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
+
+    <section class="admin-panel">
+      <h2>Locataires en retard de paiement</h2>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Locataire</th>
+              <th>Contrat</th>
+              <th>Bien</th>
+              <th>Période</th>
+              <th>Reste à payer</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (l of retard()?.locataires ?? []; track l.contratId) {
+              <tr>
+                <td>{{ l.locataireNom }}</td>
+                <td>{{ l.numContrat }}</td>
+                <td>{{ l.bienReference }}</td>
+                <td>{{ l.mois }}/{{ l.annee }}</td>
+                <td>{{ formatMoney(l.resteAPayer) }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5">Aucun retard sur cette période.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</div>

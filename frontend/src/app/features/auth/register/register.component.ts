@@ -2,8 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs/operators';
 import { getApiErrorMessage } from '../../../core/http/error-message.util';
-import { AuthService } from '../../../core/services/auth.service';
+import {
+  AuthService,
+  PublicRegistrationRole
+} from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -19,26 +23,37 @@ export class RegisterComponent {
   readonly loading = signal(false);
   errorMessage = '';
   successMessage = '';
+
+  readonly clientRoleOptions: { value: PublicRegistrationRole; label: string }[] = [
+    { value: 'ROLE_CLIENT', label: 'Locataire (client)' },
+    { value: 'ROLE_PROPRIETAIRE', label: 'Propriétaire' }
+  ];
+
   form = {
     username: '',
     email: '',
     firstName: '',
     lastName: '',
-    password: ''
+    password: '',
+    role: 'ROLE_CLIENT' as PublicRegistrationRole
   };
 
-  async submit(): Promise<void> {
+  submit(): void {
     this.errorMessage = '';
     this.successMessage = '';
     this.loading.set(true);
-    try {
-      await this.authService.register({ ...this.form });
-      this.successMessage = "Inscription envoyee. Attends l'activation admin.";
-      await this.router.navigateByUrl('/login');
-    } catch (error) {
-      this.errorMessage = getApiErrorMessage(error, "Inscription echouee.");
-    } finally {
-      this.loading.set(false);
-    }
+    const { role, ...rest } = this.form;
+    this.authService
+      .register({ ...rest, roles: [role] })
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: () => {
+          this.successMessage = "Inscription envoyee. Attends l'activation admin.";
+          void this.router.navigateByUrl('/login');
+        },
+        error: (error: unknown) => {
+          this.errorMessage = getApiErrorMessage(error, "Inscription echouee.");
+        }
+      });
   }
 }

@@ -1,0 +1,64 @@
+<footer class="skna-footer">
+  <div class="skna-footer__inner">
+    <div class="skna-footer__col skna-footer__col--brand">
+      <div class="skna-footer__logo">
+        <span class="skna-footer__mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+        </span>
+        <div>
+          <span class="skna-footer__name">Skna</span>
+          <span class="skna-footer__underline"></span>
+        </div>
+      </div>
+      <p class="skna-footer__tagline">
+        L’agence immobilière à vos côtés, en ligne et dans votre quartier.
+      </p>
+      <div class="skna-footer__stores">
+        <span class="skna-footer__store-pill">App Store</span>
+        <span class="skna-footer__store-pill">Google Play</span>
+      </div>
+    </div>
+
+    <div class="skna-footer__col">
+      <h3 class="skna-footer__heading">Skna</h3>
+      <ul>
+        @for (item of colSkna; track item) {
+          <li><a href="#">{{ item }}</a></li>
+        }
+      </ul>
+    </div>
+
+    <div class="skna-footer__col">
+      <h3 class="skna-footer__heading">Notre site</h3>
+      <ul>
+        @for (item of colSite; track item) {
+          <li><a href="#">{{ item }}</a></li>
+        }
+      </ul>
+    </div>
+
+    <div class="skna-footer__col">
+      <h3 class="skna-footer__heading">Infos utiles</h3>
+      <ul>
+        @for (item of colInfos; track item) {
+          <li><a href="#">{{ item }}</a></li>
+        }
+      </ul>
+    </div>
+
+    <div class="skna-footer__col skna-footer__col--social">
+      <h3 class="skna-footer__heading">Nous suivre</h3>
+      <ul class="skna-footer__social">
+        <li><a href="#" class="social social--fb">Facebook</a></li>
+        <li><a href="#" class="social social--x">X</a></li>
+        <li><a href="#" class="social social--in">LinkedIn</a></li>
+        <li><a href="#" class="social social--yt">YouTube</a></li>
+        <li><a href="#" class="social social--ig">Instagram</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="skna-footer__bottom">
+    <p>© {{ year }} Skna — Tous droits réservés.</p>
+  </div>
+</footer>
