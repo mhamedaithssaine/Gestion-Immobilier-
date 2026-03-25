@@ -1,0 +1,171 @@
+.admin-shell {
+  min-height: 100vh;
+  display: flex;
+  background: #f1f4f8;
+}
+
+.admin-shell__sidebar {
+  width: 268px;
+  flex-shrink: 0;
+  background: #002d5d;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  min-height: 100vh;
+}
+
+.admin-shell__brand {
+  padding: 1.35rem 1.25rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.admin-shell__brand-link {
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+}
+
+.admin-shell__brand-link:hover {
+  color: #ffb366;
+}
+
+.admin-shell__brand-badge {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.admin-shell__nav {
+  flex: 1;
+  padding: 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-shell__nav-section {
+  margin-top: 1.25rem;
+}
+
+.admin-shell__nav-section:first-of-type {
+  margin-top: 0.5rem;
+}
+
+.admin-shell__nav-subtitle {
+  display: block;
+  padding: 0.35rem 0.75rem 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.admin-shell__nav-item {
+  display: block;
+  padding: 0.55rem 0.85rem;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.88);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.admin-shell__nav-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.admin-shell__nav-item.is-active {
+  background: rgba(233, 115, 0, 0.95);
+  color: #fff;
+  font-weight: 600;
+}
+
+.admin-shell__nav-item--sub {
+  font-size: 0.875rem;
+  padding-left: 1rem;
+}
+
+.admin-shell__sidebar-foot {
+  padding: 1rem 1.25rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.admin-shell__roles {
+  margin: 0 0 0.75rem;
+  font-size: 0.65rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.45);
+  word-break: break-all;
+}
+
+.admin-shell__logout {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.admin-shell__logout:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.admin-shell__site-link {
+  display: block;
+  text-align: center;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.admin-shell__main {
+  flex: 1;
+  min-width: 0;
+  padding: clamp(1rem, 2vw, 1.75rem);
+}
+
+@media (max-width: 900px) {
+  .admin-shell {
+    flex-direction: column;
+  }
+
+  .admin-shell__sidebar {
+    width: 100%;
+    min-height: auto;
+    position: relative;
+  }
+
+  .admin-shell__nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .admin-shell__nav-section {
+    display: contents;
+  }
+
+  .admin-shell__nav-subtitle {
+    width: 100%;
+  }
+}

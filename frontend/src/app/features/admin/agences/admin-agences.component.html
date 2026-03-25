@@ -1,0 +1,108 @@
+<div class="admin-page">
+  <header class="admin-page__head">
+    <h1>Agences</h1>
+    <p class="admin-page__intro">
+      Liste des agences (<code>GET /api/admin/agences</code>). Filtrez puis approuvez, rejetez ou suspendez.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="admin-banner admin-banner--error" role="alert">{{ error() }}</div>
+  }
+
+  <section class="admin-toolbar">
+    <div class="admin-toolbar__field">
+      <label for="ag-statut">Statut</label>
+      <select
+        id="ag-statut"
+        [ngModel]="filterStatut()"
+        (ngModelChange)="filterStatut.set($event)"
+      >
+        @for (opt of statutOptions; track opt.value) {
+          <option [ngValue]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+    <div class="admin-toolbar__field admin-toolbar__field--grow">
+      <label for="ag-search">Recherche</label>
+      <input
+        id="ag-search"
+        type="search"
+        placeholder="Nom, e-mail, ville…"
+        [ngModel]="filterSearch()"
+        (ngModelChange)="filterSearch.set($event)"
+      />
+    </div>
+    <button type="button" class="admin-toolbar__btn" (click)="reload()" [disabled]="loading()">
+      Rafraîchir
+    </button>
+  </section>
+
+  @if (loading()) {
+    <p class="admin-loading">Chargement…</p>
+  } @else {
+    <div class="admin-table-wrap admin-table-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Ville</th>
+            <th>E-mail</th>
+            <th>Statut</th>
+            <th>Créée le</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of filteredRows(); track a.id) {
+            <tr>
+              <td>{{ a.nom }}</td>
+              <td>{{ a.ville }}</td>
+              <td>{{ a.email }}</td>
+              <td>
+                <span class="admin-badge" [class]="'admin-badge--' + a.statut.toLowerCase()">
+                  {{ labelStatut(a.statut) }}
+                </span>
+              </td>
+              <td>{{ a.createdAt | date: 'short' }}</td>
+              <td class="admin-actions">
+                @if (a.statut === 'PENDING') {
+                  <button
+                    type="button"
+                    class="admin-linkbtn admin-linkbtn--ok"
+                    [disabled]="actionId() === a.id"
+                    (click)="approve(a.id)"
+                  >
+                    Approuver
+                  </button>
+                  <button
+                    type="button"
+                    class="admin-linkbtn admin-linkbtn--danger"
+                    [disabled]="actionId() === a.id"
+                    (click)="reject(a.id)"
+                  >
+                    Rejeter
+                  </button>
+                }
+                @if (a.statut === 'ACTIVE') {
+                  <button
+                    type="button"
+                    class="admin-linkbtn admin-linkbtn--warn"
+                    [disabled]="actionId() === a.id"
+                    (click)="suspend(a.id)"
+                  >
+                    Suspendre
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6">Aucune agence ne correspond aux filtres.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -1,0 +1,44 @@
+<section class="skna-hero">
+  <div class="skna-hero__light">
+    <h1 class="skna-hero__title">
+      L’agence immobilière à vos côtés, en ligne et dans votre quartier
+    </h1>
+    <p class="skna-hero__lead">
+      Skna vous accompagne pour acheter, louer ou confier la gestion de votre bien avec des outils
+      simples et une équipe à l’écoute.
+    </p>
+    <div class="skna-hero__actions">
+      <button type="button" class="skna-hero__btn skna-hero__btn--primary" (click)="openMonEspace()">
+        Mon Espace
+      </button>
+      <a routerLink="/register" class="skna-hero__btn skna-hero__btn--outline">Créer un compte</a>
+    </div>
+  </div>
+  <div class="skna-hero__dark">
+    <div class="skna-hero__dark-inner">
+      <p class="skna-hero__dark-kicker">Skna</p>
+      <h2 class="skna-hero__dark-title">Votre projet immobilier, simplifié.</h2>
+      <p class="skna-hero__dark-text">
+        Tableau de bord, dossiers et suivi : tout ce dont vous avez besoin au même endroit.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="skna-welcome" aria-labelledby="welcome-title">
+  <div class="skna-welcome__card">
+    <h2 id="welcome-title" class="skna-welcome__title">Bienvenue chez Skna</h2>
+
+    <div class="skna-welcome__block">
+      <p class="skna-welcome__label">Je suis locataire ou propriétaire client</p>
+      <a routerLink="/login" class="skna-welcome__link-btn">Me connecter</a>
+    </div>
+
+    <hr class="skna-welcome__rule" />
+
+    <div class="skna-welcome__block">
+      <p class="skna-welcome__label">Je souhaite créer mon compte</p>
+      <a routerLink="/register" class="skna-welcome__link-btn">M’inscrire</a>
+    </div>
+  </div>
+</section>

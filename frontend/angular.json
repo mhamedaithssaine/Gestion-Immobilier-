@@ -3,7 +3,7 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "analytics": "669beeb1-438e-4c63-94c0-f7045dbce7aa"
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -32,6 +32,9 @@
             ],
             "styles": [
               "src/styles.scss"
+            ],
+            "allowedCommonJsDependencies": [
+              "sweetalert2"
             ]
           },
           "configurations": {

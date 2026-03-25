@@ -1,0 +1,40 @@
+<header class="skna-header">
+  <div class="skna-header__inner">
+    <a routerLink="/" class="skna-brand" aria-label="Skna — Accueil">
+      <span class="skna-brand__mark" aria-hidden="true">
+        <span class="sq sq--1"></span>
+        <span class="sq sq--2"></span>
+        <span class="sq sq--3"></span>
+        <span class="sq sq--4"></span>
+        <span class="sq sq--5"></span>
+        <span class="sq sq--6"></span>
+      </span>
+      <span class="skna-brand__text-wrap">
+        <span class="skna-brand__text">Skna</span>
+        <span class="skna-brand__line"></span>
+      </span>
+    </a>
+
+    <nav class="skna-nav" aria-label="Navigation principale">
+      <ul>
+        @for (link of navLinks; track link; let i = $index) {
+          <li>
+            @if (i > 0) {
+              <span class="skna-nav__sep" aria-hidden="true"></span>
+            }
+            <a href="#" class="skna-nav__link">{{ link }}</a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <button type="button" class="skna-space-btn" (click)="openMonEspace()" aria-haspopup="dialog">
+      <svg class="skna-space-btn__icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+        <circle cx="8" cy="3" r="1.5" fill="currentColor" />
+        <circle cx="8" cy="8" r="1.5" fill="currentColor" />
+        <circle cx="8" cy="13" r="1.5" fill="currentColor" />
+      </svg>
+      Mon Espace
+    </button>
+  </div>
+</header>

@@ -1,0 +1,45 @@
+@if (spaceModal.isOpen()) {
+  <div
+    class="skna-space-overlay"
+    (click)="close()"
+    role="presentation"
+    aria-hidden="true"
+  ></div>
+  <div
+    class="skna-space-dialog-wrap"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="skna-space-modal-title"
+  >
+    <div class="skna-space-modal" (click)="$event.stopPropagation()">
+      <button
+        type="button"
+        class="skna-space-modal__close"
+        (click)="close()"
+        aria-label="Fermer la fenêtre"
+      >
+        ×
+      </button>
+
+      <h2 id="skna-space-modal-title" class="skna-space-modal__title">
+        Bienvenue chez Skna
+      </h2>
+
+      <div class="skna-space-modal__section">
+        <p class="skna-space-modal__label">Je suis client Skna</p>
+        <button type="button" class="skna-space-modal__btn" (click)="goClientLogin()">
+          Me connecter
+        </button>
+      </div>
+
+      <hr class="skna-space-modal__rule" />
+
+      <div class="skna-space-modal__section">
+        <p class="skna-space-modal__label">Je suis candidat à la location</p>
+        <button type="button" class="skna-space-modal__btn" (click)="goCandidateLogin()">
+          Me connecter
+        </button>
+      </div>
+    </div>
+  </div>
+}

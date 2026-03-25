@@ -1,0 +1,188 @@
+.skna-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #e8ecf1;
+  margin-top: auto;
+}
+
+.skna-footer__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 2rem;
+  display: grid;
+  grid-template-columns: 1.2fr repeat(3, 1fr) 1fr;
+  gap: 2rem 1.5rem;
+}
+
+.skna-footer__col--brand {
+  padding-right: 1rem;
+}
+
+.skna-footer__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.skna-footer__mark {
+  display: grid;
+  grid-template-columns: repeat(3, 6px);
+  gap: 2px;
+}
+
+.skna-footer__mark span {
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+}
+
+.skna-footer__mark span:nth-child(1) {
+  background: #5b4fc9;
+}
+.skna-footer__mark span:nth-child(2) {
+  background: #ff8c42;
+}
+.skna-footer__mark span:nth-child(3) {
+  background: #f5c542;
+}
+.skna-footer__mark span:nth-child(4) {
+  background: #002d5d;
+}
+.skna-footer__mark span:nth-child(5) {
+  background: #2d9d8c;
+}
+.skna-footer__mark span:nth-child(6) {
+  background: #3d8bfd;
+}
+
+.skna-footer__name {
+  display: block;
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #002d5d;
+}
+
+.skna-footer__underline {
+  display: block;
+  width: 3.25rem;
+  height: 3px;
+  background: #e97300;
+  margin-top: 4px;
+  border-radius: 1px;
+}
+
+.skna-footer__tagline {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #627d98;
+  max-width: 260px;
+}
+
+.skna-footer__stores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skna-footer__store-pill {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.4rem 0.65rem;
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 6px;
+}
+
+.skna-footer__heading {
+  margin: 0 0 1rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.skna-footer__col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.skna-footer__col li {
+  margin-bottom: 0.55rem;
+}
+
+.skna-footer__col a {
+  font-size: 0.8125rem;
+  color: #666;
+  text-decoration: none;
+}
+
+.skna-footer__col a:hover {
+  color: #002d5d;
+  text-decoration: underline;
+}
+
+.skna-footer__social li {
+  margin-bottom: 0.5rem;
+}
+
+.social {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-left: 0.1rem;
+}
+
+.social::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.social--fb::before {
+  background: #1877f2;
+}
+.social--x::before {
+  background: #111;
+}
+.social--in::before {
+  background: #0a66c2;
+}
+.social--yt::before {
+  background: #ff0000;
+}
+.social--ig::before {
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+}
+
+.skna-footer__bottom {
+  border-top: 1px solid #e2e8f0;
+  padding: 1rem 1.5rem;
+  text-align: center;
+}
+
+.skna-footer__bottom p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #829ab1;
+}
+
+@media (max-width: 1024px) {
+  .skna-footer__inner {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .skna-footer__col--brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .skna-footer__inner {
+    grid-template-columns: 1fr;
+  }
+}

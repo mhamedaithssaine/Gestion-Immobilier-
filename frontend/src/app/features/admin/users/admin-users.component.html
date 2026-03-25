@@ -1,0 +1,297 @@
+<div class="admin-page">
+  <header class="admin-page__head">
+    <h1>Utilisateurs</h1>
+    <p class="admin-page__intro">
+      Utilisateurs synchronisés depuis Keycloak (<code>GET /api/admin/users?sync=true</code>). Filtrez et
+      activez ou désactivez les comptes.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="admin-banner admin-banner--error" role="alert">{{ error() }}</div>
+  }
+
+  <section class="admin-create">
+    <button type="button" class="admin-toolbar__btn" (click)="toggleCreate()">
+      {{ createOpen() ? 'Fermer' : 'Ajouter un utilisateur' }}
+    </button>
+
+    @if (createOpen()) {
+      <div class="admin-create__card">
+        <h2>Nouvel utilisateur</h2>
+        <form class="admin-create__grid" (ngSubmit)="createUser()">
+          <div class="f">
+            <label>Prénom</label>
+            <input [(ngModel)]="createForm.firstName" name="cFirstName" required />
+          </div>
+          <div class="f">
+            <label>Nom</label>
+            <input [(ngModel)]="createForm.lastName" name="cLastName" required />
+          </div>
+          <div class="f">
+            <label>Username</label>
+            <input [(ngModel)]="createForm.username" name="cUsername" required />
+          </div>
+          <div class="f">
+            <label>Email</label>
+            <input [(ngModel)]="createForm.email" name="cEmail" type="email" required />
+          </div>
+          <div class="f f--full">
+            <label>Mot de passe</label>
+            <input
+              [(ngModel)]="createForm.password"
+              name="cPassword"
+              type="password"
+              minlength="6"
+              required
+            />
+          </div>
+          <div class="f f--full">
+            <label>Rôles</label>
+            <div class="roles">
+              @for (r of availableRoles; track r) {
+                <label class="role">
+                  <input
+                    type="checkbox"
+                    [checked]="createForm.roles.includes(r)"
+                    (change)="
+                      createForm.roles = createForm.roles.includes(r)
+                        ? createForm.roles.filter((x) => x !== r)
+                        : [...createForm.roles, r]
+                    "
+                  />
+                  {{ r }}
+                </label>
+              }
+            </div>
+          </div>
+          <div class="f f--full actions">
+            <button type="submit" class="admin-toolbar__btn" [disabled]="creating()">
+              {{ creating() ? 'Création…' : 'Créer' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+  </section>
+
+  <section class="admin-toolbar">
+    <div class="admin-toolbar__field">
+      <label for="u-enabled">Compte actif</label>
+      <select
+        id="u-enabled"
+        [ngModel]="filterEnabled()"
+        (ngModelChange)="filterEnabled.set($event)"
+      >
+        <option ngValue="all">Tous</option>
+        <option ngValue="yes">Activés uniquement</option>
+        <option ngValue="no">Désactivés uniquement</option>
+      </select>
+    </div>
+    <div class="admin-toolbar__field admin-toolbar__field--grow">
+      <label for="u-search">Recherche</label>
+      <input
+        id="u-search"
+        type="search"
+        placeholder="Nom, e-mail, username…"
+        [ngModel]="filterSearch()"
+        (ngModelChange)="filterSearch.set($event)"
+      />
+    </div>
+    <div class="admin-toolbar__field">
+      <label for="u-pageSize">Par page</label>
+      <select
+        id="u-pageSize"
+        [ngModel]="pageSize()"
+        (ngModelChange)="changePageSize($event)"
+      >
+        @for (s of pageSizeOptions; track s) {
+          <option [ngValue]="s">{{ s }}</option>
+        }
+      </select>
+    </div>
+    <button type="button" class="admin-toolbar__btn" (click)="reload()" [disabled]="loading()">
+      Rafraîchir
+    </button>
+  </section>
+
+  @if (loading()) {
+    <p class="admin-loading">Chargement…</p>
+  } @else {
+    <div class="admin-table-wrap admin-table-card">
+      <div class="admin-pagination">
+        <span class="admin-pagination__range">{{ rangeLabel() }}</span>
+        <div class="admin-pagination__actions">
+          <button type="button" class="admin-linkbtn" (click)="prevPage()" [disabled]="pageIndex() <= 0">
+            Précédent
+          </button>
+          <span class="admin-pagination__page">Page {{ pageIndex() + 1 }} / {{ totalPages() }}</span>
+          <button
+            type="button"
+            class="admin-linkbtn"
+            (click)="nextPage()"
+            [disabled]="pageIndex() >= totalPages() - 1"
+          >
+            Suivant
+          </button>
+        </div>
+      </div>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Utilisateur</th>
+            <th>E-mail</th>
+            <th>Rôles</th>
+            <th>Actif</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of filteredRows(); track u.id) {
+            <tr>
+              <td>{{ u.firstName }} {{ u.lastName }}<br /><small>{{ u.username }}</small></td>
+              <td>{{ u.email }}</td>
+              <td class="admin-cell-roles">{{ rolesLabel(u) }}</td>
+              <td>
+                @if (u.enabled) {
+                  <span class="admin-badge admin-badge--active">Oui</span>
+                } @else {
+                  <span class="admin-badge admin-badge--rejected">Non</span>
+                }
+              </td>
+              <td class="admin-actions">
+                @if (u.enabled) {
+                  <button
+                    type="button"
+                    class="admin-iconbtn admin-iconbtn--warn"
+                    [disabled]="actionId() === u.id"
+                    (click)="setEnabled(u, false)"
+                    title="Désactiver"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm5 11H7a1 1 0 0 1 0-2h10a1 1 0 0 1 0 2Z"/></svg>
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    class="admin-iconbtn admin-iconbtn--ok"
+                    [disabled]="actionId() === u.id"
+                    (click)="setEnabled(u, true)"
+                    title="Activer"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm-1 14.5-4-4a1 1 0 0 1 1.41-1.41L11 13.67l4.59-4.58A1 1 0 0 1 17 10.5Z"/></svg>
+                  </button>
+                }
+
+                <button
+                  type="button"
+                  class="admin-iconbtn"
+                  [disabled]="actionId() === u.id"
+                  (click)="startEditRoles(u); cancelEditUser()"
+                  title="Modifier rôles"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 12a5 5 0 1 1 5-5a5 5 0 0 1-5 5Zm0 2c-5 0-9 2.69-9 6a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1c0-3.31-4-6-9-6Z"/></svg>
+                </button>
+
+                <button
+                  type="button"
+                  class="admin-iconbtn admin-iconbtn--blue"
+                  [disabled]="actionId() === u.id"
+                  (click)="startEditUser(u); cancelEditRoles()"
+                  title="Modifier utilisateur"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75ZM20.71 7.04a1 1 0 0 0 0-1.41L18.37 3.29a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75Z"/></svg>
+                </button>
+
+                <button
+                  type="button"
+                  class="admin-iconbtn admin-iconbtn--danger"
+                  [disabled]="actionId() === u.id"
+                  (click)="deleteUser(u)"
+                  title="Supprimer"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3h6l1 2h5a1 1 0 0 1 0 2h-1v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7H3a1 1 0 0 1 0-2h5Zm1 6a1 1 0 0 0-2 0v10a1 1 0 0 0 2 0Zm6 0a1 1 0 0 0-2 0v10a1 1 0 0 0 2 0Z"/></svg>
+                </button>
+              </td>
+            </tr>
+            @if (editUserId() === u.id) {
+              <tr class="roles-row">
+                <td colspan="5">
+                  <div class="edit-user">
+                    <div class="admin-create__grid">
+                      <div class="f">
+                        <label>Prénom</label>
+                        <input [(ngModel)]="editForm.firstName" name="eFirstName{{u.id}}" required />
+                      </div>
+                      <div class="f">
+                        <label>Nom</label>
+                        <input [(ngModel)]="editForm.lastName" name="eLastName{{u.id}}" required />
+                      </div>
+                      <div class="f">
+                        <label>Username</label>
+                        <input [(ngModel)]="editForm.username" name="eUsername{{u.id}}" required />
+                      </div>
+                      <div class="f">
+                        <label>Email</label>
+                        <input [(ngModel)]="editForm.email" name="eEmail{{u.id}}" type="email" required />
+                      </div>
+                    </div>
+                    <div class="roles-editor__actions">
+                      <button
+                        type="button"
+                        class="admin-toolbar__btn"
+                        [disabled]="actionId() === u.id"
+                        (click)="saveUser(u)"
+                      >
+                        Enregistrer
+                      </button>
+                      <button type="button" class="admin-iconbtn" (click)="cancelEditUser()" title="Annuler">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 1 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (editRolesUserId() === u.id) {
+              <tr class="roles-row">
+                <td colspan="5">
+                  <div class="roles-editor">
+                    <div class="roles">
+                      @for (r of availableRoles; track r) {
+                        <label class="role">
+                          <input
+                            type="checkbox"
+                            [checked]="editRoles().includes(r)"
+                            (change)="toggleRole(r)"
+                          />
+                          {{ r }}
+                        </label>
+                      }
+                    </div>
+                    <div class="roles-editor__actions">
+                      <button
+                        type="button"
+                        class="admin-toolbar__btn"
+                        [disabled]="actionId() === u.id"
+                        (click)="saveRoles(u)"
+                      >
+                        Enregistrer
+                      </button>
+                      <button type="button" class="admin-iconbtn" (click)="cancelEditRoles()" title="Annuler">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 1 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            }
+          } @empty {
+            <tr>
+              <td colspan="5">Aucun utilisateur ne correspond aux filtres.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
