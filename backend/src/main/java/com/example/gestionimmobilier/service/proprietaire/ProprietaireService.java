@@ -12,6 +12,7 @@ import com.example.gestionimmobilier.models.entity.finance.Versement;
 import com.example.gestionimmobilier.models.entity.user.Proprietaire;
 import com.example.gestionimmobilier.models.entity.user.Utilisateur;
 import com.example.gestionimmobilier.models.enums.Role;
+import com.example.gestionimmobilier.repository.ProprietaireRepository;
 import com.example.gestionimmobilier.repository.UtilisateurRepository;
 import com.example.gestionimmobilier.repository.VersementRepository;
 import com.example.gestionimmobilier.service.user.KeycloakAdminService;
@@ -25,19 +26,37 @@ import java.util.UUID;
 @Service
 public class ProprietaireService {
 
+    private final ProprietaireRepository proprietaireRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final VersementRepository versementRepository;
     private final KeycloakAdminService keycloakAdminService;
     private final UserMapper userMapper;
 
-    public ProprietaireService(UtilisateurRepository utilisateurRepository,
+    public ProprietaireService(ProprietaireRepository proprietaireRepository,
+                               UtilisateurRepository utilisateurRepository,
                                VersementRepository versementRepository,
                                KeycloakAdminService keycloakAdminService,
                                UserMapper userMapper) {
+        this.proprietaireRepository = proprietaireRepository;
         this.utilisateurRepository = utilisateurRepository;
         this.versementRepository = versementRepository;
         this.keycloakAdminService = keycloakAdminService;
         this.userMapper = userMapper;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProprietaireResponse> listProprietaires() {
+        return proprietaireRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(userMapper::toProprietaireResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ProprietaireResponse getProprietaireById(UUID id) {
+        Proprietaire proprietaire = proprietaireRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.PROPRIETAIRE_INTROUVABLE));
+        return userMapper.toProprietaireResponse(proprietaire);
     }
 
     @Transactional
@@ -77,6 +96,7 @@ public class ProprietaireService {
                         .lastName(utilisateur.getLastName())
                         .roles(utilisateur.getRoles())
                         .emailVerified(utilisateur.isEmailVerified())
+                        .enabled(utilisateur.isEnabled())
                         .build()
         );
     }

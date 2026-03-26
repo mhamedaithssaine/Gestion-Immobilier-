@@ -1,10 +1,7 @@
 <div class="admin-page">
   <header class="admin-page__head">
-    <h1>Utilisateurs</h1>
-    <p class="admin-page__intro">
-      Utilisateurs synchronisés depuis Keycloak (<code>GET /api/admin/users?sync=true</code>). Filtrez et
-      activez ou désactivez les comptes.
-    </p>
+    <h1>{{ pageTitle() }}</h1>
+    <p class="admin-page__intro">{{ pageIntro() }}</p>
   </header>
 
   @if (error()) {
@@ -13,65 +10,178 @@
 
   <section class="admin-create">
     <button type="button" class="admin-toolbar__btn" (click)="toggleCreate()">
-      {{ createOpen() ? 'Fermer' : 'Ajouter un utilisateur' }}
+      {{
+        createOpen()
+          ? 'Fermer'
+          : 'Ajouter '
+            + (currentView() === 'locataire'
+              ? 'un locataire'
+              : currentView() === 'proprietaire'
+                ? 'un propriétaire'
+                : 'un utilisateur')
+      }}
     </button>
 
     @if (createOpen()) {
-      <div class="admin-create__card">
-        <h2>Nouvel utilisateur</h2>
-        <form class="admin-create__grid" (ngSubmit)="createUser()">
-          <div class="f">
-            <label>Prénom</label>
-            <input [(ngModel)]="createForm.firstName" name="cFirstName" required />
-          </div>
-          <div class="f">
-            <label>Nom</label>
-            <input [(ngModel)]="createForm.lastName" name="cLastName" required />
-          </div>
-          <div class="f">
-            <label>Username</label>
-            <input [(ngModel)]="createForm.username" name="cUsername" required />
-          </div>
-          <div class="f">
-            <label>Email</label>
-            <input [(ngModel)]="createForm.email" name="cEmail" type="email" required />
-          </div>
-          <div class="f f--full">
-            <label>Mot de passe</label>
-            <input
-              [(ngModel)]="createForm.password"
-              name="cPassword"
-              type="password"
-              minlength="6"
-              required
-            />
-          </div>
-          <div class="f f--full">
-            <label>Rôles</label>
-            <div class="roles">
-              @for (r of availableRoles; track r) {
-                <label class="role">
-                  <input
-                    type="checkbox"
-                    [checked]="createForm.roles.includes(r)"
-                    (change)="
-                      createForm.roles = createForm.roles.includes(r)
-                        ? createForm.roles.filter((x) => x !== r)
-                        : [...createForm.roles, r]
-                    "
-                  />
-                  {{ r }}
-                </label>
-              }
+      @if (currentView() === 'proprietaire') {
+        <div class="admin-create__card">
+          <h2>Nouveau propriétaire</h2>
+          <p class="admin-create__hint">
+            Création via <code>POST /api/admin/proprietaires</code> : compte Keycloak + ligne
+            <code>utilisateurs</code> + fiche <code>proprietaires</code> (RIB, adresse).
+          </p>
+          <form class="admin-create__grid" (ngSubmit)="createProprietaire()">
+            <div class="f">
+              <label>Prénom</label>
+              <input [(ngModel)]="createProprioForm.firstName" name="cpFirstName" required />
             </div>
-          </div>
-          <div class="f f--full actions">
-            <button type="submit" class="admin-toolbar__btn" [disabled]="creating()">
-              {{ creating() ? 'Création…' : 'Créer' }}
-            </button>
-          </div>
-        </form>
-      </div>
+            <div class="f">
+              <label>Nom</label>
+              <input [(ngModel)]="createProprioForm.lastName" name="cpLastName" required />
+            </div>
+            <div class="f">
+              <label>Username</label>
+              <input [(ngModel)]="createProprioForm.username" name="cpUsername" required />
+            </div>
+            <div class="f">
+              <label>Email</label>
+              <input [(ngModel)]="createProprioForm.email" name="cpEmail" type="email" required />
+            </div>
+            <div class="f f--full">
+              <label>Mot de passe</label>
+              <input
+                [(ngModel)]="createProprioForm.password"
+                name="cpPassword"
+                type="password"
+                minlength="6"
+                required
+              />
+            </div>
+            <div class="f">
+              <label>RIB</label>
+              <input [(ngModel)]="createProprioForm.rib" name="cpRib" maxlength="50" />
+            </div>
+            <div class="f f--full">
+              <label>Adresse contact</label>
+              <input [(ngModel)]="createProprioForm.adresseContact" name="cpAdr" maxlength="500" />
+            </div>
+            <div class="f f--full actions">
+              <button type="submit" class="admin-toolbar__btn" [disabled]="creating()">
+                {{ creating() ? 'Création…' : 'Créer' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      } @else if (currentView() === 'locataire') {
+        <div class="admin-create__card">
+          <h2>Nouveau locataire</h2>
+          <p class="admin-create__hint">
+            Création via <code>POST /api/admin/locataires</code> : compte Keycloak + ligne
+            <code>utilisateurs</code> + dossier <code>clients</code>.
+          </p>
+          <form class="admin-create__grid" (ngSubmit)="createLocataire()">
+            <div class="f">
+              <label>Prénom</label>
+              <input [(ngModel)]="createLocForm.firstName" name="clFirstName" required />
+            </div>
+            <div class="f">
+              <label>Nom</label>
+              <input [(ngModel)]="createLocForm.lastName" name="clLastName" required />
+            </div>
+            <div class="f">
+              <label>Username</label>
+              <input [(ngModel)]="createLocForm.username" name="clUsername" required />
+            </div>
+            <div class="f">
+              <label>Email</label>
+              <input [(ngModel)]="createLocForm.email" name="clEmail" type="email" required />
+            </div>
+            <div class="f f--full">
+              <label>Mot de passe</label>
+              <input
+                [(ngModel)]="createLocForm.password"
+                name="clPassword"
+                type="password"
+                minlength="6"
+                required
+              />
+            </div>
+            <div class="f">
+              <label>Budget max</label>
+              <input [(ngModel)]="createLocForm.budgetMax" name="clBudget" type="number" step="0.01" />
+            </div>
+            <div class="f">
+              <label>Statut dossier</label>
+              <select [(ngModel)]="createLocForm.statutDossier" name="clStatut">
+                @for (s of statutDossierOptions; track s) {
+                  <option [ngValue]="s">{{ s }}</option>
+                }
+              </select>
+            </div>
+            <div class="f f--full actions">
+              <button type="submit" class="admin-toolbar__btn" [disabled]="creating()">
+                {{ creating() ? 'Création…' : 'Créer' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      } @else {
+        <div class="admin-create__card">
+          <h2>Nouvel utilisateur</h2>
+          <form class="admin-create__grid" (ngSubmit)="createUser()">
+            <div class="f">
+              <label>Prénom</label>
+              <input [(ngModel)]="createForm.firstName" name="cFirstName" required />
+            </div>
+            <div class="f">
+              <label>Nom</label>
+              <input [(ngModel)]="createForm.lastName" name="cLastName" required />
+            </div>
+            <div class="f">
+              <label>Username</label>
+              <input [(ngModel)]="createForm.username" name="cUsername" required />
+            </div>
+            <div class="f">
+              <label>Email</label>
+              <input [(ngModel)]="createForm.email" name="cEmail" type="email" required />
+            </div>
+            <div class="f f--full">
+              <label>Mot de passe</label>
+              <input
+                [(ngModel)]="createForm.password"
+                name="cPassword"
+                type="password"
+                minlength="6"
+                required
+              />
+            </div>
+            <div class="f f--full">
+              <label>Rôles</label>
+              <div class="roles">
+                @for (r of scopedRoles(); track r) {
+                  <label class="role">
+                    <input
+                      type="checkbox"
+                      [checked]="createForm.roles.includes(r)"
+                      (change)="
+                        createForm.roles = createForm.roles.includes(r)
+                          ? createForm.roles.filter((x) => x !== r)
+                          : [...createForm.roles, r]
+                      "
+                    />
+                    {{ r }}
+                  </label>
+                }
+              </div>
+            </div>
+            <div class="f f--full actions">
+              <button type="submit" class="admin-toolbar__btn" [disabled]="creating()">
+                {{ creating() ? 'Création…' : 'Créer' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      }
     }
   </section>
 
@@ -81,7 +191,7 @@
       <select
         id="u-enabled"
         [ngModel]="filterEnabled()"
-        (ngModelChange)="filterEnabled.set($event)"
+        (ngModelChange)="filterEnabled.set($event); onFilterChange()"
       >
         <option ngValue="all">Tous</option>
         <option ngValue="yes">Activés uniquement</option>
@@ -95,7 +205,7 @@
         type="search"
         placeholder="Nom, e-mail, username…"
         [ngModel]="filterSearch()"
-        (ngModelChange)="filterSearch.set($event)"
+        (ngModelChange)="filterSearch.set($event); onFilterChange()"
       />
     </div>
     <div class="admin-toolbar__field">
@@ -136,162 +246,422 @@
           </button>
         </div>
       </div>
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Utilisateur</th>
-            <th>E-mail</th>
-            <th>Rôles</th>
-            <th>Actif</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (u of filteredRows(); track u.id) {
+
+      @if (currentView() === 'proprietaire') {
+        <table class="admin-table">
+          <thead>
             <tr>
-              <td>{{ u.firstName }} {{ u.lastName }}<br /><small>{{ u.username }}</small></td>
-              <td>{{ u.email }}</td>
-              <td class="admin-cell-roles">{{ rolesLabel(u) }}</td>
-              <td>
-                @if (u.enabled) {
-                  <span class="admin-badge admin-badge--active">Oui</span>
-                } @else {
-                  <span class="admin-badge admin-badge--rejected">Non</span>
-                }
-              </td>
-              <td class="admin-actions">
-                @if (u.enabled) {
-                  <button
-                    type="button"
-                    class="admin-iconbtn admin-iconbtn--warn"
-                    [disabled]="actionId() === u.id"
-                    (click)="setEnabled(u, false)"
-                    title="Désactiver"
-                  >
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm5 11H7a1 1 0 0 1 0-2h10a1 1 0 0 1 0 2Z"/></svg>
-                  </button>
-                } @else {
-                  <button
-                    type="button"
-                    class="admin-iconbtn admin-iconbtn--ok"
-                    [disabled]="actionId() === u.id"
-                    (click)="setEnabled(u, true)"
-                    title="Activer"
-                  >
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm-1 14.5-4-4a1 1 0 0 1 1.41-1.41L11 13.67l4.59-4.58A1 1 0 0 1 17 10.5Z"/></svg>
-                  </button>
-                }
-
-                <button
-                  type="button"
-                  class="admin-iconbtn"
-                  [disabled]="actionId() === u.id"
-                  (click)="startEditRoles(u); cancelEditUser()"
-                  title="Modifier rôles"
-                >
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 12a5 5 0 1 1 5-5a5 5 0 0 1-5 5Zm0 2c-5 0-9 2.69-9 6a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1c0-3.31-4-6-9-6Z"/></svg>
-                </button>
-
-                <button
-                  type="button"
-                  class="admin-iconbtn admin-iconbtn--blue"
-                  [disabled]="actionId() === u.id"
-                  (click)="startEditUser(u); cancelEditRoles()"
-                  title="Modifier utilisateur"
-                >
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75ZM20.71 7.04a1 1 0 0 0 0-1.41L18.37 3.29a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75Z"/></svg>
-                </button>
-
-                <button
-                  type="button"
-                  class="admin-iconbtn admin-iconbtn--danger"
-                  [disabled]="actionId() === u.id"
-                  (click)="deleteUser(u)"
-                  title="Supprimer"
-                >
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3h6l1 2h5a1 1 0 0 1 0 2h-1v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7H3a1 1 0 0 1 0-2h5Zm1 6a1 1 0 0 0-2 0v10a1 1 0 0 0 2 0Zm6 0a1 1 0 0 0-2 0v10a1 1 0 0 0 2 0Z"/></svg>
-                </button>
-              </td>
+              <th>Propriétaire</th>
+              <th>E-mail</th>
+              <th>RIB</th>
+              <th>Adresse contact</th>
+              <th>Actif</th>
+              <th>Actions</th>
             </tr>
-            @if (editUserId() === u.id) {
-              <tr class="roles-row">
-                <td colspan="5">
-                  <div class="edit-user">
-                    <div class="admin-create__grid">
-                      <div class="f">
-                        <label>Prénom</label>
-                        <input [(ngModel)]="editForm.firstName" name="eFirstName{{u.id}}" required />
-                      </div>
-                      <div class="f">
-                        <label>Nom</label>
-                        <input [(ngModel)]="editForm.lastName" name="eLastName{{u.id}}" required />
-                      </div>
-                      <div class="f">
-                        <label>Username</label>
-                        <input [(ngModel)]="editForm.username" name="eUsername{{u.id}}" required />
-                      </div>
-                      <div class="f">
-                        <label>Email</label>
-                        <input [(ngModel)]="editForm.email" name="eEmail{{u.id}}" type="email" required />
-                      </div>
-                    </div>
-                    <div class="roles-editor__actions">
-                      <button
-                        type="button"
-                        class="admin-toolbar__btn"
-                        [disabled]="actionId() === u.id"
-                        (click)="saveUser(u)"
-                      >
-                        Enregistrer
-                      </button>
-                      <button type="button" class="admin-iconbtn" (click)="cancelEditUser()" title="Annuler">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 1 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/></svg>
-                      </button>
-                    </div>
-                  </div>
+          </thead>
+          <tbody>
+            @for (p of displayedProprietaires(); track p.id) {
+              <tr>
+                <td>{{ p.firstName }} {{ p.lastName }}<br /><small>{{ p.username }}</small></td>
+                <td>{{ p.email }}</td>
+                <td>{{ p.rib ?? '—' }}</td>
+                <td class="admin-cell-wrap">{{ p.adresseContact ?? '—' }}</td>
+                <td>
+                  @if (p.enabled) {
+                    <span class="admin-badge admin-badge--active">Oui</span>
+                  } @else {
+                    <span class="admin-badge admin-badge--rejected">Non</span>
+                  }
+                </td>
+                <td class="admin-actions">
+                  @if (p.enabled) {
+                    <button
+                      type="button"
+                      class="admin-iconbtn admin-iconbtn--warn"
+                      [disabled]="actionId() === p.id"
+                      (click)="setEnabled(p.id, p.username, p.email, false)"
+                      title="Désactiver"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm5 11H7a1 1 0 0 1 0-2h10a1 1 0 0 1 0 2Z"/></svg>
+                    </button>
+                  } @else {
+                    <button
+                      type="button"
+                      class="admin-iconbtn admin-iconbtn--ok"
+                      [disabled]="actionId() === p.id"
+                      (click)="setEnabled(p.id, p.username, p.email, true)"
+                      title="Activer"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm-1 14.5-4-4a1 1 0 0 1 1.41-1.41L11 13.67l4.59-4.58A1 1 0 0 1 17 10.5Z"/></svg>
+                    </button>
+                  }
+                  <button
+                    type="button"
+                    class="admin-iconbtn admin-iconbtn--blue"
+                    [disabled]="actionId() === p.id"
+                    (click)="startEditProprietaire(p); cancelEditRoles()"
+                    title="Modifier"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75ZM20.71 7.04a1 1 0 0 0 0-1.41L18.37 3.29a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75Z"/></svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="admin-iconbtn admin-iconbtn--danger"
+                    [disabled]="actionId() === p.id"
+                    (click)="deleteProprietaire(p)"
+                    title="Supprimer"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3h6l1 2h5a1 1 0 0 1 0 2h-1v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7H3a1 1 0 0 1 0-2h5Zm1 6a1 1 0 0 0-2 0v10a1 1 0 0 0 2 0Zm6 0a1 1 0 0 0-2 0v10a1 1 0 0 0 2 0Z"/></svg>
+                  </button>
                 </td>
               </tr>
-            }
-            @if (editRolesUserId() === u.id) {
-              <tr class="roles-row">
-                <td colspan="5">
-                  <div class="roles-editor">
-                    <div class="roles">
-                      @for (r of availableRoles; track r) {
-                        <label class="role">
+              @if (editUserId() === p.id) {
+                <tr class="roles-row">
+                  <td colspan="6">
+                    <div class="edit-user">
+                      <p class="edit-user__section-title">Identité &amp; contact (Keycloak + utilisateurs)</p>
+                      <div class="admin-create__grid">
+                        <div class="f">
+                          <label>Prénom</label>
+                          <input [(ngModel)]="editForm.firstName" name="epFirstName{{ p.id }}" required />
+                        </div>
+                        <div class="f">
+                          <label>Nom</label>
+                          <input [(ngModel)]="editForm.lastName" name="epLastName{{ p.id }}" required />
+                        </div>
+                        <div class="f">
+                          <label>Username (lecture seule Keycloak)</label>
+                          <input [(ngModel)]="editForm.username" name="epUser{{ p.id }}" readonly />
+                        </div>
+                        <div class="f">
+                          <label>Email</label>
+                          <input [(ngModel)]="editForm.email" name="epEmail{{ p.id }}" type="email" required />
+                        </div>
+                      </div>
+                      <p class="edit-user__section-title">Fiche propriétaire (table proprietaires)</p>
+                      <div class="admin-create__grid">
+                        <div class="f">
+                          <label>RIB</label>
+                          <input [(ngModel)]="editProprioForm.rib" name="epRib{{ p.id }}" maxlength="50" />
+                        </div>
+                        <div class="f f--full">
+                          <label>Adresse contact</label>
                           <input
-                            type="checkbox"
-                            [checked]="editRoles().includes(r)"
-                            (change)="toggleRole(r)"
+                            [(ngModel)]="editProprioForm.adresseContact"
+                            name="epAdr{{ p.id }}"
+                            maxlength="500"
                           />
-                          {{ r }}
-                        </label>
-                      }
+                        </div>
+                      </div>
+                      <div class="roles-editor__actions">
+                        <button
+                          type="button"
+                          class="admin-toolbar__btn"
+                          [disabled]="actionId() === p.id"
+                          (click)="saveProprietaire(p)"
+                        >
+                          Enregistrer
+                        </button>
+                        <button type="button" class="admin-iconbtn" (click)="cancelEditUser()" title="Annuler">
+                          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 1 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/></svg>
+                        </button>
+                      </div>
                     </div>
-                    <div class="roles-editor__actions">
-                      <button
-                        type="button"
-                        class="admin-toolbar__btn"
-                        [disabled]="actionId() === u.id"
-                        (click)="saveRoles(u)"
-                      >
-                        Enregistrer
-                      </button>
-                      <button type="button" class="admin-iconbtn" (click)="cancelEditRoles()" title="Annuler">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 1 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/></svg>
-                      </button>
-                    </div>
-                  </div>
-                </td>
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr>
+                <td colspan="6">Aucun propriétaire ne correspond aux filtres.</td>
               </tr>
             }
-          } @empty {
+          </tbody>
+        </table>
+      } @else if (currentView() === 'locataire') {
+        <table class="admin-table">
+          <thead>
             <tr>
-              <td colspan="5">Aucun utilisateur ne correspond aux filtres.</td>
+              <th>Locataire</th>
+              <th>E-mail</th>
+              <th>Budget max</th>
+              <th>Statut dossier</th>
+              <th>Actif</th>
+              <th>Actions</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (c of displayedLocataires(); track c.id) {
+              <tr>
+                <td>{{ c.firstName }} {{ c.lastName }}<br /><small>{{ c.username }}</small></td>
+                <td>{{ c.email }}</td>
+                <td>{{ c.budgetMax ?? '—' }}</td>
+                <td>{{ c.statutDossier ?? '—' }}</td>
+                <td>
+                  @if (c.enabled) {
+                    <span class="admin-badge admin-badge--active">Oui</span>
+                  } @else {
+                    <span class="admin-badge admin-badge--rejected">Non</span>
+                  }
+                </td>
+                <td class="admin-actions">
+                  @if (c.enabled) {
+                    <button
+                      type="button"
+                      class="admin-iconbtn admin-iconbtn--warn"
+                      [disabled]="actionId() === c.id"
+                      (click)="setEnabled(c.id, c.username, c.email, false)"
+                      title="Désactiver"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm5 11H7a1 1 0 0 1 0-2h10a1 1 0 0 1 0 2Z"/></svg>
+                    </button>
+                  } @else {
+                    <button
+                      type="button"
+                      class="admin-iconbtn admin-iconbtn--ok"
+                      [disabled]="actionId() === c.id"
+                      (click)="setEnabled(c.id, c.username, c.email, true)"
+                      title="Activer"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm-1 14.5-4-4a1 1 0 0 1 1.41-1.41L11 13.67l4.59-4.58A1 1 0 0 1 17 10.5Z"/></svg>
+                    </button>
+                  }
+                  <button
+                    type="button"
+                    class="admin-iconbtn admin-iconbtn--blue"
+                    [disabled]="actionId() === c.id"
+                    (click)="startEditLocataire(c); cancelEditRoles()"
+                    title="Modifier"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75ZM20.71 7.04a1 1 0 0 0 0-1.41L18.37 3.29a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75Z"/></svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="admin-iconbtn admin-iconbtn--danger"
+                    [disabled]="actionId() === c.id"
+                    (click)="deleteLocataire(c)"
+                    title="Supprimer"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3h6l1 2h5a1 1 0 0 1 0 2h-1v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7H3a1 1 0 0 1 0-2h5Zm1 6a1 1 0 0 0-2 0v10a1 1 0 0 0 2 0Zm6 0a1 1 0 0 0-2 0v10a1 1 0 0 0 2 0Z"/></svg>
+                  </button>
+                </td>
+              </tr>
+              @if (editUserId() === c.id) {
+                <tr class="roles-row">
+                  <td colspan="6">
+                    <div class="edit-user">
+                      <p class="edit-user__section-title">Identité &amp; contact (Keycloak + utilisateurs)</p>
+                      <div class="admin-create__grid">
+                        <div class="f">
+                          <label>Prénom</label>
+                          <input [(ngModel)]="editForm.firstName" name="elFirstName{{ c.id }}" required />
+                        </div>
+                        <div class="f">
+                          <label>Nom</label>
+                          <input [(ngModel)]="editForm.lastName" name="elLastName{{ c.id }}" required />
+                        </div>
+                        <div class="f">
+                          <label>Username (lecture seule Keycloak)</label>
+                          <input [(ngModel)]="editForm.username" name="elUser{{ c.id }}" readonly />
+                        </div>
+                        <div class="f">
+                          <label>Email</label>
+                          <input [(ngModel)]="editForm.email" name="elEmail{{ c.id }}" type="email" required />
+                        </div>
+                      </div>
+                      <p class="edit-user__section-title">Dossier locataire (table clients)</p>
+                      <div class="admin-create__grid">
+                        <div class="f">
+                          <label>Budget max</label>
+                          <input [(ngModel)]="editLocForm.budgetMax" name="elBudget{{ c.id }}" type="number" step="0.01" />
+                        </div>
+                        <div class="f">
+                          <label>Statut dossier</label>
+                          <select [(ngModel)]="editLocForm.statutDossier" name="elStatut{{ c.id }}">
+                            @for (s of statutDossierOptions; track s) {
+                              <option [ngValue]="s">{{ s }}</option>
+                            }
+                          </select>
+                        </div>
+                      </div>
+                      <div class="roles-editor__actions">
+                        <button
+                          type="button"
+                          class="admin-toolbar__btn"
+                          [disabled]="actionId() === c.id"
+                          (click)="saveLocataire(c)"
+                        >
+                          Enregistrer
+                        </button>
+                        <button type="button" class="admin-iconbtn" (click)="cancelEditUser()" title="Annuler">
+                          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 1 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr>
+                <td colspan="6">Aucun locataire ne correspond aux filtres.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Utilisateur</th>
+              <th>E-mail</th>
+              <th>Rôles</th>
+              <th>Actif</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of filteredUserRows(); track u.id) {
+              <tr>
+                <td>{{ u.firstName }} {{ u.lastName }}<br /><small>{{ u.username }}</small></td>
+                <td>{{ u.email }}</td>
+                <td class="admin-cell-roles">{{ rolesLabel(u) }}</td>
+                <td>
+                  @if (u.enabled) {
+                    <span class="admin-badge admin-badge--active">Oui</span>
+                  } @else {
+                    <span class="admin-badge admin-badge--rejected">Non</span>
+                  }
+                </td>
+                <td class="admin-actions">
+                  @if (u.enabled) {
+                    <button
+                      type="button"
+                      class="admin-iconbtn admin-iconbtn--warn"
+                      [disabled]="actionId() === u.id"
+                      (click)="setEnabled(u.id, u.username, u.email, false)"
+                      title="Désactiver"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm5 11H7a1 1 0 0 1 0-2h10a1 1 0 0 1 0 2Z"/></svg>
+                    </button>
+                  } @else {
+                    <button
+                      type="button"
+                      class="admin-iconbtn admin-iconbtn--ok"
+                      [disabled]="actionId() === u.id"
+                      (click)="setEnabled(u.id, u.username, u.email, true)"
+                      title="Activer"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm-1 14.5-4-4a1 1 0 0 1 1.41-1.41L11 13.67l4.59-4.58A1 1 0 0 1 17 10.5Z"/></svg>
+                    </button>
+                  }
+                  <button
+                    type="button"
+                    class="admin-iconbtn"
+                    [disabled]="actionId() === u.id"
+                    (click)="startEditRoles(u); cancelEditUser()"
+                    title="Modifier rôles"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 12a5 5 0 1 1 5-5a5 5 0 0 1-5 5Zm0 2c-5 0-9 2.69-9 6a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1c0-3.31-4-6-9-6Z"/></svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="admin-iconbtn admin-iconbtn--blue"
+                    [disabled]="actionId() === u.id"
+                    (click)="startEditUser(u); cancelEditRoles()"
+                    title="Modifier utilisateur"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75ZM20.71 7.04a1 1 0 0 0 0-1.41L18.37 3.29a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75Z"/></svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="admin-iconbtn admin-iconbtn--danger"
+                    [disabled]="actionId() === u.id"
+                    (click)="deleteUser(u)"
+                    title="Supprimer"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3h6l1 2h5a1 1 0 0 1 0 2h-1v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7H3a1 1 0 0 1 0-2h5Zm1 6a1 1 0 0 0-2 0v10a1 1 0 0 0 2 0Zm6 0a1 1 0 0 0-2 0v10a1 1 0 0 0 2 0Z"/></svg>
+                  </button>
+                </td>
+              </tr>
+              @if (editUserId() === u.id) {
+                <tr class="roles-row">
+                  <td colspan="5">
+                    <div class="edit-user">
+                      <div class="admin-create__grid">
+                        <div class="f">
+                          <label>Prénom</label>
+                          <input [(ngModel)]="editForm.firstName" name="eFirstName{{ u.id }}" required />
+                        </div>
+                        <div class="f">
+                          <label>Nom</label>
+                          <input [(ngModel)]="editForm.lastName" name="eLastName{{ u.id }}" required />
+                        </div>
+                        <div class="f">
+                          <label>Username</label>
+                          <input [(ngModel)]="editForm.username" name="eUsername{{ u.id }}" required />
+                        </div>
+                        <div class="f">
+                          <label>Email</label>
+                          <input [(ngModel)]="editForm.email" name="eEmail{{ u.id }}" type="email" required />
+                        </div>
+                      </div>
+                      <div class="roles-editor__actions">
+                        <button
+                          type="button"
+                          class="admin-toolbar__btn"
+                          [disabled]="actionId() === u.id"
+                          (click)="saveUser(u)"
+                        >
+                          Enregistrer
+                        </button>
+                        <button type="button" class="admin-iconbtn" (click)="cancelEditUser()" title="Annuler">
+                          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 1 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+              @if (editRolesUserId() === u.id) {
+                <tr class="roles-row">
+                  <td colspan="5">
+                    <div class="roles-editor">
+                      <div class="roles">
+                        @for (r of scopedRoles(); track r) {
+                          <label class="role">
+                            <input
+                              type="checkbox"
+                              [checked]="editRoles().includes(r)"
+                              (change)="toggleRole(r)"
+                            />
+                            {{ r }}
+                          </label>
+                        }
+                      </div>
+                      <div class="roles-editor__actions">
+                        <button
+                          type="button"
+                          class="admin-toolbar__btn"
+                          [disabled]="actionId() === u.id"
+                          (click)="saveRoles(u)"
+                        >
+                          Enregistrer
+                        </button>
+                        <button type="button" class="admin-iconbtn" (click)="cancelEditRoles()" title="Annuler">
+                          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 1 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr>
+                <td colspan="5">Aucun utilisateur ne correspond aux filtres.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
     </div>
   }
 </div>

@@ -89,7 +89,8 @@
   color: #fff;
 }
 
-.admin-shell__nav-item.is-active {
+/* Lien de navigation actif uniquement (pas le bouton section « Utilisateurs »). */
+a.admin-shell__nav-item.is-active {
   background: rgba(233, 115, 0, 0.95);
   color: #fff;
   font-weight: 600;
@@ -98,6 +99,79 @@
 .admin-shell__nav-item--sub {
   font-size: 0.875rem;
   padding-left: 1rem;
+}
+
+.admin-shell__nav-item--toggle {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Section ouverte : léger fond, pas la même pastille orange que la route active (évite chevauchement visuel). */
+.admin-shell__nav-item--toggle.is-open {
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+}
+
+.admin-shell__nav-item--toggle.has-active-child:not(.is-open) {
+  border-left: 3px solid rgba(233, 115, 0, 0.85);
+  padding-left: calc(0.85rem - 3px);
+}
+
+.admin-shell__nav-item--toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.admin-shell__nav-item--toggle.is-open:hover {
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.admin-shell__chevron {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  transition: transform 0.2s ease;
+}
+
+.admin-shell__chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.admin-shell__submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.22s ease;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-shell__submenu.is-open {
+  max-height: 140px;
+  margin-top: 0.2rem;
+  padding: 0.15rem 0 0.15rem 0.35rem;
+  border-left: 2px solid rgba(255, 255, 255, 0.12);
+  margin-left: 0.65rem;
+}
+
+.admin-shell__nav-item--child {
+  display: block;
+  margin-left: 0;
+  font-size: 0.82rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.82);
+  background: transparent;
+}
+
+.admin-shell__nav-item--child:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
 }
 
 .admin-shell__sidebar-foot {

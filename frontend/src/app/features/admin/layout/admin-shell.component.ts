@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -13,9 +13,20 @@ import { AuthService } from '../../../core/services/auth.service';
 export class AdminShellComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  readonly expandedMenu = signal<'users' | null>(
+    this.router.url.startsWith('/admin/utilisateurs') ? 'users' : null
+  );
 
   readonly isAdmin = computed(() => this.auth.hasRole('ROLE_ADMIN'));
   readonly rolesLabel = computed(() => this.auth.roles().join(', ') || '—');
+
+  toggleMenu(menu: 'users'): void {
+    this.expandedMenu.set(this.expandedMenu() === menu ? null : menu);
+  }
+
+  isUsersRouteActive(): boolean {
+    return this.router.url.startsWith('/admin/utilisateurs');
+  }
 
   logout(): void {
     this.auth.logout();

@@ -1,5 +1,18 @@
 @use '../styles/admin-shared';
 
+.admin-page {
+  max-width: none;
+  width: 100%;
+}
+
+.admin-table-wrap {
+  width: 100%;
+}
+
+.admin-table-card {
+  width: 100%;
+}
+
 .admin-cell-roles {
   font-size: 0.75rem;
   color: #486581;
@@ -24,6 +37,34 @@
   font-size: 1rem;
   font-weight: 700;
   color: #002d5d;
+}
+
+.admin-create__hint {
+  margin: 0 0 1rem;
+  font-size: 0.8rem;
+  color: #627d98;
+  line-height: 1.45;
+}
+
+.admin-create__hint code {
+  font-size: 0.75rem;
+  background: #e8ecf1;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+.admin-cell-wrap {
+  max-width: 220px;
+  word-break: break-word;
+}
+
+.edit-user__section-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #829ab1;
 }
 
 .admin-create__grid {

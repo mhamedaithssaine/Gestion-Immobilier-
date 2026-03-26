@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -27,6 +28,18 @@ public class ProprietaireController {
     public ProprietaireController(ProprietaireService proprietaireService, BienService bienService) {
         this.proprietaireService = proprietaireService;
         this.bienService = bienService;
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiRetour<List<ProprietaireResponse>>> listerProprietaires() {
+        List<ProprietaireResponse> proprietaires = proprietaireService.listProprietaires();
+        return ResponseEntity.ok(ApiRetour.success("Liste des propriétaires", proprietaires));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiRetour<ProprietaireResponse>> getProprietaire(@PathVariable UUID id) {
+        ProprietaireResponse proprietaire = proprietaireService.getProprietaireById(id);
+        return ResponseEntity.ok(ApiRetour.success("Détail du propriétaire", proprietaire));
     }
 
     @PostMapping

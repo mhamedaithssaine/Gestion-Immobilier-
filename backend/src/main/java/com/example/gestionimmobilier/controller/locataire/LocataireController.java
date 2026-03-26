@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,6 +23,18 @@ public class LocataireController {
 
     public LocataireController(LocataireService locataireService) {
         this.locataireService = locataireService;
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiRetour<List<LocataireResponse>>> listerLocataires() {
+        List<LocataireResponse> locataires = locataireService.listLocataires();
+        return ResponseEntity.ok(ApiRetour.success("Liste des locataires", locataires));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiRetour<LocataireResponse>> getLocataire(@PathVariable UUID id) {
+        LocataireResponse locataire = locataireService.getLocataireById(id);
+        return ResponseEntity.ok(ApiRetour.success("Détail du locataire", locataire));
     }
 
     @PostMapping

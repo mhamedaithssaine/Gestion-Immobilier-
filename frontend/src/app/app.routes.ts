@@ -62,10 +62,23 @@ export const routes: Routes = [
       {
         path: 'utilisateurs',
         canActivate: [adminOnlyGuard],
-        loadComponent: () =>
-          import('./features/admin/users/admin-users.component').then(
-            (m) => m.AdminUsersComponent
-          )
+        children: [
+          {
+            path: 'locataire',
+            loadComponent: () =>
+              import('./features/admin/users/admin-users.component').then(
+                (m) => m.AdminUsersComponent
+              )
+          },
+          {
+            path: 'proprietaire',
+            loadComponent: () =>
+              import('./features/admin/users/admin-users.component').then(
+                (m) => m.AdminUsersComponent
+              )
+          },
+          { path: '', redirectTo: 'locataire', pathMatch: 'full' }
+        ]
       },
       { path: '', redirectTo: 'vue-ensemble', pathMatch: 'full' }
     ]

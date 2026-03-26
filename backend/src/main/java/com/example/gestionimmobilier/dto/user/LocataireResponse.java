@@ -17,6 +17,7 @@ public record LocataireResponse(
         List<Role> roles,
         String type,
         boolean emailVerified,
+        boolean enabled,
         BigDecimal budgetMax,
         StatutDossier statutDossier
 ) {}

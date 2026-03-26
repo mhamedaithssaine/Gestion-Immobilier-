@@ -1,7 +1,7 @@
 package com.example.gestionimmobilier.models.entity.user;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +18,9 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Proprietaire extends Utilisateur {
 
+    @Column(length = 50)
     private String rib;
+
+    @Column(length = 500)
     private String adresseContact;
 }

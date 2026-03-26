@@ -9,6 +9,8 @@ import com.example.gestionimmobilier.models.enums.Role;
 import com.example.gestionimmobilier.repository.UtilisateurRepository;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -28,6 +30,8 @@ import static com.example.gestionimmobilier.exception.ErrorMessages.UTILISATEUR_
 
 @Service
 public class KeycloakAdminService {
+
+    private static final Logger log = LoggerFactory.getLogger(KeycloakAdminService.class);
 
     private final KeycloakAdminProperties props;
     private final RestTemplate restTemplate;
@@ -326,6 +330,7 @@ public class KeycloakAdminService {
     }
 
     public void updateUserProfile(String keycloakUserId, String username, String email, String firstName, String lastName) {
+        log.debug("Mise à jour profil Keycloak userId={} username={} (username non envoyé au PUT si read-only)", keycloakUserId, username);
         String token = getAdminToken();
         String url = buildUserUrl(keycloakUserId);
 
@@ -342,7 +347,7 @@ public class KeycloakAdminService {
             throw new ResourceNotFoundException(ErrorMessages.UTILISATEUR_INTROUVABLE_KEYCLOAK);
         }
 
-        user.put("username", username);
+        // Le username Keycloak est souvent en lecture seule via l’API admin (error-user-attribute-read-only).
         user.put("email", email);
         user.put("firstName", firstName);
         user.put("lastName", lastName);

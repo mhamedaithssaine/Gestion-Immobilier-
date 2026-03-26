@@ -10,6 +10,7 @@ import com.example.gestionimmobilier.models.entity.user.Client;
 import com.example.gestionimmobilier.models.entity.user.Utilisateur;
 import com.example.gestionimmobilier.models.enums.Role;
 import com.example.gestionimmobilier.models.enums.StatutDossier;
+import com.example.gestionimmobilier.repository.ClientRepository;
 import com.example.gestionimmobilier.repository.UtilisateurRepository;
 import com.example.gestionimmobilier.service.user.KeycloakAdminService;
 import org.springframework.stereotype.Service;
@@ -21,16 +22,34 @@ import java.util.UUID;
 @Service
 public class LocataireService {
 
+    private final ClientRepository clientRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final KeycloakAdminService keycloakAdminService;
     private final UserMapper userMapper;
 
-    public LocataireService(UtilisateurRepository utilisateurRepository,
+    public LocataireService(ClientRepository clientRepository,
+                            UtilisateurRepository utilisateurRepository,
                             KeycloakAdminService keycloakAdminService,
                             UserMapper userMapper) {
+        this.clientRepository = clientRepository;
         this.utilisateurRepository = utilisateurRepository;
         this.keycloakAdminService = keycloakAdminService;
         this.userMapper = userMapper;
+    }
+
+    @Transactional(readOnly = true)
+    public List<LocataireResponse> listLocataires() {
+        return clientRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(userMapper::toLocataireResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public LocataireResponse getLocataireById(UUID id) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.CLIENT_INTROUVABLE));
+        return userMapper.toLocataireResponse(client);
     }
 
     @Transactional

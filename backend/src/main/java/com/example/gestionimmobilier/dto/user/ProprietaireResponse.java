@@ -15,6 +15,7 @@ public record ProprietaireResponse(
         List<Role> roles,
         String type,
         boolean emailVerified,
+        boolean enabled,
         String rib,
         String adresseContact
 ) {}

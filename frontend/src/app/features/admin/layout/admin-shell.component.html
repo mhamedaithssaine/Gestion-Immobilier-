@@ -24,13 +24,33 @@
           <a routerLink="agences" routerLinkActive="is-active" class="admin-shell__nav-item admin-shell__nav-item--sub">
             Agences
           </a>
-          <a
-            routerLink="utilisateurs"
-            routerLinkActive="is-active"
-            class="admin-shell__nav-item admin-shell__nav-item--sub"
+          <button
+            type="button"
+            class="admin-shell__nav-item admin-shell__nav-item--sub admin-shell__nav-item--toggle"
+            [class.is-open]="expandedMenu() === 'users'"
+            [class.has-active-child]="isUsersRouteActive()"
+            (click)="toggleMenu('users')"
+            [attr.aria-expanded]="expandedMenu() === 'users'"
           >
-            Utilisateurs
-          </a>
+            <span>Utilisateurs</span>
+            <span class="admin-shell__chevron" [class.is-open]="expandedMenu() === 'users'">▾</span>
+          </button>
+          <div class="admin-shell__submenu" [class.is-open]="expandedMenu() === 'users'">
+            <a
+              routerLink="utilisateurs/locataire"
+              routerLinkActive="is-active"
+              class="admin-shell__nav-item admin-shell__nav-item--child"
+            >
+              Locataire
+            </a>
+            <a
+              routerLink="utilisateurs/proprietaire"
+              routerLinkActive="is-active"
+              class="admin-shell__nav-item admin-shell__nav-item--child"
+            >
+              Propriétaire
+            </a>
+          </div>
         </div>
       }
     </nav>

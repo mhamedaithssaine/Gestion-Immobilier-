@@ -70,3 +70,37 @@ export interface UtilisateurResponse {
   emailVerified: boolean;
   enabled: boolean;
 }
+
+/** Aligné sur `LocataireResponse` backend (sous-classe Client → table `clients` + `utilisateurs`). */
+export type StatutDossier = 'EN_ATTENTE' | 'VALIDE' | 'REFUSE';
+
+export interface LocataireResponse {
+  id: string;
+  keycloakId: string;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  roles: RoleEnum[];
+  type: string;
+  emailVerified: boolean;
+  enabled: boolean;
+  budgetMax: number | null;
+  statutDossier: StatutDossier | null;
+}
+
+/** Aligné sur `ProprietaireResponse` backend (sous-classe → table `proprietaires` + `utilisateurs`). */
+export interface ProprietaireResponse {
+  id: string;
+  keycloakId: string;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  roles: RoleEnum[];
+  type: string;
+  emailVerified: boolean;
+  enabled: boolean;
+  rib: string | null;
+  adresseContact: string | null;
+}
