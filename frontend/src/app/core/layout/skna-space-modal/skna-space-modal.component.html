@@ -27,18 +27,28 @@
 
       <div class="skna-space-modal__section">
         <p class="skna-space-modal__label">Je suis client Skna</p>
-        <button type="button" class="skna-space-modal__btn" (click)="goClientLogin()">
-          Me connecter
-        </button>
+        <div class="skna-space-modal__actions">
+          <button type="button" class="skna-space-modal__btn" (click)="goClientLogin()">
+            Me connecter
+          </button>
+          <button type="button" class="skna-space-modal__btn skna-space-modal__btn--ghost" (click)="goClientRegister()">
+            Créer un compte
+          </button>
+        </div>
       </div>
 
       <hr class="skna-space-modal__rule" />
 
       <div class="skna-space-modal__section">
-        <p class="skna-space-modal__label">Je suis candidat à la location</p>
-        <button type="button" class="skna-space-modal__btn" (click)="goCandidateLogin()">
-          Me connecter
-        </button>
+        <p class="skna-space-modal__label">Je représente une agence</p>
+        <div class="skna-space-modal__actions">
+          <button type="button" class="skna-space-modal__btn" (click)="goAgenceLogin()">
+            Me connecter
+          </button>
+          <button type="button" class="skna-space-modal__btn skna-space-modal__btn--ghost" (click)="goAgenceRegister()">
+            Créer un compte agence
+          </button>
+        </div>
       </div>
     </div>
   </div>

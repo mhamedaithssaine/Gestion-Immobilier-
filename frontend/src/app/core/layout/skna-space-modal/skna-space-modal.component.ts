@@ -37,8 +37,18 @@ export class SknaSpaceModalComponent {
     void this.router.navigate(['/login']);
   }
 
-  goCandidateLogin(): void {
+  goClientRegister(): void {
+    this.spaceModal.close();
+    void this.router.navigate(['/register']);
+  }
+
+  goAgenceLogin(): void {
     this.spaceModal.close();
     void this.router.navigate(['/login']);
+  }
+
+  goAgenceRegister(): void {
+    this.spaceModal.close();
+    void this.router.navigate(['/register-agence']);
   }
 }
