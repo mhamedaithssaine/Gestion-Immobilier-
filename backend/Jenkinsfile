@@ -2,49 +2,55 @@ pipeline {
     agent any
 
     triggers {
-      githubPush()
+        githubPush()
     }
+
     tools {
-        maven 'Maven3'    
+        maven 'Maven3'
         jdk 'JDK17'
     }
 
     environment {
         SONAR_HOST_URL = 'http://sonarqube:9000'
         SONAR_TOKEN = credentials('sonar-token')
-        DOCKER_IMAGE = 'gestion-immobilier'
-        DOCKER_TAG = "${env.BUILD_NUMBER}"
     }
 
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
-                echo ' Code récupéré depuis GitHub'
+                echo 'Code récupéré depuis GitHub'
             }
         }
 
-        stage('Build') {
+        stage('Build & test') {
             steps {
                 sh '''
-                    echo " Construction de l'application..."
-                    mvn clean compile
-                '''
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh '''
-                    echo " Exécution des tests..."
-                    mvn test
+                    echo "=== Build + tests + couverture JaCoCo ==="
+                    mvn clean verify
                 '''
             }
             post {
                 always {
                     junit 'target/surefire-reports/*.xml'
-                    publishTestResults testResultsPattern: 'target/surefire-reports/*.xml'
                 }
+            }
+        }
+
+        stage('Verify JaCoCo Report') {
+            steps {
+                sh '''
+                    echo "=== Vérification du rapport JaCoCo ==="
+                    ls -la target/site/jacoco/ || echo "Dossier jacoco introuvable"
+                    if [ -f target/site/jacoco/jacoco.xml ]; then
+                        echo "jacoco.xml trouvé"
+                        wc -c target/site/jacoco/jacoco.xml
+                        sed -n '1,30p' target/site/jacoco/jacoco.xml
+                    else
+                        echo "jacoco.xml introuvable"
+                        exit 1
+                    fi
+                '''
             }
         }
 
@@ -52,15 +58,17 @@ pipeline {
             steps {
                 withSonarQubeEnv('sonarqube-server') {
                     sh """
-                      mvn sonar:sonar \
+                      mvn sonar:sonar \\
                         -Dsonar.host.url=${SONAR_HOST_URL} \
-                        -Dsonar.projectKey=gestion-immobilier \
-                        -Dsonar.projectName="Gestion Immobilière" \
-                        -Dsonar.sources=src/main/java \
-                        -Dsonar.tests=src/test/java \
-                        -Dsonar.java.binaries=target/classes \
-                        -Dsonar.java.test.binaries=target/test-classes \
-                        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+                        -Dsonar.projectKey=gestion-immobilier \\
+                        -Dsonar.projectName="Gestion Immobiliere" \\
+                        -Dsonar.java.coveragePlugin=jacoco \\
+                        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \\
+                        -Dsonar.junit.reportPaths=target/surefire-reports \\
+                        -Dsonar.sources=src/main/java \\
+                        -Dsonar.tests=src/test/java \\
+                        -Dsonar.java.binaries=target/classes \\
+                        -Dsonar.java.test.binaries=target/test-classes \\
                         -Dsonar.login=${SONAR_TOKEN}
                     """
                 }
@@ -75,42 +83,27 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Package') {
             steps {
                 sh '''
-                    echo " Construction de l'image Docker..."
-                    docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .
-                    docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
+                    echo "=== Packaging ==="
+                    mvn package -DskipTests
                 '''
-            }
-        }
-
-        stage('Deploy') {
-            when {
-                branch 'main'
-            }
-            steps {
-                sh '''
-                    echo " Déploiement en production..."
-                    docker-compose down
-                    docker-compose up -d
-                '''
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
     }
 
     post {
         always {
-            echo ' Nettoyage...'
+            echo "Build ${currentBuild.result} - ${env.JOB_NAME} #${env.BUILD_NUMBER}"
             cleanWs()
         }
-        
         success {
-            echo ' Pipeline exécuté avec succès!'
+            echo 'Pipeline exécuté avec succès !'
         }
-        
         failure {
-            echo ' Pipeline échoué!'
+            echo 'La pipeline a échoué !'
         }
     }
 }
