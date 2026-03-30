@@ -44,7 +44,7 @@ class UserServiceTest {
                 "John",
                 "Doe",
                 "password",
-                List.of() // pas de rôles
+                List.of() 
         );
 
         assertThatThrownBy(() -> userService.createUser(request))
