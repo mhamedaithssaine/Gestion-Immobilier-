@@ -1,0 +1,390 @@
+.ac-page__head h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.35rem;
+}
+
+.ac-page__head p {
+  margin: 0.4rem 0 0;
+  color: #64748b;
+  max-width: 42rem;
+}
+
+.ac-page__error {
+  margin-top: 0.85rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: #ffe4e6;
+  color: #be123c;
+}
+
+.ac-page__muted {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.ac-page__kpis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.ac-kpi {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  min-width: 8rem;
+}
+
+.ac-kpi__label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.ac-kpi__value {
+  font-size: 1.35rem;
+  color: #0f172a;
+}
+
+.ac-page__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin-top: 1rem;
+}
+
+.ac-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.ac-page__field--grow {
+  flex: 1 1 12rem;
+}
+
+.ac-page__field input,
+.ac-page__field select {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  font-size: 0.9rem;
+}
+
+.ac-page__table-wrap {
+  margin-top: 1rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: auto;
+}
+
+.ac-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.ac-table th,
+.ac-table td {
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+
+.ac-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.ac-badge.is-actif {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.ac-badge.is-attente {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.ac-badge.is-agent {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.ac-badge.is-refuse {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.ac-badge.is-resilie,
+.ac-badge.is-termine {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.ac-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ac-btn {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  background: #fff;
+}
+
+.ac-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ac-btn--primary {
+  background: #002d5d;
+  color: #fff;
+  border-color: #002d5d;
+}
+
+.ac-btn--danger {
+  background: #b91c1c;
+  color: #fff;
+  border-color: #b91c1c;
+}
+
+.ac-btn--compact {
+  padding: 0.3rem 0.55rem;
+  font-size: 0.78rem;
+}
+
+.ac-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #334155;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.ac-icon-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.ac-icon-btn--primary {
+  background: #002d5d;
+  border-color: #002d5d;
+  color: #fff;
+}
+
+.ac-icon-btn--primary:hover {
+  background: #003d7a;
+  border-color: #003d7a;
+  color: #fff;
+}
+
+.ac-icon-svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.ac-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+}
+
+.ac-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.ac-modal__panel {
+  position: relative;
+  z-index: 1;
+  max-width: 520px;
+  margin: 6vh auto;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.16);
+}
+
+.ac-modal__panel--sm {
+  max-width: 360px;
+  text-align: center;
+}
+
+.ac-modal__panel--form {
+  max-width: 440px;
+}
+
+.ac-modal__close {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 8px;
+  background: #f1f5f9;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: #475569;
+  cursor: pointer;
+}
+
+.ac-modal__close:hover {
+  background: #e2e8f0;
+}
+
+.ac-modal h2 {
+  margin: 0 2rem 0 0;
+  font-size: 1.15rem;
+  color: #0f172a;
+}
+
+.ac-modal__subtitle {
+  margin: 0.35rem 0 1rem;
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.ac-detail-grid {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: 0.5rem 1rem;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.ac-detail-grid dt {
+  margin: 0;
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ac-detail-grid dd {
+  margin: 0;
+  color: #1e293b;
+}
+
+.ac-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+  margin-top: 0.5rem;
+}
+
+.ac-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.ac-form-grid label span {
+  font-weight: 600;
+}
+
+.ac-form-grid input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  font-size: 0.9rem;
+}
+
+.ac-form-grid__full {
+  grid-column: 1 / -1;
+}
+
+.ac-modal__foot {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.ac-modal__actions-primary {
+  margin-top: 1rem;
+}
+
+.ac-modal__status {
+  margin-top: 1.25rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.ac-modal__status-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.ac-modal__status-help {
+  margin: 0 0 0.75rem;
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.ac-modal__status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.ac-modal__status-select {
+  flex: 1 1 12rem;
+  min-width: 10rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  font-size: 0.9rem;
+}
+
+.ac-modal__hint {
+  margin: 1rem 0 0;
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.4;
+}

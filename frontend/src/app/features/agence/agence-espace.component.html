@@ -1,0 +1,117 @@
+<div class="admin-page agent-agence">
+  <header class="admin-page__head">
+    <h1>Espace agence — Mon agence</h1>
+    <p class="admin-page__intro">
+      Consultez la fiche <strong>publiée</strong>. Toute modification ou demande de clôture est soumise à
+      <strong>validation administrateur</strong>.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="admin-banner admin-banner--error" role="alert">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <p class="admin-loading">Chargement…</p>
+  } @else if (agence(); as a) {
+    <div class="agent-agence__status">
+      <span class="admin-badge">{{ labelStatut(a.statut) }}</span>
+    </div>
+
+    @if (demande(); as d) {
+      <div class="agent-agence__pending" role="status">
+        <strong>{{ labelTypeDemande(d.type) }}</strong> en attente de validation (envoyée le
+        {{ d.demandeLe | date: 'short' }}).
+        @if (d.type === 'MISE_AJOUR') {
+          <ul class="agent-agence__pending-list">
+            @if (d.nomPropose) {
+              <li><span>Nom proposé</span> {{ d.nomPropose }}</li>
+            }
+            @if (d.emailPropose) {
+              <li><span>Email proposé</span> {{ d.emailPropose }}</li>
+            }
+            @if (d.telephonePropose) {
+              <li><span>Téléphone</span> {{ d.telephonePropose }}</li>
+            }
+            @if (d.villePropose) {
+              <li><span>Ville</span> {{ d.villePropose }}</li>
+            }
+            @if (d.adressePropose) {
+              <li><span>Adresse</span> {{ d.adressePropose }}</li>
+            }
+          </ul>
+        }
+        <p class="agent-agence__pending-hint">
+          Vous pouvez envoyer une nouvelle demande : elle remplace la précédente tant qu’elle n’est pas traitée.
+        </p>
+      </div>
+    }
+
+    <section class="agent-agence__published" aria-labelledby="pub-title">
+      <h2 id="pub-title" class="agent-agence__subhead">Fiche publiée (en ligne)</h2>
+      <dl class="agent-agence__dl">
+        <div><dt>Nom</dt><dd>{{ a.nom }}</dd></div>
+        <div><dt>Email</dt><dd>{{ a.email }}</dd></div>
+        <div><dt>Téléphone</dt><dd>{{ a.telephone || '—' }}</dd></div>
+        <div><dt>Ville</dt><dd>{{ a.ville || '—' }}</dd></div>
+        <div class="agent-agence__dl-full">
+          <dt>Adresse</dt>
+          <dd>{{ a.adresse || '—' }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="agent-agence__form-section" aria-labelledby="form-title">
+      <h2 id="form-title" class="agent-agence__subhead">Proposer une mise à jour</h2>
+      <p class="agent-agence__hint">
+        Renseignez les champs à faire valider. Les valeurs actuelles sont préremplies : modifiez uniquement ce qui doit
+        changer.
+      </p>
+      <form class="agent-agence__form" (ngSubmit)="soumettreMiseAJour()">
+        <div class="admin-create__grid">
+          <div class="f">
+            <label for="ag-nom">Nom de l’agence</label>
+            <input id="ag-nom" name="nom" [(ngModel)]="form.nom" required />
+          </div>
+          <div class="f">
+            <label for="ag-email">E-mail agence</label>
+            <input id="ag-email" name="email" type="email" [(ngModel)]="form.email" required />
+          </div>
+          <div class="f">
+            <label for="ag-tel">Téléphone</label>
+            <input id="ag-tel" name="telephone" [(ngModel)]="form.telephone" />
+          </div>
+          <div class="f">
+            <label for="ag-ville">Ville</label>
+            <input id="ag-ville" name="ville" [(ngModel)]="form.ville" />
+          </div>
+          <div class="f f--full">
+            <label for="ag-adr">Adresse</label>
+            <input id="ag-adr" name="adresse" [(ngModel)]="form.adresse" />
+          </div>
+        </div>
+        <div class="agent-agence__actions">
+          <button type="submit" class="admin-toolbar__btn" [disabled]="saving()">
+            {{ saving() ? 'Envoi…' : 'Soumettre pour validation' }}
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="agent-agence__danger-zone" aria-labelledby="danger-title">
+      <h2 id="danger-title" class="agent-agence__subhead">Demande de clôture</h2>
+      <p class="agent-agence__danger-text">
+        Demande la suspension de l’agence et la désactivation des comptes agents après accord admin. À utiliser uniquement
+        pour une fermeture définitive.
+      </p>
+      <button
+        type="button"
+        class="agent-agence__btn-danger"
+        [disabled]="deleting() || a.statut === 'SUSPENDED' || a.statut === 'REJECTED'"
+        (click)="soumettreSuppression()"
+      >
+        {{ deleting() ? 'Envoi…' : 'Demander la clôture' }}
+      </button>
+    </section>
+  }
+</div>

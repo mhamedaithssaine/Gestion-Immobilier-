@@ -1,0 +1,154 @@
+<div class="admin-page">
+  <header class="admin-page__head">
+    <h1>Espace propriétaire - Mes biens</h1>
+    <p class="admin-page__intro">Gestion de vos biens immobiliers.</p>
+  </header>
+
+  @if (error()) {
+    <div class="admin-banner admin-banner--error" role="alert">{{ error() }}</div>
+  }
+
+  <section class="pb-actions">
+    <button type="button" class="admin-toolbar__btn" (click)="showCreate.set(!showCreate())">
+      {{ showCreate() ? 'Fermer' : 'Ajouter un bien' }}
+    </button>
+  </section>
+
+  @if (showCreate()) {
+    <app-bien-create-form
+      mode="create"
+      [submitting]="saving()"
+      (close)="showCreate.set(false)"
+      (formSubmit)="onBienFormSubmit($event)"
+    />
+  }
+
+  <section class="admin-toolbar">
+    <div class="admin-toolbar__field">
+      <label for="pb-statut">Statut</label>
+      <select id="pb-statut" [ngModel]="filterStatut()" (ngModelChange)="filterStatut.set($event)">
+        @for (opt of statutOptions; track opt.value) {
+          <option [ngValue]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+    <div class="admin-toolbar__field admin-toolbar__field--grow">
+      <label for="pb-search">Recherche</label>
+      <input
+        id="pb-search"
+        type="search"
+        placeholder="Référence, titre, ville…"
+        [ngModel]="filterSearch()"
+        (ngModelChange)="filterSearch.set($event)"
+      />
+    </div>
+    <button type="button" class="admin-toolbar__btn" (click)="reload()" [disabled]="loading()">Rafraîchir</button>
+  </section>
+
+  @if (loading()) {
+    <p class="admin-loading">Chargement…</p>
+  } @else {
+    <div class="admin-table-wrap admin-table-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Titre</th>
+            <th>Ville</th>
+            <th>Prix base</th>
+            <th>Statut</th>
+            <th>Locataire</th>
+            <th class="pb-th-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (b of filteredRows(); track b.id) {
+            <tr>
+              <td>{{ b.reference }}</td>
+              <td>{{ b.titre }}</td>
+              <td>{{ b.adresse?.ville || '—' }}</td>
+              <td>{{ b.prixBase | number: '1.0-2' }}</td>
+              <td><span class="admin-badge">{{ labelStatut(b.statut) }}</span></td>
+              <td>{{ locataireLabelForBien(b.id) }}</td>
+              <td class="admin-actions pb-actions-cell">
+                <div class="pb-row-actions">
+                  <button
+                    type="button"
+                    class="pb-iconbtn"
+                    title="Détails"
+                    aria-label="Voir le détail du bien"
+                    [disabled]="saving() || actionId() === b.id"
+                    (click)="openDetail(b.id)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path
+                        fill="currentColor"
+                        d="M12 5c-5 0-9.27 3.11-11 8a11.6 11.6 0 0 0 22 0c-1.73-4.89-6-8-11-8zm0 13a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 .01 6 3 3 0 0 0 0-6z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="pb-iconbtn pb-iconbtn--accent"
+                    title="Modifier"
+                    aria-label="Modifier le bien"
+                    [disabled]="saving() || loadingEditId() === b.id || actionId() === b.id"
+                    (click)="openEdit(b.id)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path
+                        fill="currentColor"
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="pb-iconbtn pb-iconbtn--danger"
+                    title="Supprimer"
+                    aria-label="Supprimer le bien"
+                    [disabled]="saving() || actionId() === b.id"
+                    (click)="deleteBien(b.id, b.reference)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path
+                        fill="currentColor"
+                        d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="7">Aucun bien trouvé.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (selectedBien(); as bien) {
+  <app-bien-detail-modal
+    [bien]="bien"
+    [contrats]="contratsByBien()[bien.id] || []"
+    (close)="closeDetail()"
+  />
+}
+
+@if (editDetail(); as d) {
+  <div class="pb-edit-overlay" role="dialog" aria-modal="true">
+    <div class="pb-edit-overlay__backdrop" (click)="closeEdit()"></div>
+    <div class="pb-edit-overlay__panel" (click)="$event.stopPropagation()">
+      <app-bien-create-form
+        mode="edit"
+        [editBienId]="d.id"
+        [prefill]="d"
+        [submitting]="saving()"
+        (formSubmit)="onBienFormSubmit($event)"
+        (close)="closeEdit()"
+      />
+    </div>
+  </div>
+}

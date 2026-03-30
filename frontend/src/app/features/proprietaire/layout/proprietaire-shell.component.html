@@ -1,0 +1,33 @@
+<div class="proprio-shell">
+  <aside class="proprio-shell__sidebar">
+    <div class="proprio-shell__brand">
+      <a class="proprio-shell__brand-link" routerLink="/">Skna</a>
+      <span class="proprio-shell__brand-badge">Espace propriétaire</span>
+    </div>
+
+    <nav class="proprio-shell__nav">
+      <a routerLink="/proprietaire/tableau-de-bord" routerLinkActive="is-active" class="proprio-shell__nav-item">
+        Tableau de bord
+      </a>
+      <a routerLink="/proprietaire/biens" routerLinkActive="is-active" class="proprio-shell__nav-item">
+        Mes biens
+      </a>
+      <a routerLink="/proprietaire/contrats" routerLinkActive="is-active" class="proprio-shell__nav-item">
+        Mes contrats
+      </a>
+      <a routerLink="/proprietaire/mandats" routerLinkActive="is-active" class="proprio-shell__nav-item">
+        Mes mandats
+      </a>
+    </nav>
+
+    <div class="proprio-shell__foot">
+      <p class="proprio-shell__identity">Compte proprietaire</p>
+      <button type="button" class="proprio-shell__logout" (click)="logout()">Se déconnecter</button>
+    </div>
+  </aside>
+
+  <main class="proprio-shell__main">
+    <router-outlet />
+  </main>
+</div>
+

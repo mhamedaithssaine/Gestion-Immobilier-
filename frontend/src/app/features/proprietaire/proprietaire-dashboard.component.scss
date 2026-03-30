@@ -1,0 +1,252 @@
+:host {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 100%;
+  width: 100%;
+}
+
+.pdb {
+  flex: 1;
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+.pdb__head h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  color: #002d5d;
+}
+
+.pdb__head p {
+  margin: 0.35rem 0 0;
+  color: #64748b;
+  max-width: 36rem;
+}
+
+.pdb__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin-top: 1.25rem;
+}
+
+.pdb__filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.pdb__filters select {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.4rem 0.55rem;
+  min-width: 8rem;
+}
+
+.pdb__btn-refresh {
+  border: 0;
+  border-radius: 8px;
+  padding: 0.45rem 0.9rem;
+  background: #002d5d;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.pdb__btn-refresh:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pdb__error {
+  margin-top: 1rem;
+  background: #ffe4e6;
+  color: #be123c;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+}
+
+.pdb__muted {
+  color: #94a3b8;
+  margin-top: 1rem;
+}
+
+.pdb__kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.pdb__kpis--secondary {
+  margin-top: 0.75rem;
+}
+
+.pdb-kpi {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.pdb-kpi--accent {
+  border-color: rgba(233, 115, 0, 0.45);
+  background: linear-gradient(180deg, #fffbf7 0%, #fff 100%);
+}
+
+.pdb-kpi--compact .pdb-kpi__value {
+  font-size: 1.35rem;
+}
+
+.pdb-kpi__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.pdb-kpi__value {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.pdb-kpi__hint {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.35;
+}
+
+.pdb__panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 1rem;
+  margin-top: 1.35rem;
+}
+
+.pdb-panel {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+}
+
+.pdb-panel h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.pdb-panel__intro {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.pdb-panel__bars {
+  display: flex;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0.35rem 0 0.75rem;
+  background: #e2e8f0;
+}
+
+.pdb-bar {
+  min-width: 2px;
+}
+
+.pdb-bar--dispo {
+  background: #0ea5e9;
+}
+
+.pdb-bar--loue {
+  background: #002d5d;
+}
+
+.pdb-bar--vendu {
+  background: #64748b;
+}
+
+.pdb-bar--compromis {
+  background: #e97300;
+}
+
+.pdb-panel__legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.82rem;
+  color: #475569;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+.pdb-panel__legend .dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 2px;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+}
+
+.pdb-panel__legend .dot.dispo {
+  background: #0ea5e9;
+}
+
+.pdb-panel__legend .dot.loue {
+  background: #002d5d;
+}
+
+.pdb-panel__legend .dot.vendu {
+  background: #64748b;
+}
+
+.pdb-panel__legend .dot.compromis {
+  background: #e97300;
+}
+
+.pdb-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.35rem;
+  min-height: 140px;
+  padding: 0.25rem 0 0;
+}
+
+.pdb-chart__col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.pdb-chart__bar {
+  width: 100%;
+  max-width: 2.25rem;
+  min-height: 4px;
+  background: linear-gradient(180deg, #e97300 0%, #002d5d 100%);
+  border-radius: 6px 6px 2px 2px;
+  transition: height 0.2s ease;
+}
+
+.pdb-chart__label {
+  font-size: 0.65rem;
+  color: #64748b;
+  text-transform: capitalize;
+}

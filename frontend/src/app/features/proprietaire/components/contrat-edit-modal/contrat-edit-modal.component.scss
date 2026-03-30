@@ -1,0 +1,106 @@
+.cem {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+}
+
+.cem__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.cem__panel {
+  position: relative;
+  z-index: 1;
+  width: min(920px, calc(100vw - 1.5rem));
+  max-height: 90vh;
+  overflow: auto;
+  margin: 4vh auto;
+  background: #fff;
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.cem__close {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: #fff;
+  padding: 0.3rem 0.6rem;
+}
+
+.cem h2 {
+  margin: 0;
+}
+
+.cem__subtitle {
+  margin: 0.25rem 0 0.85rem;
+  color: #64748b;
+}
+
+.cem__grid {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.cem label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+}
+
+.cem input,
+.cem select {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.5rem 0.6rem;
+}
+
+.cem__actions {
+  margin-top: 0.8rem;
+}
+
+.cem__btn {
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: #fff;
+  padding: 0.45rem 0.7rem;
+}
+
+.cem__btn--primary {
+  background: #e97300;
+  border-color: #e97300;
+  color: #fff;
+}
+
+.cem__status {
+  margin-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 0.8rem;
+}
+
+.cem__status h3 {
+  margin: 0 0 0.45rem;
+  font-size: 0.95rem;
+}
+
+.cem__status-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cem__hint {
+  margin-top: 1rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 0.88rem;
+}

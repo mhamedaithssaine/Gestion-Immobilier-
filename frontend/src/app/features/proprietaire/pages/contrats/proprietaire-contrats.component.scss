@@ -1,0 +1,285 @@
+.ppage__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+}
+
+.ppage h1 {
+  margin: 0;
+}
+
+.ppage__refresh {
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+}
+
+.ppage__kpis {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  margin-bottom: 0.8rem;
+}
+
+.ppage__kpi {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.7rem 0.8rem;
+}
+
+.ppage__kpi p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.78rem;
+}
+
+.ppage__kpi strong {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 1.05rem;
+}
+
+.ppage__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-bottom: 0.8rem;
+}
+
+.ppage__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 170px;
+}
+
+.ppage__field--grow {
+  flex: 1;
+}
+
+.ppage__field label {
+  font-size: 0.78rem;
+  color: #475569;
+}
+
+.ppage__field select,
+.ppage__field input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+}
+
+.ppage__loading {
+  color: #475569;
+}
+
+.ppage__error {
+  background: #ffe4e6;
+  color: #be123c;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  margin-bottom: 0.8rem;
+}
+.ppage__table-wrap {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  overflow: auto;
+}
+.ppage__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ppage__table th,
+.ppage__table td {
+  padding: 0.7rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+.badge {
+  display: inline-block;
+  background: #e2e8f0;
+  color: #334155;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+}
+
+.badge.is-actif {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge.is-attente {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.badge.is-agent {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge.is-refuse {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.badge.is-resilie {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badge.is-termine {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.ppage__actions {
+  white-space: nowrap;
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.ghost {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #0f172a;
+  padding: 0.4rem 0.65rem;
+  cursor: pointer;
+}
+
+.primary {
+  border: 0;
+  border-radius: 8px;
+  background: #1a7fd4;
+  color: #fff;
+  padding: 0.4rem 0.65rem;
+  cursor: pointer;
+}
+
+.danger {
+  border: 0;
+  border-radius: 8px;
+  background: #dc2626;
+  color: #fff;
+  padding: 0.4rem 0.65rem;
+  cursor: pointer;
+}
+
+.iconbtn {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.iconbtn svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.ppage-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+}
+
+.ppage-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.ppage-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(900px, calc(100vw - 1.5rem));
+  max-height: 88vh;
+  overflow: auto;
+  margin: 4vh auto;
+  background: #fff;
+  border-radius: 14px;
+  padding: 1rem 1rem 0.9rem;
+  box-shadow: 0 16px 44px rgba(15, 23, 42, 0.2);
+}
+
+.ppage-modal__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 0.8rem;
+}
+
+.ppage-modal__close {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  border-radius: 9px;
+  padding: 0.35rem 0.65rem;
+}
+
+.ppage-modal h2 {
+  margin: 0;
+}
+
+.ppage-modal__subtitle {
+  margin: 0.2rem 0 0;
+  color: #64748b;
+}
+
+.ppage-modal__section {
+  margin-bottom: 0.85rem;
+}
+
+.ppage-modal__section h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.88rem;
+  color: #334155;
+}
+
+.ppage-modal__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.35rem 1rem;
+}
+
+.ppage-modal__item {
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.ppage-modal__item span {
+  display: block;
+  color: #64748b;
+  font-size: 0.76rem;
+  margin-bottom: 0.15rem;
+}
+
+.ppage-modal__item strong {
+  font-size: 0.9rem;
+  color: #0f172a;
+}
+
+.ppage-modal__doc {
+  margin-top: 0.2rem;
+}
+
+.ppage-modal__doc a {
+  color: #1d4ed8;
+  text-decoration: none;
+  font-weight: 600;
+}
+

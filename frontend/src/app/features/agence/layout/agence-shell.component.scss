@@ -1,0 +1,140 @@
+/* Aligné sur l’espace admin : barre latérale #002d5d, lien actif orange. */
+.ag-shell {
+  min-height: 100vh;
+  display: flex;
+  background: #f1f4f8;
+}
+
+.ag-shell__sidebar {
+  width: 268px;
+  flex-shrink: 0;
+  background: #002d5d;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  min-height: 100vh;
+}
+
+.ag-shell__brand {
+  padding: 1.35rem 1.25rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.ag-shell__brand-link {
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+}
+
+.ag-shell__brand-link:hover {
+  color: #ffb366;
+}
+
+.ag-shell__brand-badge {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.ag-shell__nav {
+  flex: 1;
+  padding: 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ag-shell__nav-item {
+  display: block;
+  padding: 0.55rem 0.85rem;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.88);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.ag-shell__nav-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+a.ag-shell__nav-item.is-active {
+  background: rgba(233, 115, 0, 0.95);
+  color: #fff;
+  font-weight: 600;
+}
+
+.ag-shell__sidebar-foot {
+  padding: 1rem 1.25rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.ag-shell__roles {
+  margin: 0 0 0.75rem;
+  font-size: 0.65rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.45);
+  word-break: break-all;
+}
+
+.ag-shell__logout {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.ag-shell__logout:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ag-shell__site-link {
+  display: block;
+  text-align: center;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.ag-shell__main {
+  flex: 1;
+  min-width: 0;
+  padding: clamp(1rem, 2vw, 1.75rem);
+}
+
+@media (max-width: 900px) {
+  .ag-shell {
+    flex-direction: column;
+  }
+
+  .ag-shell__sidebar {
+    width: 100%;
+    min-height: auto;
+    position: relative;
+  }
+
+  .ag-shell__nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}

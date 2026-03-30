@@ -1,0 +1,73 @@
+.dem-page__head h1 { margin: 0; color: #0f172a; }
+.dem-page__head p { margin: 0.35rem 0 0; color: #64748b; }
+
+.dem-page__error {
+  margin-top: 0.9rem;
+  background: #ffe4e6;
+  color: #be123c;
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+}
+
+.dem-page__table-wrap {
+  margin-top: 0.9rem;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: auto;
+}
+
+.dem-page__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dem-page__table th,
+.dem-page__table td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.7rem;
+  text-align: left;
+}
+
+.badge {
+  display: inline-block;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  padding: 0.12rem 0.55rem;
+  font-size: 0.78rem;
+}
+
+.badge.waiting {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.badge.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge.refused {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.dem-page__info {
+  margin-top: 1rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+}
+
+.dem-page__info h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.dem-page__info ol {
+  margin: 0;
+  padding-left: 1rem;
+}
+

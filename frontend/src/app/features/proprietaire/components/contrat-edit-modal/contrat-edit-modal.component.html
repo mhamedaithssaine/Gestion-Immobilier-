@@ -1,0 +1,69 @@
+<section class="cem">
+  <div class="cem__backdrop" (click)="close.emit()"></div>
+  <article class="cem__panel">
+    <button type="button" class="cem__close" (click)="close.emit()">Fermer</button>
+
+    <h2>Modifier contrat</h2>
+    <p class="cem__subtitle">
+      {{ contrat.numContrat }} • {{ contrat.bien.reference }} • {{ contrat.locataire.firstName }} {{ contrat.locataire.lastName }}
+    </p>
+
+    <div class="cem__grid">
+      <label>
+        Date début
+        <input type="date" [(ngModel)]="dateDebut" />
+      </label>
+      <label>
+        Date fin
+        <input type="date" [(ngModel)]="dateFin" />
+      </label>
+      <label>
+        Loyer HC
+        <input type="number" min="0" step="1" [(ngModel)]="loyerHC" />
+      </label>
+      <label>
+        Charges
+        <input type="number" min="0" step="1" [(ngModel)]="charges" />
+      </label>
+      <label>
+        Date signature
+        <input type="date" [(ngModel)]="dateSignature" />
+      </label>
+      <label>
+        URL document
+        <input type="url" [(ngModel)]="documentUrl" placeholder="https://..." />
+      </label>
+    </div>
+
+    <div class="cem__actions">
+      <button type="button" class="cem__btn cem__btn--primary" [disabled]="submitting" (click)="submit()">
+        Enregistrer
+      </button>
+    </div>
+
+    @if (statutChangeDisabled) {
+      <p class="cem__hint">
+        @if (contrat.statut === 'EN_ATTENTE_VALIDATION_AGENT') {
+          Cette demande est en validation par l’agent mandaté : vous ne pouvez pas en modifier le statut ici.
+        } @else {
+          Le statut de ce bail ne peut pas être modifié depuis cet écran.
+        }
+      </p>
+    } @else {
+      <div class="cem__status">
+        <h3>Changer le statut</h3>
+        <div class="cem__status-row">
+          <select [(ngModel)]="statut">
+            @for (opt of statutOptions; track opt.value) {
+              <option [ngValue]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+          <button type="button" class="cem__btn" [disabled]="submitting" (click)="submitStatus()">
+            Mettre à jour le statut
+          </button>
+        </div>
+      </div>
+    }
+  </article>
+</section>
+

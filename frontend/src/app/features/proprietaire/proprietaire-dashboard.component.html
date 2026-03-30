@@ -1,0 +1,118 @@
+<div class="pdb">
+  <header class="pdb__head">
+    <h1>Tableau de bord propriétaire</h1>
+    <p>Vue consolidée de votre patrimoine, de vos flux locatifs et de vos mandats.</p>
+  </header>
+
+  <section class="pdb__filters" aria-label="Période d’analyse">
+    <label>
+      Année
+      <select [(ngModel)]="annee" (ngModelChange)="reload()">
+        @for (y of anneesOptions; track y) {
+          <option [ngValue]="y">{{ y }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Mois
+      <select [(ngModel)]="mois" (ngModelChange)="reload()">
+        @for (m of moisOptions; track m.value) {
+          <option [ngValue]="m.value">{{ m.label }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="pdb__btn-refresh" (click)="reload()" [disabled]="loading()">Actualiser</button>
+  </section>
+
+  @if (error()) {
+    <div class="pdb__error" role="alert">{{ error() }}</div>
+  }
+
+  @if (loading() && !data()) {
+    <p class="pdb__muted">Chargement des indicateurs…</p>
+  } @else if (data(); as d) {
+    <section class="pdb__kpis" aria-label="Indicateurs clés">
+      <article class="pdb-kpi">
+        <span class="pdb-kpi__label">Patrimoine (annonces)</span>
+        <strong class="pdb-kpi__value">{{ formatDh(d.patrimoineEstimeAnnonce) }}</strong>
+        <span class="pdb-kpi__hint">{{ d.biensTotal }} bien(s) — somme des prix affichés</span>
+      </article>
+      <article class="pdb-kpi">
+        <span class="pdb-kpi__label">Loyers mensuels théoriques</span>
+        <strong class="pdb-kpi__value">{{ formatDh(d.loyerMensuelTheoriqueContratsActifs) }}</strong>
+        <span class="pdb-kpi__hint">Baux actifs (loyer HC + charges)</span>
+      </article>
+      <article class="pdb-kpi pdb-kpi--accent">
+        <span class="pdb-kpi__label">Encaissements du mois</span>
+        <strong class="pdb-kpi__value">{{ formatDh(d.revenusEncaissesMois) }}</strong>
+        <span class="pdb-kpi__hint">{{ d.moisPeriode }}/{{ d.anneePeriode }} — versements validés</span>
+      </article>
+      <article class="pdb-kpi">
+        <span class="pdb-kpi__label">Taux d’occupation</span>
+        <strong class="pdb-kpi__value">{{ d.tauxOccupationContratsSurBiens }}%</strong>
+        <span class="pdb-kpi__hint">Baux actifs / nombre de biens</span>
+      </article>
+    </section>
+
+    <section class="pdb__kpis pdb__kpis--secondary">
+      <article class="pdb-kpi pdb-kpi--compact">
+        <span class="pdb-kpi__label">Biens</span>
+        <strong class="pdb-kpi__value">{{ d.biensTotal }}</strong>
+        <span class="pdb-kpi__hint">{{ d.biensDisponibles }} disp. · {{ d.biensLoues }} loués</span>
+      </article>
+      <article class="pdb-kpi pdb-kpi--compact">
+        <span class="pdb-kpi__label">Contrats</span>
+        <strong class="pdb-kpi__value">{{ d.contratsTotal }}</strong>
+        <span class="pdb-kpi__hint">{{ d.contratsActifs }} actifs · {{ d.contratsEnAttenteCandidatures }} en attente</span>
+      </article>
+      <article class="pdb-kpi pdb-kpi--compact">
+        <span class="pdb-kpi__label">Mandats</span>
+        <strong class="pdb-kpi__value">{{ d.mandatsTotal }}</strong>
+        <span class="pdb-kpi__hint">{{ d.mandatsActifs }} actifs · {{ d.mandatsEnAttente }} en attente</span>
+      </article>
+    </section>
+
+    <div class="pdb__panels">
+      <section class="pdb-panel">
+        <h2>Répartition des biens par statut</h2>
+        @if (totalBiensPatrimoine(d) === 0) {
+          <p class="pdb__muted">Aucun bien enregistré.</p>
+        } @else {
+          <div class="pdb-panel__bars" aria-hidden="true">
+            <div class="pdb-bar pdb-bar--dispo" [style.flex]="d.biensDisponibles || 0.001"></div>
+            <div class="pdb-bar pdb-bar--loue" [style.flex]="d.biensLoues || 0.001"></div>
+            <div class="pdb-bar pdb-bar--vendu" [style.flex]="d.biensVendus || 0.001"></div>
+            <div class="pdb-bar pdb-bar--compromis" [style.flex]="d.biensSousCompromis || 0.001"></div>
+          </div>
+          <ul class="pdb-panel__legend">
+            <li>
+              <span class="dot dispo"></span> Dispo {{ d.biensDisponibles }} ({{
+                pct(d.biensDisponibles, totalBiensPatrimoine(d))
+              }}%)
+            </li>
+            <li><span class="dot loue"></span> Loués {{ d.biensLoues }}</li>
+            <li><span class="dot vendu"></span> Vendus {{ d.biensVendus }}</li>
+            <li><span class="dot compromis"></span> Sous compromis {{ d.biensSousCompromis }}</li>
+          </ul>
+        }
+      </section>
+
+      <section class="pdb-panel">
+        <h2>Encaissements — 6 mois</h2>
+        <p class="pdb-panel__intro">Somme des versements validés par mois (fenêtre glissante jusqu’à la période choisie).</p>
+        <div class="pdb-chart" role="img" aria-label="Histogramme des encaissements">
+          @for (pt of d.historiqueRevenus6Mois; track pt.annee + '-' + pt.mois) {
+            <div class="pdb-chart__col">
+              <div
+                class="pdb-chart__bar"
+                [style.height.%]="barHeightPct(pt.montant)"
+                [title]="formatDh(pt.montant)"
+              ></div>
+              <span class="pdb-chart__label">{{ labelMoisCourt(pt.mois) }}</span>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+  }
+</div>

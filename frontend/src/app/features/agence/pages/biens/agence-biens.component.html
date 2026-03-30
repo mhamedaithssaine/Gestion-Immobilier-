@@ -1,0 +1,197 @@
+<div class="admin-page">
+  <header class="admin-page__head">
+    <h1>Biens sous mandat</h1>
+    <p class="admin-page__intro">
+      Biens pour lesquels vous avez (ou avez eu) un mandat de gestion. Vous pouvez
+      <strong>consulter et modifier</strong> les annonces (prix, statut, photos, etc.). La
+      <strong>création</strong> et la <strong>suppression</strong> de biens restent du ressort du propriétaire. Mandats :
+      <a routerLink="/agence/mandats">Mandats</a>.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="admin-banner admin-banner--error" role="alert">{{ error() }}</div>
+  }
+
+  <section class="admin-toolbar">
+    <div class="admin-toolbar__field">
+      <label for="ag-b-statut">Statut du bien</label>
+      <select id="ag-b-statut" [ngModel]="filterStatut()" (ngModelChange)="filterStatut.set($event)">
+        @for (opt of statutOptions; track opt.value) {
+          <option [ngValue]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+    <div class="admin-toolbar__field admin-toolbar__field--grow">
+      <label for="ag-b-search">Recherche</label>
+      <input
+        id="ag-b-search"
+        type="search"
+        placeholder="Référence, titre, propriétaire, n° mandat…"
+        [ngModel]="filterQuery()"
+        (ngModelChange)="filterQuery.set($event)"
+      />
+    </div>
+    <button type="button" class="admin-toolbar__btn" (click)="reload()" [disabled]="loading()">Rafraîchir</button>
+  </section>
+
+  @if (loading()) {
+    <p class="admin-loading">Chargement…</p>
+  } @else {
+    <div class="admin-table-wrap admin-table-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Titre</th>
+            <th>Propriétaire</th>
+            <th>Surface</th>
+            <th>Prix</th>
+            <th>Statut bien</th>
+            <th>Mandat lié</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of filteredRows(); track row.bien.id) {
+            <tr>
+              <td>{{ row.bien.reference }}</td>
+              <td>{{ row.bien.titre }}</td>
+              <td>{{ row.bien.proprietaireNom }}</td>
+              <td>{{ row.bien.surface }} m²</td>
+              <td>{{ row.bien.prixBase | number: '1.0-0' }} DH</td>
+              <td>
+                <span class="admin-badge admin-badge--muted">{{ statutBienLabel(row.bien.statut) }}</span>
+              </td>
+              <td>
+                @if (row.mandat; as m) {
+                  <span class="ag-b-mandat">
+                    <strong>{{ m.numMandat }}</strong>
+                    <span class="admin-badge admin-badge--{{ m.statut.toLowerCase() }}">{{
+                      mandatStatutLabel(m)
+                    }}</span>
+                  </span>
+                } @else {
+                  <span class="ag-b-muted">—</span>
+                }
+              </td>
+              <td class="admin-actions">
+                <div class="ag-b-actions">
+                  <button
+                    type="button"
+                    class="m-iconbtn"
+                    title="Détail du bien"
+                    aria-label="Détail du bien"
+                    (click)="openDetail(row.bien)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path
+                        fill="currentColor"
+                        d="M12 5c-5 0-9.27 3.11-11 8a11.6 11.6 0 0 0 22 0c-1.73-4.89-6-8-11-8zm0 13a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 .01 6 3 3 0 0 0 0-6z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="m-iconbtn m-iconbtn--edit"
+                    title="Modifier le bien"
+                    aria-label="Modifier le bien"
+                    [disabled]="loadingEditId() === row.bien.id"
+                    (click)="openEdit(row.bien.id)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path
+                        fill="currentColor"
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                      />
+                    </svg>
+                  </button>
+                  @if (row.mandat) {
+                    <button
+                      type="button"
+                      class="m-iconbtn m-iconbtn--link"
+                      title="Ouvrir le mandat"
+                      aria-label="Ouvrir le mandat"
+                      (click)="allerAuMandat(row.mandat!.id)"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path
+                          fill="currentColor"
+                          d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"
+                        />
+                      </svg>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8">Aucun bien ne correspond aux filtres.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (detail(); as b) {
+  <section class="ag-b-modal">
+    <div class="ag-b-modal__backdrop" (click)="closeDetail()"></div>
+    <article class="ag-b-modal__panel">
+      <header class="ag-b-modal__header">
+        <div>
+          <h2>{{ b.reference }}</h2>
+          <p class="ag-b-modal__subtitle">{{ b.titre }}</p>
+        </div>
+        <button type="button" class="ag-b-modal__close" (click)="closeDetail()">Fermer</button>
+      </header>
+
+      <div class="ag-b-modal__grid">
+        <article class="ag-b-modal__item"><span>Propriétaire</span><strong>{{ b.proprietaireNom }}</strong></article>
+        <article class="ag-b-modal__item"><span>Statut</span><strong>{{ statutBienLabel(b.statut) }}</strong></article>
+        <article class="ag-b-modal__item"><span>Surface</span><strong>{{ b.surface }} m²</strong></article>
+        <article class="ag-b-modal__item"
+          ><span>Prix de base</span><strong>{{ b.prixBase | number: '1.0-0' }} DH</strong></article
+        >
+        @if (b.type) {
+          <article class="ag-b-modal__item"><span>Type</span><strong>{{ b.type }}</strong></article>
+        }
+        @if (b.adresse) {
+          <article class="ag-b-modal__item ag-b-modal__item--wide">
+            <span>Adresse</span>
+            <strong>{{ b.adresse.rue }}, {{ b.adresse.codePostal }} {{ b.adresse.ville }} {{ b.adresse.pays }}</strong>
+          </article>
+        }
+      </div>
+
+      @if (b.images.length) {
+        <div class="ag-b-modal__images">
+          @for (img of b.images; track img) {
+            <a [href]="img" target="_blank" rel="noopener noreferrer" class="ag-b-modal__thumb">
+              <img [src]="img" [alt]="'Photo ' + b.reference" />
+            </a>
+          }
+        </div>
+      }
+    </article>
+  </section>
+}
+
+@if (editDetail(); as d) {
+  <div class="ag-b-edit-overlay" role="dialog" aria-modal="true" aria-labelledby="ag-b-edit-title">
+    <div class="ag-b-edit-overlay__backdrop" (click)="closeEdit()"></div>
+    <div class="ag-b-edit-overlay__panel" (click)="$event.stopPropagation()">
+      <h2 id="ag-b-edit-title" class="visually-hidden">Modifier le bien</h2>
+      <app-bien-create-form
+        mode="edit"
+        [editBienId]="d.id"
+        [prefill]="d"
+        [submitting]="saving()"
+        (formSubmit)="onBienFormSubmit($event)"
+        (close)="closeEdit()"
+      />
+    </div>
+  </div>
+}

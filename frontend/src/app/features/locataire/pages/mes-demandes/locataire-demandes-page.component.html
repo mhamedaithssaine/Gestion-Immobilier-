@@ -1,0 +1,58 @@
+<section class="dem-page">
+  <header class="dem-page__head">
+    <h1>Mes demandes et contrats</h1>
+    <p>Suivez l'etat de vos demandes de location et l'avancement de vos contrats.</p>
+  </header>
+
+  @if (error()) {
+    <div class="dem-page__error">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <p>Chargement...</p>
+  } @else {
+    <div class="dem-page__table-wrap">
+      <table class="dem-page__table">
+        <thead>
+          <tr>
+            <th>Numero</th>
+            <th>Bien</th>
+            <th>Propriétaire</th>
+            <th>Date debut</th>
+            <th>Date fin</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of rows(); track r.id) {
+            <tr>
+              <td>{{ r.numContrat }}</td>
+              <td>{{ r.bien.reference }} - {{ r.bien.titre }}</td>
+              <td>{{ r.proprietaire.firstName }} {{ r.proprietaire.lastName }}</td>
+              <td>{{ r.dateDebut }}</td>
+              <td>{{ r.dateFin }}</td>
+              <td><span class="badge" [ngClass]="badgeClass(r.statut)">{{ label(r.statut) }}</span></td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6">Aucune demande pour le moment.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <article class="dem-page__info">
+    <h2>Comment passer du dossier au contrat ?</h2>
+    <ol>
+      <li>Envoyez votre demande depuis la fiche détail du bien.</li>
+      <li>
+        Si le bien est <strong>sous mandat de gestion</strong>, l’<strong>agent mandaté</strong> accepte ou refuse
+        votre demande. Sinon, c’est le <strong>propriétaire</strong> qui valide.
+      </li>
+      <li>Une fois acceptée, le bail devient <strong>actif</strong> dans cet espace.</li>
+    </ol>
+  </article>
+</section>
+

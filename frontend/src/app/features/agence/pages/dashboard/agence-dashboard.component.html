@@ -1,0 +1,150 @@
+<div class="ag-dash">
+  <header class="ag-dash__head">
+    <h1>Tableau de bord</h1>
+    <p>Vue d’ensemble de votre activité sous mandat : mandats, baux, locataires et trésorerie du mois.</p>
+  </header>
+
+  <section class="ag-dash__period">
+    <label>
+      Année
+      <select [(ngModel)]="annee" (ngModelChange)="load()">
+        @for (y of anneesOptions; track y) {
+          <option [ngValue]="y">{{ y }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Mois
+      <select [(ngModel)]="mois" (ngModelChange)="load()">
+        @for (m of moisOptions; track m.value) {
+          <option [ngValue]="m.value">{{ m.label }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="ag-dash__btn" (click)="load()" [disabled]="loading()">Actualiser</button>
+  </section>
+
+  @if (error()) {
+    <div class="ag-dash__error" role="alert">{{ error() }}</div>
+  }
+
+  @if (data(); as dash) {
+    @if (dash.demandeModificationAgenceEnAttente && dash.resumeDemandeModificationAgenceEnAttente) {
+      <div class="ag-dash__alert ag-dash__alert--pending" role="status">
+        <strong>Demande agence en attente d’approbation</strong>
+        <p>{{ dash.resumeDemandeModificationAgenceEnAttente }}</p>
+        <a routerLink="/agence/mon-agence" class="ag-dash__alert-link">Voir « Mon agence »</a>
+      </div>
+    }
+    @if (dash.derniereNoteAdminDemandeAgence) {
+      <div class="ag-dash__alert ag-dash__alert--note" role="region" aria-label="Note administrateur">
+        <strong>Dernière réponse administrateur</strong>
+        @if (dash.derniereNoteAdminDemandeAgenceLe) {
+          <span class="ag-dash__alert-date">{{ dash.derniereNoteAdminDemandeAgenceLe | date: 'short' }}</span>
+        }
+        <p class="ag-dash__alert-note">{{ dash.derniereNoteAdminDemandeAgence }}</p>
+      </div>
+    }
+  }
+
+  @if (loading() && !data()) {
+    <p class="ag-dash__muted">Chargement…</p>
+  } @else if (data(); as d) {
+    <section class="ag-dash__kpis">
+      <article class="ag-kpi">
+        <span class="ag-kpi__label">Mandats actifs</span>
+        <strong class="ag-kpi__value">{{ d.mandatsActifs }}</strong>
+        <span class="ag-kpi__hint">sur {{ d.mandatsTotal }} mandat(s) au total</span>
+      </article>
+      <article class="ag-kpi">
+        <span class="ag-kpi__label">Biens sous mandat</span>
+        <strong class="ag-kpi__value">{{ d.biensDistinctsSousMandat }}</strong>
+        <a routerLink="/agence/biens" class="ag-kpi__link">Gérer les biens</a>
+      </article>
+      <article class="ag-kpi">
+        <span class="ag-kpi__label">Baux actifs</span>
+        <strong class="ag-kpi__value">{{ d.bauxActifs }}</strong>
+      </article>
+      <article class="ag-kpi ag-kpi--accent">
+        <span class="ag-kpi__label">À valider (demandes)</span>
+        <strong class="ag-kpi__value">{{ d.demandesEnAttenteValidationAgent }}</strong>
+        <a routerLink="/agence/contrats" class="ag-kpi__link">Traiter les demandes</a>
+      </article>
+      <article class="ag-kpi">
+        <span class="ag-kpi__label">Locataires (baux actifs)</span>
+        <strong class="ag-kpi__value">{{ d.locatairesActifsDistincts }}</strong>
+      </article>
+      <article class="ag-kpi">
+        <span class="ag-kpi__label">Revenus du mois</span>
+        <strong class="ag-kpi__value">{{ formatDh(d.revenusMensuels) }}</strong>
+        <span class="ag-kpi__hint">Versements enregistrés sur vos baux</span>
+      </article>
+    </section>
+
+    <section class="ag-dash__panel">
+      <h2>Répartition des biens (mandat actif)</h2>
+      @if (totalBiensSousMandat(d) === 0) {
+        <p class="ag-dash__muted">Aucun bien rattaché à un mandat actif pour le moment.</p>
+      } @else {
+        <div class="ag-dash__bars" aria-hidden="true">
+          <div
+            class="ag-dash__bar ag-dash__bar--dispo"
+            [style.flex]="d.biensDisponiblesSousMandat || 0.001"
+          ></div>
+          <div
+            class="ag-dash__bar ag-dash__bar--loue"
+            [style.flex]="d.biensLouesSousMandat || 0.001"
+          ></div>
+          <div
+            class="ag-dash__bar ag-dash__bar--vendu"
+            [style.flex]="d.biensVendusSousMandat || 0.001"
+          ></div>
+          <div
+            class="ag-dash__bar ag-dash__bar--compromis"
+            [style.flex]="d.biensSousCompromisSousMandat || 0.001"
+          ></div>
+        </div>
+        <ul class="ag-dash__legend">
+          <li>
+            <span class="dot dispo"></span> Dispo {{ d.biensDisponiblesSousMandat }} ({{
+              pct(d.biensDisponiblesSousMandat, totalBiensSousMandat(d))
+            }}%)
+          </li>
+          <li><span class="dot loue"></span> Loués {{ d.biensLouesSousMandat }}</li>
+          <li><span class="dot vendu"></span> Vendus {{ d.biensVendusSousMandat }}</li>
+          <li><span class="dot compromis"></span> Sous compromis {{ d.biensSousCompromisSousMandat }}</li>
+        </ul>
+      }
+    </section>
+
+    <section class="ag-dash__panel">
+      <h2>Locataires en retard ({{ d.anneePeriode }} / {{ d.moisPeriode }})</h2>
+      @if (d.locatairesEnRetard.length === 0) {
+        <p class="ag-dash__muted">Aucun retard sur cette période.</p>
+      } @else {
+        <div class="ag-dash__table-wrap">
+          <table class="ag-dash__table">
+            <thead>
+              <tr>
+                <th>Contrat</th>
+                <th>Locataire</th>
+                <th>Bien</th>
+                <th>Reste à payer</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (l of d.locatairesEnRetard; track l.contratId) {
+                <tr>
+                  <td>{{ l.numContrat }}</td>
+                  <td>{{ l.locataireNom }}</td>
+                  <td>{{ l.bienReference }}</td>
+                  <td>{{ formatDh(l.resteAPayer) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</div>

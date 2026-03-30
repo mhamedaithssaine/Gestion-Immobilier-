@@ -1,0 +1,56 @@
+<div class="ppage">
+  <h1>Mes mandats</h1>
+
+  @if (error()) {
+    <div class="ppage__error">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <p>Chargement...</p>
+  } @else {
+    <div class="ppage__table-wrap">
+      <table class="ppage__table">
+        <thead>
+          <tr>
+            <th>Numero</th>
+            <th>Bien</th>
+            <th>Agent</th>
+            <th>Date debut</th>
+            <th>Date fin</th>
+            <th>Commission %</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of rows(); track m.id) {
+            <tr>
+              <td>{{ m.numMandat }}</td>
+              <td>{{ m.bienReference }}</td>
+              <td>{{ m.agentNom }}</td>
+              <td>{{ m.dateDebut }}</td>
+              <td>{{ m.dateFin }}</td>
+              <td>{{ m.commissionPct }}</td>
+              <td><span class="badge">{{ statutLabel(m.statut) }}</span></td>
+              <td>
+                <button
+                  type="button"
+                  class="danger"
+                  [disabled]="m.statut !== 'ACTIF' || actionId() === m.id"
+                  (click)="demanderResiliation(m.id, m.numMandat)"
+                >
+                  Demander résiliation
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8">Aucun mandat.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+

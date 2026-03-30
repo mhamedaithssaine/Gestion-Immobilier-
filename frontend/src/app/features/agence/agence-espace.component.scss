@@ -1,0 +1,160 @@
+@use '../admin/styles/admin-shared';
+
+.agent-agence__form {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem 1.35rem;
+}
+
+.admin-create__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1.1rem;
+}
+
+.f {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.f--full {
+  grid-column: 1 / -1;
+}
+
+.f label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #829ab1;
+}
+
+.f input {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #d9e2ec;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.agent-agence__actions {
+  margin-top: 1.1rem;
+}
+
+.agent-agence__pending {
+  margin: 1rem 0 1.25rem;
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(233, 115, 0, 0.45);
+  background: #fffbf5;
+  color: #0f172a;
+  font-size: 0.92rem;
+}
+
+.agent-agence__pending-list {
+  margin: 0.65rem 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.86rem;
+}
+
+.agent-agence__pending-list li span {
+  color: #64748b;
+  margin-right: 0.35rem;
+}
+
+.agent-agence__pending-hint {
+  margin: 0.6rem 0 0;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.agent-agence__subhead {
+  margin: 0 0 0.65rem;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.agent-agence__published {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.1rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.agent-agence__dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem 1rem;
+  font-size: 0.88rem;
+}
+
+.agent-agence__dl dt {
+  margin: 0;
+  font-weight: 700;
+  color: #64748b;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.agent-agence__dl dd {
+  margin: 0.15rem 0 0;
+  color: #0f172a;
+}
+
+.agent-agence__dl-full {
+  grid-column: 1 / -1;
+}
+
+.agent-agence__form-section {
+  margin-bottom: 1.5rem;
+}
+
+.agent-agence__hint {
+  margin: 0 0 0.85rem;
+  font-size: 0.86rem;
+  color: #64748b;
+}
+
+.agent-agence__danger-zone {
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+}
+
+.agent-agence__danger-text {
+  margin: 0 0 0.75rem;
+  font-size: 0.86rem;
+  color: #7f1d1d;
+}
+
+.agent-agence__btn-danger {
+  border: 0;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  background: #b91c1c;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.agent-agence__btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 720px) {
+  .agent-agence__dl {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-create__grid {
+    grid-template-columns: 1fr;
+  }
+}
+

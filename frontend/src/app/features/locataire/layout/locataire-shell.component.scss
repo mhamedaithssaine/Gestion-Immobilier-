@@ -1,0 +1,93 @@
+.loc-shell {
+  min-height: 100vh;
+  display: flex;
+  background: #eef2f7;
+  flex-direction: column;
+}
+
+.loc-shell__header {
+  width: 100%;
+  background: #002d5d;
+  color: #fff;
+  padding: 0.9rem 1.1rem;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.loc-shell__header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.loc-shell__brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.loc-shell__brand-link {
+  color: #fff;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.loc-shell__badge {
+  margin-top: 0.25rem;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.loc-shell__nav {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.loc-shell__nav-item {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+}
+
+.loc-shell__nav-item.is-active {
+  background: #e97300;
+  color: #fff;
+}
+
+.loc-shell__logout {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.loc-shell__main {
+  flex: 1;
+  min-width: 0;
+  padding: 1rem;
+  width: 100%;
+}
+
+.loc-shell__container {
+  max-width: min(1560px, 100%);
+  margin: 0 auto;
+  width: 100%;
+  padding-inline: 0.25rem;
+}
+
+@media (max-width: 900px) {
+  .loc-shell__header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .loc-shell__nav {
+    flex-wrap: wrap;
+  }
+}
+

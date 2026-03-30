@@ -1,0 +1,126 @@
+.proprio-shell {
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: stretch;
+  background: #f1f4f8;
+}
+
+.proprio-shell__sidebar {
+  width: 268px;
+  flex-shrink: 0;
+  background: #002d5d;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-self: stretch;
+}
+
+.proprio-shell__brand {
+  padding: 1.35rem 1.25rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.proprio-shell__brand-link {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.proprio-shell__brand-badge {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.proprio-shell__nav {
+  flex: 1;
+  padding: 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.proprio-shell__nav-item {
+  display: block;
+  padding: 0.55rem 0.85rem;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.88);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.proprio-shell__nav-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.proprio-shell__nav-item.is-active {
+  background: rgba(233, 115, 0, 0.95);
+  color: #fff;
+  font-weight: 600;
+}
+
+.proprio-shell__foot {
+  padding: 1rem 1.25rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.proprio-shell__identity {
+  margin: 0 0 0.6rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.proprio-shell__logout {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.proprio-shell__main {
+  flex: 1 1 0;
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1rem, 2vw, 1.75rem);
+  background: #f1f4f8;
+  box-sizing: border-box;
+}
+
+/* Le composant routé occupe toute la largeur du main */
+.proprio-shell__main > :not(router-outlet) {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .proprio-shell {
+    flex-direction: column;
+  }
+  .proprio-shell__sidebar {
+    width: 100%;
+    min-height: auto;
+  }
+}
+

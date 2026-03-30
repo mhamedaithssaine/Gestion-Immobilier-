@@ -1,0 +1,28 @@
+<div class="loc-shell">
+  <header class="loc-shell__header">
+    <div class="loc-shell__header-inner">
+      <div class="loc-shell__brand">
+        <a routerLink="/" class="loc-shell__brand-link">Skna</a>
+        <span class="loc-shell__badge">Espace locataire</span>
+      </div>
+
+      <nav class="loc-shell__nav">
+        <a routerLink="/locataire/biens" routerLinkActive="is-active" class="loc-shell__nav-item">
+          Biens disponibles
+        </a>
+        <a routerLink="/locataire/mes-demandes" routerLinkActive="is-active" class="loc-shell__nav-item">
+          Mes demandes
+        </a>
+      </nav>
+
+      <button type="button" class="loc-shell__logout" (click)="logout()">Se deconnecter</button>
+    </div>
+  </header>
+
+  <main class="loc-shell__main">
+    <div class="loc-shell__container">
+      <router-outlet />
+    </div>
+  </main>
+</div>
+

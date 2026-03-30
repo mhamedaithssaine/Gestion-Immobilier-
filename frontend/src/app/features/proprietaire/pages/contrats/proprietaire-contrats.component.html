@@ -1,0 +1,186 @@
+<div class="ppage">
+  <header class="ppage__head">
+    <h1>Mes contrats</h1>
+    <button type="button" class="ppage__refresh" (click)="reload()" [disabled]="loading()">Rafraîchir</button>
+  </header>
+
+  <section class="ppage__kpis">
+    <article class="ppage__kpi">
+      <p>Total</p>
+      <strong>{{ totalCount() }}</strong>
+    </article>
+    <article class="ppage__kpi">
+      <p>Actifs</p>
+      <strong>{{ actifsCount() }}</strong>
+    </article>
+    <article class="ppage__kpi">
+      <p>En attente</p>
+      <strong>{{ attenteCount() }}</strong>
+    </article>
+    <article class="ppage__kpi">
+      <p>Résiliés</p>
+      <strong>{{ resiliesCount() }}</strong>
+    </article>
+    <article class="ppage__kpi">
+      <p>Valeur mensuelle</p>
+      <strong>{{ valeurMensuelle() | number: '1.0-0' }} DH</strong>
+    </article>
+  </section>
+
+  @if (error()) {
+    <div class="ppage__error">{{ error() }}</div>
+  }
+
+  <section class="ppage__toolbar">
+    <div class="ppage__field">
+      <label for="pc-statut">Statut</label>
+      <select id="pc-statut" [ngModel]="filterStatut()" (ngModelChange)="filterStatut.set($event)">
+        @for (opt of statutOptions; track opt.value) {
+          <option [ngValue]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+    <div class="ppage__field ppage__field--grow">
+      <label for="pc-search">Recherche</label>
+      <input
+        id="pc-search"
+        type="search"
+        placeholder="Numéro, référence, locataire..."
+        [ngModel]="filterQuery()"
+        (ngModelChange)="filterQuery.set($event)"
+      />
+    </div>
+  </section>
+
+  @if (loading()) {
+    <p class="ppage__loading">Chargement...</p>
+  } @else {
+    <div class="ppage__table-wrap">
+      <table class="ppage__table">
+        <thead>
+          <tr>
+            <th>Numero</th>
+            <th>Bien</th>
+            <th>Locataire</th>
+            <th>Date debut</th>
+            <th>Date fin</th>
+            <th>Loyer + Charges</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of rowsFiltered(); track c.id) {
+            <tr>
+              <td>{{ c.numContrat }}</td>
+              <td>{{ c.bien.reference }}</td>
+              <td>{{ c.locataire.firstName }} {{ c.locataire.lastName }}</td>
+              <td>{{ c.dateDebut }}</td>
+              <td>{{ c.dateFin }}</td>
+              <td>{{ (c.loyerHC + c.charges) | number: '1.0-0' }} DH</td>
+              <td><span class="badge" [class]="statutClass(c.statut)">{{ statutLabel(c.statut) }}</span></td>
+              <td class="ppage__actions">
+                <button type="button" class="iconbtn ghost" title="Détails" (click)="openDetail(c)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M12 5c-5 0-9.27 3.11-11 8a11.6 11.6 0 0 0 22 0c-1.73-4.89-6-8-11-8zm0 13a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 .01 6 3 3 0 0 0 0-6z"
+                    />
+                  </svg>
+                </button>
+                <button type="button" class="iconbtn primary" title="Modifier" [disabled]="actionId() === c.id" (click)="openEdit(c)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                    />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="iconbtn danger"
+                  title="Résilier"
+                  [disabled]="!canResilier(c) || actionId() === c.id"
+                  (click)="resilier(c.id, c.numContrat)"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8">Aucun contrat trouvé avec ces filtres.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (selected(); as c) {
+  <section class="ppage-modal">
+    <div class="ppage-modal__backdrop" (click)="closeDetail()"></div>
+    <article class="ppage-modal__panel">
+      <header class="ppage-modal__header">
+        <div>
+          <h2>{{ c.numContrat }}</h2>
+          <p class="ppage-modal__subtitle">
+            {{ c.bien.reference }} • {{ c.locataire.firstName }} {{ c.locataire.lastName }}
+          </p>
+        </div>
+        <button type="button" class="ppage-modal__close" (click)="closeDetail()">Fermer</button>
+      </header>
+
+      <section class="ppage-modal__section">
+        <h3>Informations contrat</h3>
+        <div class="ppage-modal__grid">
+          <article class="ppage-modal__item"><span>Date signature</span><strong>{{ c.dateSignature || '—' }}</strong></article>
+          <article class="ppage-modal__item"><span>Date début</span><strong>{{ c.dateDebut }}</strong></article>
+          <article class="ppage-modal__item"><span>Date fin</span><strong>{{ c.dateFin }}</strong></article>
+          <article class="ppage-modal__item"><span>Statut</span><strong>{{ statutLabel(c.statut) }}</strong></article>
+        </div>
+      </section>
+
+      <section class="ppage-modal__section">
+        <h3>Financier</h3>
+        <div class="ppage-modal__grid">
+          <article class="ppage-modal__item"><span>Loyer HC</span><strong>{{ c.loyerHC | number: '1.0-0' }} DH</strong></article>
+          <article class="ppage-modal__item"><span>Charges</span><strong>{{ c.charges | number: '1.0-0' }} DH</strong></article>
+          <article class="ppage-modal__item"><span>Total mensuel</span><strong>{{ c.loyerHC + c.charges | number: '1.0-0' }} DH</strong></article>
+          <article class="ppage-modal__item"><span>Document</span><strong>{{ c.documentUrl ? 'Disponible' : 'Aucun' }}</strong></article>
+        </div>
+      </section>
+
+      <section class="ppage-modal__section">
+        <h3>Acteurs</h3>
+        <div class="ppage-modal__grid">
+          <article class="ppage-modal__item"><span>Locataire</span><strong>{{ c.locataire.firstName }} {{ c.locataire.lastName }}</strong></article>
+          <article class="ppage-modal__item"><span>Agent</span><strong>{{ c.agentNomComplet || 'Non assigné' }}</strong></article>
+          <article class="ppage-modal__item"><span>Bien</span><strong>{{ c.bien.reference }}</strong></article>
+        </div>
+      </section>
+      @if (c.documentUrl) {
+        <div class="ppage-modal__doc">
+          <a [href]="c.documentUrl" target="_blank" rel="noopener noreferrer">Ouvrir le document</a>
+        </div>
+      }
+    </article>
+  </section>
+}
+
+@if (editing(); as c) {
+  <app-contrat-edit-modal
+    [contrat]="c"
+    [submitting]="actionId() === c.id"
+    (close)="closeEdit()"
+    (save)="onSaveContrat($event)"
+    (saveStatus)="onSaveStatus($event)"
+  />
+}
+

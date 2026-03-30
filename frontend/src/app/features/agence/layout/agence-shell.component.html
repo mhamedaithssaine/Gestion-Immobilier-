@@ -1,0 +1,28 @@
+<div class="ag-shell">
+  <aside class="ag-shell__sidebar">
+    <div class="ag-shell__brand">
+      <a class="ag-shell__brand-link" routerLink="/">Skna</a>
+      <span class="ag-shell__brand-badge">Espace agence</span>
+    </div>
+
+    <nav class="ag-shell__nav">
+      <a routerLink="/agence/tableau-de-bord" routerLinkActive="is-active" class="ag-shell__nav-item">
+        Tableau de bord
+      </a>
+      <a routerLink="/agence/mon-agence" routerLinkActive="is-active" class="ag-shell__nav-item">Mon agence</a>
+      <a routerLink="/agence/biens" routerLinkActive="is-active" class="ag-shell__nav-item">Biens (mandats)</a>
+      <a routerLink="/agence/mandats" routerLinkActive="is-active" class="ag-shell__nav-item">Mandats</a>
+      <a routerLink="/agence/contrats" routerLinkActive="is-active" class="ag-shell__nav-item">Baux &amp; demandes</a>
+    </nav>
+
+    <div class="ag-shell__sidebar-foot">
+      <p class="ag-shell__roles" title="Rôles du compte">{{ rolesLabel() }}</p>
+      <button type="button" class="ag-shell__logout" (click)="logout()">Se déconnecter</button>
+      <a routerLink="/" class="ag-shell__site-link">Retour au site</a>
+    </div>
+  </aside>
+
+  <main class="ag-shell__main">
+    <router-outlet />
+  </main>
+</div>

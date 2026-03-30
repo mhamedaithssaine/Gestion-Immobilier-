@@ -1,0 +1,163 @@
+<div class="admin-page">
+  <header class="admin-page__head">
+    <h1>Mandats agence</h1>
+    <p class="admin-page__intro">
+      Mandats dont vous êtes l’agent. La création est réservée à l’administrateur. Pour le détail des biens,
+      voir <a routerLink="/agence/biens">Biens (mandats)</a>.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="admin-banner admin-banner--error" role="alert">{{ error() }}</div>
+  }
+
+  <section class="admin-toolbar">
+    <div class="admin-toolbar__field">
+      <label for="ag-m-statut">Statut</label>
+      <select id="ag-m-statut" [ngModel]="filterStatut()" (ngModelChange)="filterStatut.set($event); reload()">
+        @for (opt of statutOptions; track opt.value) {
+          <option [ngValue]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+    <div class="admin-toolbar__field admin-toolbar__field--grow">
+      <label for="ag-m-search">Recherche</label>
+      <input
+        id="ag-m-search"
+        type="search"
+        placeholder="Numéro, bien, propriétaire, agent…"
+        [ngModel]="filterQuery()"
+        (ngModelChange)="filterQuery.set($event)"
+      />
+    </div>
+    <button type="button" class="admin-toolbar__btn" (click)="reload()" [disabled]="loading()">Rafraîchir</button>
+  </section>
+
+  @if (loading()) {
+    <p class="admin-loading">Chargement…</p>
+  } @else {
+    <div class="admin-table-wrap admin-table-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>N° mandat</th>
+            <th>Bien</th>
+            <th>Propriétaire</th>
+            <th>Agent</th>
+            <th>Début</th>
+            <th>Fin</th>
+            <th>Commission</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of filteredRows(); track m.id) {
+            <tr>
+              <td>{{ m.numMandat }}</td>
+              <td>{{ m.bienReference }}</td>
+              <td>{{ m.proprietaireNom }}</td>
+              <td>{{ m.agentNom }}</td>
+              <td>{{ m.dateDebut | date: 'shortDate' }}</td>
+              <td>{{ m.dateFin | date: 'shortDate' }}</td>
+              <td>{{ m.commissionPct }}</td>
+              <td>
+                <span class="admin-badge" [class]="'admin-badge admin-badge--' + m.statut.toLowerCase()">
+                  {{ statutLabel(m.statut) }}
+                </span>
+              </td>
+              <td class="admin-actions">
+                <div class="m-actions">
+                  <button
+                    type="button"
+                    class="m-iconbtn"
+                    title="Détail"
+                    aria-label="Voir le détail"
+                    (click)="openDetail(m)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path
+                        fill="currentColor"
+                        d="M12 5c-5 0-9.27 3.11-11 8a11.6 11.6 0 0 0 22 0c-1.73-4.89-6-8-11-8zm0 13a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 .01 6 3 3 0 0 0 0-6z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9">Aucun mandat disponible.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (detail(); as d) {
+  <div class="m-modal-backdrop" (click)="closeDetail()" role="presentation">
+    <div class="m-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="ag-mandat-detail-title">
+      <header class="m-modal__head">
+        <h2 id="ag-mandat-detail-title">Mandat {{ d.numMandat }}</h2>
+        <button type="button" class="m-modal__close" (click)="closeDetail()" aria-label="Fermer">×</button>
+      </header>
+      <dl class="m-modal__dl">
+        <dt>Bien</dt>
+        <dd>{{ d.bienReference }}</dd>
+        <dt>Propriétaire</dt>
+        <dd>{{ d.proprietaireNom }}</dd>
+        <dt>Agent</dt>
+        <dd>{{ d.agentNom }}</dd>
+        <dt>Période</dt>
+        <dd>{{ d.dateDebut | date: 'mediumDate' }} → {{ d.dateFin | date: 'mediumDate' }}</dd>
+        <dt>Commission</dt>
+        <dd>{{ d.commissionPct }} %</dd>
+        <dt>Statut</dt>
+        <dd>
+          <span class="admin-badge" [class]="'admin-badge admin-badge--' + d.statut.toLowerCase()">
+            {{ statutLabel(d.statut) }}
+          </span>
+        </dd>
+        @if (d.documentUrl) {
+          <dt>Document</dt>
+          <dd>
+            <button
+              type="button"
+              class="admin-toolbar__btn m-btn-icon-text"
+              [disabled]="downloadingDocId() === d.id"
+              (click)="telechargerDocument(d)"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="currentColor" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+              </svg>
+              <span>Télécharger le PDF</span>
+            </button>
+          </dd>
+        }
+      </dl>
+      <footer class="m-modal__foot">
+        @if (d.statut === 'ACTIF') {
+          <button
+            type="button"
+            class="admin-toolbar__btn m-btn-icon-text m-danger"
+            [disabled]="actionId() === d.id"
+            (click)="demanderResiliation(d)"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+            </svg>
+            <span>Demander la résiliation</span>
+          </button>
+        }
+        <button type="button" class="admin-toolbar__btn m-btn-icon-text" (click)="closeDetail()">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+          </svg>
+          <span>Fermer</span>
+        </button>
+      </footer>
+    </div>
+  </div>
+}

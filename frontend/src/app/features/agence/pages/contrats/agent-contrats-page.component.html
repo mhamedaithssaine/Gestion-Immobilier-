@@ -1,0 +1,255 @@
+<section class="ac-page">
+  <header class="ac-page__head">
+    <h1>Baux et demandes (mandat)</h1>
+    <p>
+      Les demandes sur biens sous mandat actif vous sont réservées : acceptez ou refusez depuis cette liste. Utilisez
+      Voir / Modifier pour consulter ou mettre à jour un bail.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="ac-page__error">{{ error() }}</div>
+  }
+
+  <div class="ac-page__kpis">
+    <article class="ac-kpi">
+      <span class="ac-kpi__label">À valider</span>
+      <strong class="ac-kpi__value">{{ aValiderCount() }}</strong>
+    </article>
+  </div>
+
+  <div class="ac-page__toolbar">
+    <label class="ac-page__field">
+      <span>Statut</span>
+      <select [ngModel]="filterStatut()" (ngModelChange)="filterStatut.set($event)">
+        @for (opt of statutOptions; track opt.value) {
+          <option [ngValue]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </label>
+    <label class="ac-page__field ac-page__field--grow">
+      <span>Recherche</span>
+      <input
+        type="search"
+        placeholder="N°, bien, locataire…"
+        [ngModel]="filterQuery()"
+        (ngModelChange)="filterQuery.set($event)"
+      />
+    </label>
+  </div>
+
+  @if (loading()) {
+    <p class="ac-page__muted">Chargement…</p>
+  } @else {
+    <div class="ac-page__table-wrap">
+      <table class="ac-table">
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Bien</th>
+            <th>Locataire</th>
+            <th>Période</th>
+            <th>Loyer</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of rowsFiltered(); track c.id) {
+            <tr>
+              <td>{{ c.numContrat }}</td>
+              <td>{{ c.bien.reference }} — {{ c.bien.titre }}</td>
+              <td>{{ c.locataire.firstName }} {{ c.locataire.lastName }}</td>
+              <td>{{ c.dateDebut }} → {{ c.dateFin }}</td>
+              <td>{{ formatMoney(c.loyerHC) }}</td>
+              <td>
+                <span class="ac-badge" [ngClass]="statutClass(c.statut)">{{ statutLabel(c.statut) }}</span>
+              </td>
+              <td>
+                <div class="ac-actions">
+                  <button type="button" class="ac-icon-btn" title="Voir le détail" (click)="openView(c)">
+                    <svg class="ac-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                  </button>
+                  @if (canModifierContrat(c)) {
+                    <button type="button" class="ac-icon-btn ac-icon-btn--primary" title="Modifier" (click)="openEdit(c)">
+                      <svg class="ac-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
+                      </svg>
+                    </button>
+                  }
+                  @if (canValiderDemande(c)) {
+                    <button
+                      type="button"
+                      class="ac-btn ac-btn--primary ac-btn--compact"
+                      [disabled]="actionId() === c.id"
+                      (click)="accepterDemande(c)"
+                    >
+                      Accepter
+                    </button>
+                    <button
+                      type="button"
+                      class="ac-btn ac-btn--danger ac-btn--compact"
+                      [disabled]="actionId() === c.id"
+                      (click)="refuserDemande(c)"
+                    >
+                      Refuser
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7">Aucun bail pour l’instant.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
+
+@if (viewLoading()) {
+  <div class="ac-modal" role="dialog" aria-modal="true" aria-label="Chargement">
+    <div class="ac-modal__backdrop"></div>
+    <div class="ac-modal__panel ac-modal__panel--sm">
+      <p class="ac-page__muted">Chargement du bail…</p>
+    </div>
+  </div>
+}
+
+@if (viewContrat(); as v) {
+  <div class="ac-modal" role="dialog" aria-modal="true" aria-labelledby="ac-view-title">
+    <div class="ac-modal__backdrop" (click)="closeView()"></div>
+    <div class="ac-modal__panel">
+      <button type="button" class="ac-modal__close" (click)="closeView()" aria-label="Fermer">×</button>
+      <h2 id="ac-view-title">Détail du bail</h2>
+      <p class="ac-modal__subtitle">{{ v.numContrat }}</p>
+      <dl class="ac-detail-grid">
+        <dt>Bien</dt>
+        <dd>{{ v.bien.reference }} — {{ v.bien.titre }}</dd>
+        <dt>Locataire</dt>
+        <dd>{{ v.locataire.firstName }} {{ v.locataire.lastName }} · {{ v.locataire.email }}</dd>
+        <dt>Propriétaire</dt>
+        <dd>{{ v.proprietaire.firstName }} {{ v.proprietaire.lastName }}</dd>
+        <dt>Période</dt>
+        <dd>{{ v.dateDebut }} → {{ v.dateFin }}</dd>
+        <dt>Loyer HC / charges</dt>
+        <dd>{{ formatMoney(v.loyerHC) }} · {{ formatMoney(v.charges) }}</dd>
+        <dt>Statut</dt>
+        <dd>
+          <span class="ac-badge" [ngClass]="statutClass(v.statut)">{{ statutLabel(v.statut) }}</span>
+        </dd>
+        @if (v.agentNomComplet) {
+          <dt>Agent</dt>
+          <dd>{{ v.agentNomComplet }}</dd>
+        }
+      </dl>
+      <div class="ac-modal__foot">
+        <button type="button" class="ac-btn" (click)="closeView()">Fermer</button>
+        @if (canModifierContrat(v)) {
+          <button
+            type="button"
+            class="ac-btn ac-btn--primary"
+            (click)="closeView(); openEdit(v)"
+          >
+            Modifier
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+@if (editContrat(); as e) {
+  <div class="ac-modal" role="dialog" aria-modal="true" aria-labelledby="ac-edit-title">
+    <div class="ac-modal__backdrop" (click)="closeEdit()"></div>
+    <div class="ac-modal__panel ac-modal__panel--form">
+      <button type="button" class="ac-modal__close" (click)="closeEdit()" aria-label="Fermer">×</button>
+      <h2 id="ac-edit-title">Modifier le bail</h2>
+      <p class="ac-modal__subtitle">{{ e.numContrat }} — {{ e.bien.reference }}</p>
+      <div class="ac-form-grid">
+        <label>
+          <span>Date début</span>
+          <input type="date" [(ngModel)]="editDateDebut" />
+        </label>
+        <label>
+          <span>Date fin</span>
+          <input type="date" [(ngModel)]="editDateFin" />
+        </label>
+        <label>
+          <span>Loyer HC (€)</span>
+          <input type="number" step="0.01" [(ngModel)]="editLoyerHC" />
+        </label>
+        <label>
+          <span>Charges (€)</span>
+          <input type="number" step="0.01" [(ngModel)]="editCharges" />
+        </label>
+        <label>
+          <span>Date signature</span>
+          <input type="date" [(ngModel)]="editDateSignature" />
+        </label>
+        <label class="ac-form-grid__full">
+          <span>URL document (optionnel)</span>
+          <input type="url" [(ngModel)]="editDocumentUrl" placeholder="https://…" />
+        </label>
+      </div>
+
+      <div class="ac-modal__actions-primary">
+        <button type="button" class="ac-btn ac-btn--primary" [disabled]="editSaving()" (click)="saveEdit()">
+          {{ editSaving() ? 'Enregistrement…' : 'Enregistrer les informations' }}
+        </button>
+      </div>
+
+      @if (!statutChangeDisabled(e)) {
+        <div class="ac-modal__status">
+          <h3 class="ac-modal__status-title">Changer le statut</h3>
+          <p class="ac-modal__status-help">
+            Comme dans l’espace propriétaire : choisissez le nouveau statut puis validez (confirmation demandée).
+          </p>
+          <div class="ac-modal__status-row">
+            <select [(ngModel)]="editStatut" class="ac-modal__status-select">
+              @for (opt of statutOptionsPourEdition(e); track opt.value) {
+                <option [ngValue]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+            <button
+              type="button"
+              class="ac-btn ac-btn--primary"
+              [disabled]="statutSaving() || editStatut === e.statut"
+              (click)="saveStatutFromEdit()"
+            >
+              {{ statutSaving() ? 'Mise à jour…' : 'Mettre à jour le statut' }}
+            </button>
+          </div>
+        </div>
+      } @else {
+        <p class="ac-modal__hint">Le statut de ce bail ne peut pas être modifié depuis cet écran.</p>
+      }
+
+      <div class="ac-modal__foot">
+        <button type="button" class="ac-btn" [disabled]="editSaving() || statutSaving()" (click)="closeEdit()">
+          Fermer
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,178 @@
+<main class="locataire-page">
+  <section class="locataire-hero">
+    <h1>Biens disponibles</h1>
+    <p>Recherchez, comparez et envoyez votre demande de location rapidement.</p>
+  </section>
+
+  <section class="locataire-filters">
+    <input type="search" placeholder="Recherche (titre, référence, ville)" [(ngModel)]="query" />
+    <input type="text" placeholder="Ville" [(ngModel)]="ville" />
+    <div class="type-multiselect" [class.is-open]="typeMenuOpen()">
+      <span class="type-multiselect__label">Types de biens</span>
+      <button
+        type="button"
+        class="type-multiselect__trigger"
+        [class.has-selection]="selectedTypes().length > 0"
+        (click)="toggleTypeMenu($event)"
+        [attr.aria-expanded]="typeMenuOpen()"
+      >
+        {{ typesSummary() }}
+      </button>
+      @if (typeMenuOpen()) {
+        <div class="type-multiselect__panel" role="listbox" (click)="$event.stopPropagation()">
+          @for (opt of typeOptions; track opt.value) {
+            <label class="type-multiselect__row">
+              <input
+                type="checkbox"
+                [checked]="isTypeSelected(opt.value)"
+                (change)="toggleType(opt.value, $event)"
+              />
+              <span>{{ opt.label }}</span>
+            </label>
+          }
+        </div>
+      }
+    </div>
+    <input type="number" placeholder="Prix min" [(ngModel)]="minPrix" />
+    <input type="number" placeholder="Prix max" [(ngModel)]="maxPrix" />
+    <input type="number" placeholder="Surface min" [(ngModel)]="minSurface" />
+    <input type="number" placeholder="Surface max" [(ngModel)]="maxSurface" />
+    <div class="locataire-filters__actions">
+      <button type="button" class="primary" (click)="search()">Rechercher</button>
+      <button type="button" class="ghost" (click)="resetFilters()">Réinitialiser</button>
+    </div>
+  </section>
+
+  @if (error()) {
+    <div class="locataire-error">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <p class="locataire-loading">Chargement…</p>
+  } @else {
+    <section class="locataire-grid">
+      @for (b of page().content; track b.id) {
+        <article class="bien-card">
+          <div class="bien-card__image">
+            @if (b.images.length) {
+              <img [src]="currentImage(b)" [alt]="b.titre" />
+              @if (b.images.length > 1) {
+                <button type="button" class="img-nav img-nav--prev" (click)="prevImage(b); $event.stopPropagation()">‹</button>
+                <button type="button" class="img-nav img-nav--next" (click)="nextImage(b); $event.stopPropagation()">›</button>
+                <span class="img-count">{{ imageIndexByBien()[b.id] + 1 }} / {{ b.images.length }}</span>
+              }
+            } @else {
+              <div class="bien-card__placeholder">Skna</div>
+            }
+          </div>
+          <div class="bien-card__content">
+            <h3>{{ b.prixBase | number: '1.0-0' }} €</h3>
+            <p class="title">{{ b.titre }}</p>
+            <p class="meta">{{ b.surface }} m² — {{ b.adresse?.ville || 'Ville non définie' }}</p>
+            <div class="bien-card__actions">
+              <button type="button" class="btn-detail" (click)="openDetail(b.id)">Voir détails</button>
+              <button type="button" class="btn-demande" (click)="openDemandeModal(b)">Demande</button>
+            </div>
+          </div>
+        </article>
+      } @empty {
+        <p class="locataire-empty">Aucun bien disponible avec ces filtres.</p>
+      }
+    </section>
+
+    <section class="locataire-pagination">
+      <button type="button" (click)="prevPage()" [disabled]="page().first">Précédent</button>
+      <span>Page {{ page().number + 1 }} / {{ page().totalPages || 1 }}</span>
+      <button type="button" (click)="nextPage()" [disabled]="page().last">Suivant</button>
+    </section>
+  }
+
+  @if (selectedBien(); as bien) {
+    <section class="locataire-modal locataire-modal--detail" aria-modal="true" role="dialog">
+      <div class="locataire-modal__backdrop" (click)="closeDetail()"></div>
+      <article class="locataire-modal__panel">
+        <button type="button" class="close" (click)="closeDetail()" aria-label="Fermer">×</button>
+        <h2>{{ bien.titre }}</h2>
+
+        <div class="detail-gallery">
+          @if (detailImageUrl()) {
+            <img [src]="detailImageUrl()" [alt]="bien.titre" class="detail-gallery__main" />
+          } @else {
+            <div class="detail-gallery__main detail-gallery__placeholder">Aucune image</div>
+          }
+          @if (bien.images.length > 1) {
+            <div class="detail-gallery__thumbs">
+              @for (img of bien.images; track img; let i = $index) {
+                <button type="button" class="thumb" [class.is-active]="detailImageIndex() === i" (click)="selectDetailImage(i)">
+                  <img [src]="img" [alt]="'Image ' + (i + 1)" />
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="detail-grid">
+          <p><strong>Référence</strong> {{ bien.reference }}</p>
+          <p><strong>Prix</strong> {{ bien.prixBase | number: '1.0-0' }} €</p>
+          <p><strong>Surface</strong> {{ bien.surface }} m²</p>
+          <p><strong>Adresse</strong> {{ bien.adresse?.rue }}, {{ bien.adresse?.ville }}</p>
+          <p><strong>Propriétaire</strong> {{ bien.proprietaireNom }}</p>
+        </div>
+
+        <p class="detail-hint">
+          Pour envoyer une demande de location, choisissez vos dates dans la fenêtre dédiée. Le suivi se fait dans
+          <strong>Mes demandes</strong>.
+        </p>
+
+        <div class="detail-footer">
+          <button type="button" class="btn-demande" (click)="openDemandeFromDetail()">Demander ce bien</button>
+        </div>
+      </article>
+    </section>
+  }
+
+  @if (demandeBien(); as db) {
+    <section class="locataire-modal locataire-modal--demande" aria-modal="true" role="dialog">
+      <div class="locataire-modal__backdrop" (click)="closeDemandeModal()"></div>
+      <article class="locataire-modal__panel locataire-modal__panel--demande">
+        <button type="button" class="close" (click)="closeDemandeModal()" aria-label="Fermer">×</button>
+        <h2>Demande de location</h2>
+        <p class="demande-subtitle">{{ db.titre }}</p>
+        <p class="demande-ref">Réf. {{ db.reference }} · {{ db.prixBase | number: '1.0-0' }} € · {{ db.surface }} m²</p>
+
+        @if (demandeGlobalError()) {
+          <div class="demande-banner" role="alert">{{ demandeGlobalError() }}</div>
+        }
+
+        <div class="demande-fields">
+          <label class="field">
+            <span class="field__label">Date de début</span>
+            <input type="date" [(ngModel)]="demandeDateDebut" [class.is-invalid]="demandeFieldErrors()['dateDebut']" />
+            @if (demandeFieldErrors()['dateDebut']) {
+              <span class="field__error">{{ demandeFieldErrors()['dateDebut'] }}</span>
+            }
+          </label>
+          <label class="field">
+            <span class="field__label">Date de fin</span>
+            <input type="date" [(ngModel)]="demandeDateFin" [class.is-invalid]="demandeFieldErrors()['dateFin']" />
+            @if (demandeFieldErrors()['dateFin']) {
+              <span class="field__error">{{ demandeFieldErrors()['dateFin'] }}</span>
+            }
+          </label>
+        </div>
+
+        <p class="demande-help">
+          Si le bien est sous mandat de gestion, la demande est traitée par l’agent mandaté ; sinon elle est transmise au
+          propriétaire.
+        </p>
+
+        <div class="demande-actions">
+          <button type="button" class="ghost" (click)="closeDemandeModal()">Annuler</button>
+          <button type="button" class="btn-demande" [disabled]="requesting()" (click)="submitDemande()">
+            {{ requesting() ? 'Envoi…' : 'Envoyer la demande' }}
+          </button>
+        </div>
+      </article>
+    </section>
+  }
+</main>

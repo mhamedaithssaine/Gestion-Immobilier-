@@ -1,0 +1,43 @@
+.ppage h1 {
+  margin: 0 0 0.8rem;
+}
+.ppage__error {
+  background: #ffe4e6;
+  color: #be123c;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  margin-bottom: 0.8rem;
+}
+.ppage__table-wrap {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  overflow: auto;
+}
+.ppage__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ppage__table th,
+.ppage__table td {
+  padding: 0.7rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+.badge {
+  display: inline-block;
+  background: #ffedd5;
+  color: #9a3412;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+}
+.danger {
+  border: 0;
+  border-radius: 8px;
+  background: #dc2626;
+  color: #fff;
+  padding: 0.4rem 0.65rem;
+  cursor: pointer;
+}
+

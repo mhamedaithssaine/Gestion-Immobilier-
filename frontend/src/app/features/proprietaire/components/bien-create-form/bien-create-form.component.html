@@ -1,0 +1,116 @@
+<section class="pcf">
+  <header class="pcf__head">
+    <h2>{{ mode === 'edit' ? 'Modifier le bien' : 'Ajouter un bien' }}</h2>
+    <button type="button" class="pcf__close" (click)="close.emit()">Fermer</button>
+  </header>
+
+  <div class="pcf__grid">
+    <label>
+      Type de bien
+      <select [(ngModel)]="type" [disabled]="mode === 'edit'" (ngModelChange)="onTypeChange()">
+        <option value="APPARTEMENT">Appartement</option>
+        <option value="MAISON">Maison</option>
+      </select>
+      @if (mode === 'edit') {
+        <small class="pcf__hint">Le type ne peut pas être modifié (cohérence avec le bien existant).</small>
+      }
+    </label>
+
+    <label>
+      Titre
+      <input type="text" [(ngModel)]="titre" placeholder="Ex: Studio centre ville" />
+    </label>
+
+    <label>
+      Surface habitable (m²)
+      <input type="number" [(ngModel)]="surface" min="0" step="0.01" />
+    </label>
+
+    <label>
+      Prix
+      <input type="number" [(ngModel)]="prixBase" min="0" step="1" />
+    </label>
+
+    <label>
+      Statut
+      <select [(ngModel)]="statut">
+        <option value="DISPONIBLE">Disponible</option>
+        <option value="LOUE">Loué</option>
+        <option value="VENDU">Vendu</option>
+        <option value="SOUS_COMPROMIS">Sous compromis</option>
+      </select>
+    </label>
+
+    <label>
+      Rue
+      <input type="text" [(ngModel)]="rue" />
+    </label>
+    <label>
+      Ville
+      <input type="text" [(ngModel)]="ville" />
+    </label>
+    <label>
+      Code postal
+      <input type="text" [(ngModel)]="codePostal" />
+    </label>
+    <label>
+      Pays
+      <input type="text" [(ngModel)]="pays" />
+    </label>
+
+    @if (type === 'APPARTEMENT') {
+      <label>
+        Étage
+        <input type="number" [(ngModel)]="etage" />
+      </label>
+      <label class="pcf__check pcf__check--row">
+        <input type="checkbox" [(ngModel)]="ascenseur" />
+        Ascenseur
+      </label>
+    } @else {
+      <label>
+        Surface terrain (m²)
+        <input type="number" [(ngModel)]="surfaceTerrain" min="0" step="0.01" />
+      </label>
+      <label class="pcf__check pcf__check--row">
+        <input type="checkbox" [(ngModel)]="garage" />
+        Garage
+      </label>
+    }
+
+    <label class="pcf__full">
+      @if (mode === 'create') {
+        Images (plusieurs fichiers)
+      } @else {
+        Ajouter des images (optionnel)
+      }
+      <input type="file" accept="image/*" multiple (change)="onImagesSelected($event)" />
+      <small>
+        @if (mode === 'create') {
+          {{ images.length }} fichier(s) sélectionné(s)
+        } @else {
+          {{ images.length }} nouvelle(s) image(s) — elles seront ajoutées aux photos existantes.
+        }
+      </small>
+    </label>
+
+    @if (mode === 'edit' && prefill?.images?.length) {
+      <div class="pcf__full pcf__existing">
+        <span class="pcf__existing-label">Photos actuelles</span>
+        <div class="pcf__thumbs">
+          @for (url of prefill?.images ?? []; track url) {
+            <img [src]="url" alt="" class="pcf__thumb" />
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <button type="button" class="pcf__submit" [disabled]="submitting" (click)="submit()">
+    @if (mode === 'edit') {
+      {{ submitting ? 'Enregistrement…' : 'Enregistrer les modifications' }}
+    } @else {
+      {{ submitting ? 'Creation...' : 'Ajouter le bien' }}
+    }
+  </button>
+</section>
