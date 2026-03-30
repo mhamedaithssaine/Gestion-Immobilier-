@@ -20,41 +20,31 @@ pipeline {
 
         stage('Build & test') {
             steps {
-                sh '''
-                    echo "=== Build + tests + couverture JaCoCo ==="
-                    mvn clean verify
-                '''
-            }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
+                dir('backend') {
+                    sh '''
+                        echo "=== Build + tests + couverture JaCoCo ==="
+                        mvn clean verify
+                    '''
                 }
             }
         }
 
         stage('Verify JaCoCo Report') {
             steps {
-                sh '''
-                    echo "=== Vérification du rapport JaCoCo ==="
-                    ls -la target/site/jacoco/ || echo "Dossier jacoco introuvable"
-                    if [ -f target/site/jacoco/jacoco.xml ]; then
-                        echo "jacoco.xml trouvé"
-                        wc -c target/site/jacoco/jacoco.xml
-                        sed -n '1,30p' target/site/jacoco/jacoco.xml
-                    else
-                        echo "jacoco.xml introuvable"
-                        exit 1
-                    fi
-                '''
+                  dir('backend') {
+                    sh '''
+                        ls -la target/site/jacoco/ || echo "Dossier jacoco introuvable"
+                        test -f target/site/jacoco/jacoco.xml
+                    '''
+                }
             }
-        }
 
         stage('Package') {
             steps {
-                sh '''
-                    echo "=== Packaging ==="
-                    mvn package -DskipTests
-                '''
+                steps {
+                    dir('backend') {
+                        sh 'mvn package -DskipTests'
+                    }
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
@@ -62,6 +52,7 @@ pipeline {
 
     post {
         always {
+            junit testResults: 'backend/target/surefire-reports/*.xml', allowEmptyResults: true
             echo "Build ${currentBuild.result} - ${env.JOB_NAME} #${env.BUILD_NUMBER}"
             cleanWs()
         }
