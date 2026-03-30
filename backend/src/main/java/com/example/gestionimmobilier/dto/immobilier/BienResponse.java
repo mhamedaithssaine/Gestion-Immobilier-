@@ -19,6 +19,7 @@ import java.util.UUID;
 })
 public abstract class BienResponse {
 
+    public abstract String getType();
     public abstract UUID getId();
     public abstract String getReference();
     public abstract String getTitre();

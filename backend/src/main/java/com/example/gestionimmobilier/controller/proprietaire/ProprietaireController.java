@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/proprietaires")
-@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+@PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_PROPRIETAIRE')")
 public class ProprietaireController {
 
     private final ProprietaireService proprietaireService;
@@ -73,7 +73,6 @@ public class ProprietaireController {
     }
 
     @GetMapping("/{id}/historique-financier")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_PROPRIETAIRE')")
     public ResponseEntity<ApiRetour<HistoriqueFinancierResponse>> getHistoriqueFinancier(@PathVariable UUID id) {
         HistoriqueFinancierResponse historique = proprietaireService.getHistoriqueFinancier(id);
         return ResponseEntity.ok(ApiRetour.success("Historique financier du propriétaire", historique));

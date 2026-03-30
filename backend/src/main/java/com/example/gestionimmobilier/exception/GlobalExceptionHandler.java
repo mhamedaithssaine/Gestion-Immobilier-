@@ -11,6 +11,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -114,6 +115,20 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceeded(
+            MaxUploadSizeExceededException ex,
+            WebRequest request) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.PAYLOAD_TOO_LARGE.value())
+                .error(ErrorMessages.REQUETE_INVALIDE)
+                .message(ErrorMessages.IMAGE_TAILLE_DEPASSEE)
+                .path(getPath(request))
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
     @ExceptionHandler(UnauthorizedException.class)

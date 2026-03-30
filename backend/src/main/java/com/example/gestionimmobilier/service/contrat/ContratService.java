@@ -7,6 +7,7 @@ import com.example.gestionimmobilier.dto.immobilier.BienResponse;
 import com.example.gestionimmobilier.dto.user.LocataireResponse;
 import com.example.gestionimmobilier.dto.user.ProprietaireResponse;
 import com.example.gestionimmobilier.exception.ErrorMessages;
+import com.example.gestionimmobilier.exception.ForbiddenException;
 import com.example.gestionimmobilier.exception.ResourceNotFoundException;
 import com.example.gestionimmobilier.exception.ValidationException;
 import com.example.gestionimmobilier.mapper.BienMapper;
@@ -38,6 +39,13 @@ import java.util.UUID;
 public class ContratService {
 
     private static final Logger log = LoggerFactory.getLogger(ContratService.class);
+
+    /** Empêche une nouvelle demande / contrat tant qu’une demande ou un bail actif existe sur le bien. */
+    private static final List<StatutBail> STATUTS_BLOQUANTS_NOUVEAU_BAIL = List.of(
+            StatutBail.ACTIF,
+            StatutBail.EN_ATTENTE,
+            StatutBail.EN_ATTENTE_VALIDATION_AGENT
+    );
 
     private final BailRepository bailRepository;
     private final BienImmobilierRepository bienRepository;
@@ -99,7 +107,7 @@ public class ContratService {
             throw new ValidationException(ErrorMessages.BIEN_N_APPARTIENT_PAS_PROPRIETAIRE);
         }
 
-        if (bailRepository.existsByBien_IdAndStatutIn(bien.getId(), List.of(StatutBail.ACTIF, StatutBail.EN_ATTENTE))) {
+        if (bailRepository.existsByBien_IdAndStatutIn(bien.getId(), STATUTS_BLOQUANTS_NOUVEAU_BAIL)) {
             throw new ValidationException(ErrorMessages.BIEN_DEJA_LIE_CONTRAT);
         }
         if (bien.getStatut() != StatutBien.DISPONIBLE) {
@@ -150,7 +158,8 @@ public class ContratService {
                 id, request.dateDebut(), request.dateFin(), request.loyerHC(), request.charges());
         Bail bail = bailRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BAIL_INTROUVABLE));
-        if (bail.getStatut() == StatutBail.RESILIE || bail.getStatut() == StatutBail.TERMINE) {
+        if (bail.getStatut() == StatutBail.RESILIE || bail.getStatut() == StatutBail.TERMINE
+                || bail.getStatut() == StatutBail.REFUSE) {
             throw new ValidationException(ErrorMessages.CONTRAT_NON_MODIFIABLE);
         }
         if (request.dateDebut() != null) bail.setDateDebut(request.dateDebut());
@@ -169,6 +178,9 @@ public class ContratService {
         log.info("Résiliation contrat {}", id);
         Bail bail = bailRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BAIL_INTROUVABLE));
+        if (bail.getStatut() == StatutBail.REFUSE) {
+            throw new ValidationException(ErrorMessages.CONTRAT_DEMANDE_REFUSEE_NON_RESILIABLE);
+        }
         if (bail.getStatut() == StatutBail.RESILIE || bail.getStatut() == StatutBail.TERMINE) {
             throw new ValidationException(ErrorMessages.CONTRAT_DEJA_RESILIE);
         }
@@ -184,6 +196,193 @@ public class ContratService {
     public List<ContratResponse> listerContratsParLocataire(UUID locataireId) {
         List<Bail> baux = bailRepository.findByClient_IdOrderByDateDebutDesc(locataireId);
         return baux.stream().map(this::toContratResponse).toList();
+    }
+
+    public List<ContratResponse> listerContratsParLocataireKeycloak(String keycloakId) {
+        List<Bail> baux = bailRepository.findByClient_KeycloakIdOrderByDateDebutDesc(keycloakId);
+        return baux.stream().map(this::toContratResponse).toList();
+    }
+
+    public List<ContratResponse> listerContratsParProprietaireKeycloak(String keycloakId) {
+        List<Bail> baux = bailRepository.findByProprietaire_KeycloakIdOrderByDateDebutDesc(keycloakId);
+        return baux.stream().map(this::toContratResponse).toList();
+    }
+
+    @Transactional
+    public ContratResponse resilierContratProprietaire(UUID id, String keycloakId) {
+        Bail bail = bailRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BAIL_INTROUVABLE));
+        if (!bail.getProprietaire().getKeycloakId().equals(keycloakId)) {
+            throw new ForbiddenException(ErrorMessages.MESSAGE_FORBIDDEN);
+        }
+        return resilierContrat(id);
+    }
+
+    @Transactional
+    public ContratResponse modifierContratProprietaire(UUID id, String keycloakId, UpdateContratRequest request) {
+        Bail bail = bailRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BAIL_INTROUVABLE));
+        if (!bail.getProprietaire().getKeycloakId().equals(keycloakId)) {
+            throw new ForbiddenException(ErrorMessages.MESSAGE_FORBIDDEN);
+        }
+        refuserSiBailSousMandatActif(bail);
+        return modifierContrat(id, request);
+    }
+
+    @Transactional
+    public ContratResponse changerStatutContratProprietaire(UUID id, String keycloakId, StatutBail statut) {
+        Bail bail = bailRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BAIL_INTROUVABLE));
+        if (!bail.getProprietaire().getKeycloakId().equals(keycloakId)) {
+            throw new ForbiddenException(ErrorMessages.MESSAGE_FORBIDDEN);
+        }
+        refuserSiDemandeReserveeAgent(bail);
+        return changerStatutContrat(id, statut);
+    }
+
+    /**
+     * Mandat actif : le propriétaire ne modifie pas les termes du bail (pilotage agent).
+     */
+    private void refuserSiBailSousMandatActif(Bail bail) {
+        if (mandatRepository.findByBien_IdAndStatut(bail.getBien().getId(), StatutMandat.ACTIF).isPresent()) {
+            throw new ForbiddenException(ErrorMessages.CONTRAT_GERE_PAR_MANDATAIRE);
+        }
+    }
+
+    /**
+     * File d’attente agent ou ancienne demande EN_ATTENTE alors qu’un mandat existe : pas le propriétaire.
+     */
+    private void refuserSiDemandeReserveeAgent(Bail bail) {
+        if (bail.getStatut() == StatutBail.EN_ATTENTE_VALIDATION_AGENT) {
+            throw new ForbiddenException(ErrorMessages.CONTRAT_VALIDATION_AGENT_REQUISE);
+        }
+        if (bail.getStatut() == StatutBail.EN_ATTENTE
+                && mandatRepository.findByBien_IdAndStatut(bail.getBien().getId(), StatutMandat.ACTIF).isPresent()) {
+            throw new ForbiddenException(ErrorMessages.CONTRAT_VALIDATION_AGENT_REQUISE);
+        }
+    }
+
+    public List<ContratResponse> listerContratsParAgentKeycloak(String keycloakId, StatutBail statut) {
+        List<Bail> baux = statut == null
+                ? bailRepository.findByAgent_KeycloakIdOrderByDateDebutDesc(keycloakId, StatutMandat.ACTIF)
+                : bailRepository.findByAgent_KeycloakIdAndStatutOrderByDateDebutDesc(
+                        keycloakId, statut, StatutMandat.ACTIF);
+        return baux.stream().map(this::toContratResponse).toList();
+    }
+
+    public ContratResponse getContratByIdPourAgent(UUID id, String keycloakId) {
+        Bail bail = bailRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BAIL_INTROUVABLE));
+        assertAgentPeutVoirBail(bail, keycloakId);
+        return toContratResponse(bail);
+    }
+
+    @Transactional
+    public ContratResponse modifierContratAgent(UUID id, String keycloakId, UpdateContratRequest request) {
+        Bail bail = bailRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BAIL_INTROUVABLE));
+        assertAgentMandataireDuBien(bail, keycloakId);
+        return modifierContrat(id, request);
+    }
+
+   
+    @Transactional
+    public ContratResponse changerStatutContratAgent(UUID id, String keycloakId, StatutBail nouveauStatut) {
+        Bail bail = bailRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BAIL_INTROUVABLE));
+        assertAgentMandataireDuBien(bail, keycloakId);
+        if (bail.getAgent() == null) {
+            MandatDeGestion m = mandatRepository
+                    .findByBien_IdAndStatut(bail.getBien().getId(), StatutMandat.ACTIF)
+                    .orElseThrow(() -> new ForbiddenException(ErrorMessages.CONTRAT_AGENT_HORS_MANDAT));
+            bail.setAgent(m.getAgent());
+            bailRepository.save(bail);
+        }
+
+        StatutBail current = bail.getStatut();
+        boolean fileValidationAgent = current == StatutBail.EN_ATTENTE_VALIDATION_AGENT
+                || (current == StatutBail.EN_ATTENTE
+                && mandatRepository.findByBien_IdAndStatut(bail.getBien().getId(), StatutMandat.ACTIF).isPresent());
+
+        if (fileValidationAgent) {
+            if (nouveauStatut != StatutBail.ACTIF && nouveauStatut != StatutBail.REFUSE) {
+                throw new ValidationException(ErrorMessages.CONTRAT_TRANSITION_STATUT_INTERDITE);
+            }
+        } else {
+            if (current == StatutBail.REFUSE || current == StatutBail.RESILIE || current == StatutBail.TERMINE) {
+                throw new ValidationException(ErrorMessages.CONTRAT_NON_MODIFIABLE);
+            }
+        }
+
+        return changerStatutContrat(id, nouveauStatut);
+    }
+
+    /** Lecture d’un bail : agent désigné sur le bail ou titulaire du mandat actif sur le bien. */
+    private void assertAgentPeutVoirBail(Bail bail, String keycloakId) {
+        if (bail.getAgent() != null
+                && bail.getAgent().getKeycloakId() != null
+                && bail.getAgent().getKeycloakId().equals(keycloakId)) {
+            return;
+        }
+        boolean viaMandat = mandatRepository
+                .findByBien_IdAndStatut(bail.getBien().getId(), StatutMandat.ACTIF)
+                .map(m -> m.getAgent() != null && keycloakId.equals(m.getAgent().getKeycloakId()))
+                .orElse(false);
+        if (!viaMandat) {
+            throw new ForbiddenException(ErrorMessages.MESSAGE_FORBIDDEN);
+        }
+    }
+
+    private void assertAgentMandataireDuBien(Bail bail, String keycloakId) {
+        MandatDeGestion mandat = mandatRepository.findByBien_IdAndStatut(bail.getBien().getId(), StatutMandat.ACTIF)
+                .orElseThrow(() -> new ForbiddenException(ErrorMessages.CONTRAT_AGENT_HORS_MANDAT));
+        if (mandat.getAgent() == null || !mandat.getAgent().getKeycloakId().equals(keycloakId)) {
+            throw new ForbiddenException(ErrorMessages.CONTRAT_AGENT_HORS_MANDAT);
+        }
+        if (bail.getAgent() != null && !bail.getAgent().getId().equals(mandat.getAgent().getId())) {
+            throw new ValidationException(ErrorMessages.CONTRAT_AGENT_HORS_MANDAT);
+        }
+    }
+
+    @Transactional
+    public ContratResponse changerStatutContrat(UUID id, StatutBail statut) {
+        Bail bail = bailRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BAIL_INTROUVABLE));
+        if (statut == null) {
+            throw new ValidationException("Le statut du contrat est requis.");
+        }
+
+        if (statut == StatutBail.ACTIF) {
+            boolean bienOccupeParAutre = bailRepository.existsByBien_IdAndStatutInAndIdNot(
+                    bail.getBien().getId(),
+                    List.of(StatutBail.ACTIF),
+                    bail.getId()
+            );
+            if (bienOccupeParAutre) {
+                throw new ValidationException(ErrorMessages.BIEN_DEJA_LIE_CONTRAT);
+            }
+
+            boolean locataireAvecAutreContratActif = bailRepository.existsByClient_IdAndStatutInAndIdNot(
+                    bail.getClient().getId(),
+                    List.of(StatutBail.ACTIF),
+                    bail.getId()
+            );
+            if (locataireAvecAutreContratActif) {
+                throw new ValidationException(ErrorMessages.LOCATAIRE_DEJA_LIE_CONTRAT_ACTIF);
+            }
+        }
+
+        bail.setStatut(statut);
+        bail = bailRepository.save(bail);
+
+        BienImmobilier bien = bail.getBien();
+        if (statut == StatutBail.ACTIF) {
+            bien.setStatut(StatutBien.LOUE);
+        } else if (statut == StatutBail.RESILIE || statut == StatutBail.TERMINE || statut == StatutBail.REFUSE) {
+            bien.setStatut(StatutBien.DISPONIBLE);
+        }
+        bienRepository.save(bien);
+        return toContratResponse(bail);
     }
 
     private ContratResponse toContratResponse(Bail bail) {

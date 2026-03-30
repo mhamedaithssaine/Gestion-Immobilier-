@@ -6,6 +6,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Réponse mandat. {@code documentUrl} est l’URL Cloudinary persistée (affichage / traçabilité) ;
+ * pour un fichier garanti avec l’auth applicative, le front doit utiliser
+ * {@code GET .../mandats/{id}/document} (admin, agent ou espace propriétaire selon le rôle).
+ */
 public record MandatResponse(
         UUID id,
         String numMandat,

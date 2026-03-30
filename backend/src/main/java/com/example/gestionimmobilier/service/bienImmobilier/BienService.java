@@ -15,8 +15,10 @@ import com.example.gestionimmobilier.models.entity.immobilier.Adresse;
 import com.example.gestionimmobilier.models.entity.immobilier.Appartement;
 import com.example.gestionimmobilier.models.entity.immobilier.BienImmobilier;
 import com.example.gestionimmobilier.models.entity.immobilier.Maison;
+import com.example.gestionimmobilier.models.entity.user.Agent;
 import com.example.gestionimmobilier.models.entity.user.Proprietaire;
 import com.example.gestionimmobilier.models.entity.user.Utilisateur;
+import com.example.gestionimmobilier.models.enums.Role;
 import com.example.gestionimmobilier.repository.AdresseRepository;
 import com.example.gestionimmobilier.repository.BienImmobilierRepository;
 import com.example.gestionimmobilier.repository.UtilisateurRepository;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,6 +53,7 @@ public class BienService {
 
     @Transactional
     public BienResponse creerBien(String keycloakId, CreateBienRequest request, MultipartFile[] images) {
+        requireProprietaireRole(keycloakId);
         Proprietaire proprietaire = getProprietaireByKeycloakId(keycloakId);
 
         Adresse adresse = mapAdresse(request.getAdresse());
@@ -61,7 +65,6 @@ public class BienService {
         bien = bienImmobilierRepository.save(bien);
 
         if (images != null && images.length > 0) {
-            // Upload to Cloudinary; fallback to local storage if needed later
             List<String> urls = cloudStorageService.uploadBienImages(bien.getId(), images);
             bien.setImages(urls);
             bien = bienImmobilierRepository.save(bien);
@@ -72,12 +75,46 @@ public class BienService {
 
     @Transactional
     public BienResponse modifierBien(UUID bienId, String keycloakId, CreateBienRequest request, MultipartFile[] images) {
-        Proprietaire proprietaire = getProprietaireByKeycloakId(keycloakId);
+        Utilisateur utilisateur = getUtilisateurByKeycloakId(keycloakId);
+
+        if (hasRole(utilisateur, Role.ROLE_ADMIN)) {
+            BienImmobilier existing = bienImmobilierRepository.findById(bienId)
+                    .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BIEN_INTROUVABLE));
+            return modifierBien(bienId, existing.getProprietaire().getKeycloakId(), request, images);
+        }
+
+        requireProprietaireRole(utilisateur);
+        Proprietaire proprietaire = (Proprietaire) utilisateur;
 
         BienImmobilier bien = bienImmobilierRepository
                 .findByIdAndProprietaire(bienId, proprietaire)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BIEN_INTROUVABLE));
 
+        applyBienUpdates(bien, request, images);
+        bien = bienImmobilierRepository.save(bien);
+        return bienMapper.toBienResponse(bien);
+    }
+
+    /**
+     * Mise à jour d’un bien par l’agent mandataire (même contenu que {@link #modifierBien}, sans changement de propriétaire).
+     */
+    @Transactional
+    public BienResponse modifierBienPourAgent(UUID bienId, String keycloakId, CreateBienRequest request, MultipartFile[] images) {
+        Utilisateur u = getUtilisateurByKeycloakId(keycloakId);
+        if (!hasRole(u, Role.ROLE_AGENT) || !(u instanceof Agent agent)) {
+            throw new ForbiddenException(ErrorMessages.ACCES_REFUSE);
+        }
+        if (!bienImmobilierRepository.existsAgentAccessToBien(agent.getId(), bienId)) {
+            throw new ForbiddenException(ErrorMessages.ACCES_REFUSE);
+        }
+        BienImmobilier bien = bienImmobilierRepository.findById(bienId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BIEN_INTROUVABLE));
+        applyBienUpdates(bien, request, images);
+        bien = bienImmobilierRepository.save(bien);
+        return bienMapper.toBienResponse(bien);
+    }
+
+    private void applyBienUpdates(BienImmobilier bien, CreateBienRequest request, MultipartFile[] images) {
         bien.setTitre(request.getTitre());
         bien.setSurface(request.getSurface());
         bien.setPrixBase(request.getPrixBase());
@@ -107,17 +144,29 @@ public class BienService {
         }
 
         if (images != null && images.length > 0) {
-            List<String> urls = cloudStorageService.uploadBienImages(bien.getId(), images);
-            bien.setImages(urls);
+            List<String> newUrls = cloudStorageService.uploadBienImages(bien.getId(), images);
+            List<String> merged = new ArrayList<>();
+            if (bien.getImages() != null) {
+                merged.addAll(bien.getImages());
+            }
+            merged.addAll(newUrls);
+            bien.setImages(merged);
         }
-
-        bien = bienImmobilierRepository.save(bien);
-        return bienMapper.toBienResponse(bien);
     }
 
     @Transactional
     public void supprimerBien(UUID bienId, String keycloakId) {
-        Proprietaire proprietaire = getProprietaireByKeycloakId(keycloakId);
+        Utilisateur utilisateur = getUtilisateurByKeycloakId(keycloakId);
+
+        if (hasRole(utilisateur, Role.ROLE_ADMIN)) {
+            BienImmobilier bien = bienImmobilierRepository.findById(bienId)
+                    .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BIEN_INTROUVABLE));
+            bienImmobilierRepository.delete(bien);
+            return;
+        }
+
+        requireProprietaireRole(utilisateur);
+        Proprietaire proprietaire = (Proprietaire) utilisateur;
 
         BienImmobilier bien = bienImmobilierRepository
                 .findByIdAndProprietaire(bienId, proprietaire)
@@ -130,10 +179,25 @@ public class BienService {
         if (keycloakId == null || keycloakId.isBlank()) {
             throw new ValidationException(ErrorMessages.IDENTITE_PROPRIETAIRE_REQUISE);
         }
-        Proprietaire proprietaire = getProprietaireByKeycloakId(keycloakId);
-        BienImmobilier bien = bienImmobilierRepository
-                .findByIdAndProprietaire(bienId, proprietaire)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BIEN_INTROUVABLE));
+        Utilisateur utilisateur = getUtilisateurByKeycloakId(keycloakId);
+        BienImmobilier bien;
+        if (hasRole(utilisateur, Role.ROLE_ADMIN)) {
+            bien = bienImmobilierRepository.findById(bienId)
+                    .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BIEN_INTROUVABLE));
+        } else if (hasRole(utilisateur, Role.ROLE_AGENT)) {
+            Agent agent = getAgentByUtilisateur(utilisateur);
+            if (!bienImmobilierRepository.existsAgentAccessToBien(agent.getId(), bienId)) {
+                throw new ForbiddenException(ErrorMessages.ACCES_REFUSE);
+            }
+            bien = bienImmobilierRepository.findById(bienId)
+                    .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BIEN_INTROUVABLE));
+        } else if (hasRole(utilisateur, Role.ROLE_PROPRIETAIRE)) {
+            Proprietaire proprietaire = (Proprietaire) utilisateur;
+            bien = bienImmobilierRepository.findByIdAndProprietaire(bienId, proprietaire)
+                    .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.BIEN_INTROUVABLE));
+        } else {
+            throw new ForbiddenException(ErrorMessages.ACCES_REFUSE);
+        }
         return bienMapper.toBienResponse(bien);
     }
 
@@ -141,9 +205,46 @@ public class BienService {
         if (keycloakId == null || keycloakId.isBlank()) {
             throw new ValidationException(ErrorMessages.IDENTITE_PROPRIETAIRE_REQUISE);
         }
-        Proprietaire proprietaire = getProprietaireByKeycloakId(keycloakId);
-        List<BienImmobilier> biens = bienImmobilierRepository.findByProprietaireOrderByCreatedAtDesc(proprietaire);
+        Utilisateur utilisateur = getUtilisateurByKeycloakId(keycloakId);
+        List<BienImmobilier> biens;
+        if (hasRole(utilisateur, Role.ROLE_ADMIN)) {
+            biens = bienImmobilierRepository.findAllByOrderByCreatedAtDesc();
+        } else if (hasRole(utilisateur, Role.ROLE_AGENT)) {
+            Agent agent = getAgentByUtilisateur(utilisateur);
+            biens = bienImmobilierRepository.findDistinctByAgentMandat(agent.getId());
+        } else if (hasRole(utilisateur, Role.ROLE_PROPRIETAIRE)) {
+            Proprietaire proprietaire = (Proprietaire) utilisateur;
+            biens = bienImmobilierRepository.findByProprietaireOrderByCreatedAtDesc(proprietaire);
+        } else {
+            throw new ForbiddenException(ErrorMessages.ACCES_REFUSE);
+        }
         return biens.stream().map(bienMapper::toBienResponse).toList();
+    }
+
+    private Utilisateur getUtilisateurByKeycloakId(String keycloakId) {
+        return utilisateurRepository.findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.UTILISATEUR_INTROUVABLE));
+    }
+
+    private static boolean hasRole(Utilisateur utilisateur, Role role) {
+        return utilisateur.getRoles() != null && utilisateur.getRoles().contains(role);
+    }
+
+    private void requireProprietaireRole(String keycloakId) {
+        requireProprietaireRole(getUtilisateurByKeycloakId(keycloakId));
+    }
+
+    private static void requireProprietaireRole(Utilisateur utilisateur) {
+        if (!hasRole(utilisateur, Role.ROLE_PROPRIETAIRE)) {
+            throw new ForbiddenException(ErrorMessages.ACCES_REFUSE);
+        }
+    }
+
+    private static Agent getAgentByUtilisateur(Utilisateur utilisateur) {
+        if (!(utilisateur instanceof Agent agent)) {
+            throw new ForbiddenException(ErrorMessages.ACCES_REFUSE);
+        }
+        return agent;
     }
 
     private Proprietaire getProprietaireByKeycloakId(String keycloakId) {

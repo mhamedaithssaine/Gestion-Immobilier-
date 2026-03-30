@@ -60,6 +60,18 @@ class DashboardControllerTest {
 
     @Test
     @WithMockUser(authorities = {"ROLE_ADMIN"})
+    void getNombreComptesEnAttenteActivation_retourne200() throws Exception {
+        Mockito.when(dashboardService.getNombreComptesEnAttenteActivation())
+                .thenReturn(new NombreComptesEnAttenteActivationResponse(2L));
+
+        mockMvc.perform(get("/api/admin/dashboard/comptes-en-attente-activation/count")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.nombreComptesEnAttenteActivation").value(2));
+    }
+
+    @Test
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
     void getStatistiquesMandatsToutesAgences_retourne200() throws Exception {
         UUID agenceId = UUID.randomUUID();
         MandatsGestionStatistiqueResponse resp =

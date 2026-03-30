@@ -10,6 +10,10 @@ import java.util.UUID;
 public interface AgentRepository extends JpaRepository<Agent, UUID> {
 
     List<Agent> findByAgence_Id(UUID agenceId);
+    List<Agent> findByEnabledTrueOrderByFirstNameAscLastNameAsc();
+    List<Agent> findByAgence_IdAndEnabledTrueOrderByFirstNameAscLastNameAsc(UUID agenceId);
+    boolean existsByAgence_Id(UUID agenceId);
 
+    Optional<Agent> findByKeycloakId(String keycloakId);
     Optional<Agent> findTopByMatriculeStartingWithOrderByMatriculeDesc(String prefix);
 }

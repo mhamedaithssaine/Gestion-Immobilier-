@@ -2,6 +2,7 @@ package com.example.gestionimmobilier.controller.dashboard;
 
 import com.example.gestionimmobilier.dto.api.response.ApiRetour;
 import com.example.gestionimmobilier.dto.dashboard.*;
+import com.example.gestionimmobilier.dto.user.UtilisateurResponse;
 import com.example.gestionimmobilier.service.dashboard.DashboardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,6 +48,21 @@ public class DashboardController {
             @RequestParam int mois) {
         LocatairesEnRetardResponse data = dashboardService.getLocatairesEnRetard(annee, mois);
         return ResponseEntity.ok(ApiRetour.success("Locataires en retard de paiement", data));
+    }
+
+    /** Comptes locataire / propriétaire créés via inscription publique, en attente d’activation Keycloak. */
+    @GetMapping("/comptes-en-attente-activation/count")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiRetour<NombreComptesEnAttenteActivationResponse>> getNombreComptesEnAttenteActivation() {
+        NombreComptesEnAttenteActivationResponse data = dashboardService.getNombreComptesEnAttenteActivation();
+        return ResponseEntity.ok(ApiRetour.success("Nombre de comptes en attente d’activation", data));
+    }
+
+    @GetMapping("/comptes-en-attente-activation")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiRetour<List<UtilisateurResponse>>> listerComptesEnAttenteActivation() {
+        List<UtilisateurResponse> data = dashboardService.listerComptesEnAttenteActivation();
+        return ResponseEntity.ok(ApiRetour.success("Comptes en attente d’activation par un administrateur", data));
     }
 
     @GetMapping("/agences/stats/mandats-gestion")

@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/proprietaire/biens")
-@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE')")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE', 'ROLE_AGENT')")
 public class BienImmobilierController {
 
     private final BienService bienService;
@@ -43,14 +43,16 @@ public class BienImmobilierController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-public ResponseEntity<ApiRetour<BienResponse>> creerBienJson(@RequestBody @Valid CreateBienRequest data) {
-    String keycloakId = getCurrentKeycloakId();
-    BienResponse bien = bienService.creerBien(keycloakId, data, new MultipartFile[0]);
-    return ResponseEntity.status(HttpStatus.CREATED)
-            .body(ApiRetour.success("Bien immobilier créé avec succès", bien));
-}
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE')")
+    public ResponseEntity<ApiRetour<BienResponse>> creerBienJson(@RequestBody @Valid CreateBienRequest data) {
+        String keycloakId = getCurrentKeycloakId();
+        BienResponse bien = bienService.creerBien(keycloakId, data, new MultipartFile[0]);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiRetour.success("Bien immobilier créé avec succès", bien));
+    }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE')")
     public ResponseEntity<ApiRetour<BienResponse>> creerBienMultipart(
             @RequestPart("data") String data,
             @RequestPart(value = "images", required = false) MultipartFile[] images
@@ -71,6 +73,7 @@ public ResponseEntity<ApiRetour<BienResponse>> creerBienJson(@RequestBody @Valid
 
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE')")
     public ResponseEntity<ApiRetour<BienResponse>> modifierBien(
             @PathVariable UUID id,
             @RequestBody @Valid CreateBienRequest data) {
@@ -79,7 +82,23 @@ public ResponseEntity<ApiRetour<BienResponse>> creerBienJson(@RequestBody @Valid
         return ResponseEntity.ok(ApiRetour.success("Bien immobilier modifié avec succès", bien));
     }
 
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE')")
+    public ResponseEntity<ApiRetour<BienResponse>> modifierBienMultipart(
+            @PathVariable UUID id,
+            @RequestPart("data") String data,
+            @RequestPart(value = "images", required = false) MultipartFile[] images
+    ) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        CreateBienRequest request = mapper.readValue(data, CreateBienRequest.class);
+        String keycloakId = getCurrentKeycloakId();
+        MultipartFile[] parts = images != null ? images : new MultipartFile[0];
+        BienResponse bien = bienService.modifierBien(id, keycloakId, request, parts);
+        return ResponseEntity.ok(ApiRetour.success("Bien immobilier modifié avec succès", bien));
+    }
+
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE')")
     public ResponseEntity<ApiRetour<Void>> supprimerBien(@PathVariable UUID id) {
         String keycloakId = getCurrentKeycloakId();
         bienService.supprimerBien(id, keycloakId);

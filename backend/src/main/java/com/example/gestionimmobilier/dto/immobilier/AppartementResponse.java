@@ -30,6 +30,8 @@ public class AppartementResponse extends BienResponse {
     boolean ascenseur;
 
     @Override
+    public String getType() { return "APPARTEMENT"; }
+    @Override
     public UUID getId() { return id; }
     @Override
     public String getReference() { return reference; }
@@ -49,4 +51,6 @@ public class AppartementResponse extends BienResponse {
     public UUID getProprietaireId() { return proprietaireId; }
     @Override
     public String getProprietaireNom() { return proprietaireNom; }
+    public int getEtage() { return etage; }
+    public boolean isAscenseur() { return ascenseur; }
 }

@@ -79,7 +79,14 @@ public class BienMapper {
         List<String> urls = new ArrayList<>();
         for (String path : images) {
             if (path == null || path.isBlank()) continue;
-            urls.add(path.startsWith("/") ? path : "/uploads/" + path);
+            String normalized = path.trim();
+            if (normalized.startsWith("http://") || normalized.startsWith("https://") || normalized.startsWith("//")) {
+                urls.add(normalized);
+            } else if (normalized.startsWith("/")) {
+                urls.add(normalized);
+            } else {
+                urls.add("/uploads/" + normalized);
+            }
         }
         return urls;
     }

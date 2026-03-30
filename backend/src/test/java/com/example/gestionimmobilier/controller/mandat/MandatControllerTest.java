@@ -42,7 +42,7 @@ class MandatControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @WithMockUser(authorities = {"ROLE_AGENT"})
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
     void creerMandat_retourne201() throws Exception {
         UUID id = UUID.randomUUID();
         MandatResponse response = new MandatResponse(
@@ -77,7 +77,7 @@ class MandatControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"ROLE_AGENT"})
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
     void listerMandats_retourne200() throws Exception {
         Mockito.when(mandatService.listerMandats(any(), any(), any()))
                 .thenReturn(List.of());
@@ -88,7 +88,7 @@ class MandatControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"ROLE_AGENT"})
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
     void getMandat_retourne200() throws Exception {
         UUID id = UUID.randomUUID();
         MandatResponse response = Mockito.mock(MandatResponse.class);
@@ -101,7 +101,7 @@ class MandatControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"ROLE_AGENT"})
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
     void resilierMandat_retourne200() throws Exception {
         UUID id = UUID.randomUUID();
         MandatResponse response = Mockito.mock(MandatResponse.class);

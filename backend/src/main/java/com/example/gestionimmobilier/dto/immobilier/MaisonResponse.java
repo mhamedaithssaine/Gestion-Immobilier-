@@ -30,6 +30,8 @@ public class MaisonResponse extends BienResponse {
     boolean garage;
 
     @Override
+    public String getType() { return "MAISON"; }
+    @Override
     public UUID getId() { return id; }
     @Override
     public String getReference() { return reference; }
@@ -49,4 +51,6 @@ public class MaisonResponse extends BienResponse {
     public UUID getProprietaireId() { return proprietaireId; }
     @Override
     public String getProprietaireNom() { return proprietaireNom; }
+    public Double getSurfaceTerrain() { return surfaceTerrain; }
+    public boolean isGarage() { return garage; }
 }

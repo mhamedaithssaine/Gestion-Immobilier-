@@ -39,7 +39,7 @@ public class ContratController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PROPRIETAIRE','ROLE_AGENT')")
     public ResponseEntity<ApiRetour<List<ContratResponse>>> listerContrats(
             @RequestParam(required = false) StatutBail statut,
             @RequestParam(required = false) UUID locataireId) {
@@ -50,7 +50,7 @@ public class ContratController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_CLIENT', 'ROLE_PROPRIETAIRE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_CLIENT', 'ROLE_PROPRIETAIRE','ROLE_AGENT')")
     public ResponseEntity<ApiRetour<ContratResponse>> getContrat(@PathVariable UUID id) {
         ContratResponse contrat = contratService.getContratById(id);
         return ResponseEntity.ok(ApiRetour.success("Détail du contrat", contrat));
@@ -73,7 +73,7 @@ public class ContratController {
     }
 
     @GetMapping("/{id}/reste-a-payer")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_CLIENT')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_CLIENT','ROLE_PROPRIETAIRE','ROLE_AGENT')")
     public ResponseEntity<ApiRetour<ResteAPayerResponse>> getResteAPayer(
             @PathVariable UUID id,
             @RequestParam int annee,
