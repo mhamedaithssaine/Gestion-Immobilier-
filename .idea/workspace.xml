@@ -5,158 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ceeafa13-9b6e-4d08-81f7-746c91ede31b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Jenkinsfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker/ci/docker-compose.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker/keycloak/docker-compose.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker/monitoring/docker-compose.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker/monitoring/logstash.conf/logstash.conf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/GesiotionImmobilierApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/config/CloudinaryConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/config/CustomAuthenticationEntryPoint.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/config/KeycloakAdminProperties.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/config/RestTemplateConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/config/SecurityConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/config/WebMvcConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/controller/agence/AgenceAdminController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/controller/agence/AgenceInscriptionController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/controller/auth/login/AuthLoginController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/controller/auth/register/AuthRegisterController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/controller/bienImmobilier/BienImmobilierController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/controller/contrat/ContratController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/controller/dashboard/DashboardController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/controller/finance/VersementController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/controller/locataire/LocataireController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/controller/mandat/MandatController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/controller/proprietaire/ProprietaireController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/controller/user/KeycloakUserController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/agence/AgenceResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/agence/CreateAgenceRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/api/response/ApiRetour.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/auth/login/LoginRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/auth/login/RefreshTokenRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/auth/login/TokenResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/auth/register/RegisterRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/contrat/ContratResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/contrat/CreateContratRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/contrat/CreateMandatRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/contrat/MandatResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/contrat/UpdateContratRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/dashboard/BiensLouesVsLibresResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/dashboard/LocataireEnRetardLigneResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/dashboard/LocatairesEnRetardResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/dashboard/MandatsGestionParAgentResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/dashboard/MandatsGestionStatistiqueResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/dashboard/NombreBiensDisponiblesResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/dashboard/RevenusMensuelsResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/finance/CreateVersementRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/finance/HistoriqueFinancierLigneResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/finance/HistoriqueFinancierResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/finance/QuittancePdfData.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/finance/QuittanceResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/finance/ResteAPayerResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/finance/VersementResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/immobilier/AdresseRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/immobilier/AdresseResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/immobilier/AppartementResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/immobilier/BienResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/immobilier/CreateAppartementRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/immobilier/CreateBienRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/immobilier/CreateMaisonRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/immobilier/MaisonResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/keycloack/KeycloakUserResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/user/AssignRolesRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/user/CreateLocataireRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/user/CreateProprietaireRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/user/CreateUserRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/user/LocataireResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/user/ProprietaireResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/user/UpdateLocataireRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/user/UpdateProprietaireRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/user/UpdateUserEnabledRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/dto/user/UtilisateurResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/exception/BusinessRuleException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/exception/ErrorMessages.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/exception/ErrorResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/exception/ForbiddenException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/exception/GlobalExceptionHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/exception/InternalServerException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/exception/ResourceNotFoundException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/exception/UnauthorizedException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/exception/ValidationException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/mapper/BienMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/mapper/KeycloakUserMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/mapper/UserMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/agence/Agence.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/base/BaseEntity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/contrat/Bail.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/contrat/Contrat.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/contrat/MandatDeGestion.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/finance/Quittance.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/finance/Versement.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/immobilier/Adresse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/immobilier/Appartement.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/immobilier/BienImmobilier.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/immobilier/Maison.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/intervention/Intervention.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/user/Admin.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/user/Agent.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/user/Client.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/user/Proprietaire.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/entity/user/Utilisateur.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/enums/ModeVersement.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/enums/Role.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/enums/StatutAgence.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/enums/StatutBail.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/enums/StatutBien.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/enums/StatutDossier.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/models/enums/StatutMandat.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/repository/AdresseRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/repository/AgenceRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/repository/AgentRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/repository/BailRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/repository/BienImmobilierRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/repository/MandatDeGestionRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/repository/QuittanceRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/repository/UtilisateurRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/repository/VersementRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/agence/AgenceService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/auth/login/AuthLoginService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/auth/register/AuthRegisterService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/bienImmobilier/BienService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/contrat/ContratService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/dashboard/DashboardService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/finance/PdfGenerationService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/finance/QuittanceService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/finance/VersementService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/locataire/LocataireService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/mandat/MandatService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/proprietaire/ProprietaireService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/storage/CloudStorageService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/storage/FileStorageService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/user/KeycloakAdminService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/service/user/UserService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/validation/BusinessEmail.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/gestionimmobilier/validation/BusinessEmailValidator.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/logback-spring.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/pdf/quittance.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/gestionimmobilier/GesiotionImmobilierApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/gestionimmobilier/controller/bienImmobilier/BienImmobilierControllerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/gestionimmobilier/controller/dashboard/DashboardControllerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/gestionimmobilier/controller/finance/VersementControllerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/gestionimmobilier/controller/mandat/MandatControllerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/gestionimmobilier/service/finance/VersementServiceTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/gestionimmobilier/service/user/UserServiceTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/quittances/6cfb0712-ced3-4f7f-a075-b33d6dc7f324.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/quittances/ae17de0f-2dbe-4d6f-ac91-6e75e33a768b.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/quittances/ca5d95fd-1335-440e-9931-f83fcc743af6.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/angular.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/angular.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -207,37 +58,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Maven.gesiotion-immobilier [clean].executor": "Run",
-    "Maven.gesiotion-immobilier [compile].executor": "Run",
-    "Maven.gesiotion-immobilier [install].executor": "Run",
-    "Maven.gesiotion-immobilier [package].executor": "Run",
-    "Maven.gesiotion-immobilier [test].executor": "Run",
-    "Maven.gesiotion-immobilier [validate].executor": "Run",
-    "Maven.gesiotion-immobilier [verify].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.GesiotionImmobilierApplication.executor": "Run",
-    "git-widget-placeholder": "feature/frontend",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Youcode/Desktop/gesiotion-immobilier",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.poratu.idea.plugins.tomcat.setting.TomcatServersConfigurable",
-    "ts.external.directory.path": "C:\\Users\\Youcode\\Desktop\\gesiotion-immobilier\\frontend\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Maven.gesiotion-immobilier [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.gesiotion-immobilier [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.gesiotion-immobilier [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.gesiotion-immobilier [package].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.gesiotion-immobilier [test].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.gesiotion-immobilier [validate].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.gesiotion-immobilier [verify].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.GesiotionImmobilierApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Youcode/Desktop/gesiotion-immobilier&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.poratu.idea.plugins.tomcat.setting.TomcatServersConfigurable&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2025.2.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Youcode\Desktop\gesiotion-immobilier\backend" />
@@ -289,6 +140,8 @@
       <workItem from="1773671752470" duration="31343000" />
       <workItem from="1773827084483" duration="22929000" />
       <workItem from="1774387220261" duration="422000" />
+      <workItem from="1774387888736" duration="20254000" />
+      <workItem from="1774824342364" duration="13851000" />
     </task>
     <servers />
   </component>
