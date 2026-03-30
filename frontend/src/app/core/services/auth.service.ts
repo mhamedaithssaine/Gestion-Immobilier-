@@ -4,6 +4,7 @@ import { Observable, defer, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ApiRetour } from '../http/api-types';
+import {Router} from '@angular/router';
 
 interface LoginResponse {
   accessToken: string;
@@ -14,7 +15,6 @@ interface LoginResponse {
   scope: string;
 }
 
-/** Rôles autorisés à l'inscription publique (alignés sur l'enum backend `Role`). */
 export type PublicRegistrationRole = 'ROLE_CLIENT' | 'ROLE_PROPRIETAIRE';
 
 export type RegisterPayload = {
@@ -30,6 +30,7 @@ export type RegisterPayload = {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private router = inject(Router)
   private readonly accessTokenStorageKey = 'gi_access_token';
   private readonly refreshTokenStorageKey = 'gi_refresh_token';
 
@@ -40,6 +41,11 @@ export class AuthService {
   readonly roles = computed(() => {
     const token = this.accessToken();
     return token ? this.extractRolesFromToken(token) : [];
+  });
+
+  readonly subject = computed(() => {
+    const token = this.accessToken();
+    return token ? this.extractSubjectFromToken(token) : null;
   });
 
   hasRole(role: string): boolean {
@@ -93,6 +99,7 @@ export class AuthService {
 
   logout(): void {
     this.clearTokens();
+    void this.router.navigateByUrl('/login');
   }
 
   private refreshAccessToken$(): Observable<string | null> {
@@ -155,6 +162,15 @@ export class AuthService {
         .filter(Boolean);
     } catch {
       return [];
+    }
+  }
+
+  private extractSubjectFromToken(token: string): string | null {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1])) as { sub?: string };
+      return payload.sub ?? null;
+    } catch {
+      return null;
     }
   }
 }

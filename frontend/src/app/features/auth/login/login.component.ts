@@ -29,7 +29,19 @@ export class LoginComponent {
       .login(this.identifier.trim(), this.password)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: () => void this.router.navigateByUrl('/admin'),
+        next: () => {
+          if (this.authService.hasRole('ROLE_ADMIN')) {
+            void this.router.navigateByUrl('/admin');
+          } else if (this.authService.hasRole('ROLE_AGENT')) {
+            void this.router.navigateByUrl('/agence');
+          } else if (this.authService.hasRole('ROLE_PROPRIETAIRE')) {
+            void this.router.navigateByUrl('/proprietaire');
+          } else if (this.authService.hasRole('ROLE_CLIENT')) {
+            void this.router.navigateByUrl('/locataire');
+          } else {
+            void this.router.navigateByUrl('/');
+          }
+        },
         error: (error: unknown) => {
           this.errorMessage = getApiErrorMessage(error, 'Connexion echouee.');
         }

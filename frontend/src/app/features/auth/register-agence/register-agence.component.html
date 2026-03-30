@@ -1,0 +1,200 @@
+<main class="auth-page">
+  <section class="register-card" aria-labelledby="register-agence-title">
+    <header class="register-card__head">
+      <h1 id="register-agence-title">Créer un compte agence</h1>
+      <p class="register-card__intro">
+        Inscris ton agence et le compte agent principal. Le compte sera activé après validation admin.
+      </p>
+    </header>
+
+    <form class="register-form" #registerAgenceForm="ngForm" (ngSubmit)="submit(registerAgenceForm)" novalidate>
+      <section class="register-section">
+        <h2 class="register-section__title">Agence</h2>
+        <div class="register-grid">
+          <div class="register-field">
+            <label class="register-field__label" for="ag-nom">Nom agence</label>
+            <input
+              id="ag-nom"
+              class="register-field__control"
+              [(ngModel)]="form.nom"
+              name="nom"
+              #nomCtrl="ngModel"
+              required
+              maxlength="255"
+            />
+            @if (shouldShow(nomCtrl)) {
+              <span class="register-field__error">Nom agence requis (max 255).</span>
+            }
+          </div>
+          <div class="register-field">
+            <label class="register-field__label" for="ag-email">Email agence</label>
+            <input
+              id="ag-email"
+              class="register-field__control"
+              [(ngModel)]="form.email"
+              name="email"
+              #emailCtrl="ngModel"
+              type="email"
+              required
+            />
+            @if (shouldShow(emailCtrl)) {
+              <span class="register-field__error">Email agence requis et valide.</span>
+            }
+            @if ((emailCtrl.touched || submitted()) && emailCtrl.valid && !isBusinessEmail(form.email)) {
+              <span class="register-field__error">
+                Email professionnel requis (gmail, yahoo, outlook... refusés).
+              </span>
+            }
+          </div>
+          <div class="register-field">
+            <label class="register-field__label" for="ag-tel">Téléphone</label>
+            <input
+              id="ag-tel"
+              class="register-field__control"
+              [(ngModel)]="form.telephone"
+              name="telephone"
+              #telCtrl="ngModel"
+              maxlength="50"
+            />
+            @if (shouldShow(telCtrl)) {
+              <span class="register-field__error">Téléphone max 50 caractères.</span>
+            }
+          </div>
+          <div class="register-field">
+            <label class="register-field__label" for="ag-ville">Ville</label>
+            <input
+              id="ag-ville"
+              class="register-field__control"
+              [(ngModel)]="form.ville"
+              name="ville"
+              #villeCtrl="ngModel"
+              maxlength="100"
+            />
+            @if (shouldShow(villeCtrl)) {
+              <span class="register-field__error">Ville max 100 caractères.</span>
+            }
+          </div>
+          <div class="register-field register-field--full">
+            <label class="register-field__label" for="ag-adr">Adresse</label>
+            <input
+              id="ag-adr"
+              class="register-field__control"
+              [(ngModel)]="form.adresse"
+              name="adresse"
+              #adresseCtrl="ngModel"
+              maxlength="500"
+            />
+            @if (shouldShow(adresseCtrl)) {
+              <span class="register-field__error">Adresse max 500 caractères.</span>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="register-section">
+        <h2 class="register-section__title">Agent principal</h2>
+        <div class="register-grid">
+          <div class="register-field">
+            <label class="register-field__label" for="agent-first">Prénom</label>
+            <input
+              id="agent-first"
+              class="register-field__control"
+              [(ngModel)]="form.agentFirstName"
+              name="agentFirstName"
+              #agentFirstCtrl="ngModel"
+              required
+              maxlength="255"
+            />
+            @if (shouldShow(agentFirstCtrl)) {
+              <span class="register-field__error">Prénom requis (max 255).</span>
+            }
+          </div>
+          <div class="register-field">
+            <label class="register-field__label" for="agent-last">Nom</label>
+            <input
+              id="agent-last"
+              class="register-field__control"
+              [(ngModel)]="form.agentLastName"
+              name="agentLastName"
+              #agentLastCtrl="ngModel"
+              required
+              maxlength="255"
+            />
+            @if (shouldShow(agentLastCtrl)) {
+              <span class="register-field__error">Nom requis (max 255).</span>
+            }
+          </div>
+          <div class="register-field">
+            <label class="register-field__label" for="agent-user">Username</label>
+            <input
+              id="agent-user"
+              class="register-field__control"
+              [(ngModel)]="form.agentUsername"
+              name="agentUsername"
+              #agentUserCtrl="ngModel"
+              required
+              minlength="2"
+              maxlength="100"
+              pattern="^[A-Za-z0-9_-]+$"
+            />
+            @if (shouldShow(agentUserCtrl)) {
+              <span class="register-field__error">
+                Username requis, 2-100 caractères, lettres/chiffres/_/-
+              </span>
+            }
+          </div>
+          <div class="register-field">
+            <label class="register-field__label" for="agent-email">Email agent</label>
+            <input
+              id="agent-email"
+              class="register-field__control"
+              [(ngModel)]="form.agentEmail"
+              name="agentEmail"
+              #agentEmailCtrl="ngModel"
+              type="email"
+              required
+            />
+            @if (shouldShow(agentEmailCtrl)) {
+              <span class="register-field__error">Email agent requis et valide.</span>
+            }
+          </div>
+          <div class="register-field register-field--full">
+            <label class="register-field__label" for="agent-pass">Mot de passe agent</label>
+            <input
+              id="agent-pass"
+              class="register-field__control"
+              [(ngModel)]="form.agentPassword"
+              name="agentPassword"
+              #agentPassCtrl="ngModel"
+              type="password"
+              minlength="6"
+              required
+            />
+            @if (shouldShow(agentPassCtrl)) {
+              <span class="register-field__error">Mot de passe requis (min 6 caractères).</span>
+            }
+          </div>
+        </div>
+      </section>
+
+      @if (errorMessage) {
+        <div class="register-alert register-alert--error" role="alert">{{ errorMessage }}</div>
+      }
+      @if (successMessage) {
+        <div class="register-alert register-alert--success" role="status">{{ successMessage }}</div>
+      }
+
+      <div class="register-actions">
+        <button type="submit" class="register-submit" [disabled]="loading()">
+          {{ loading() ? 'Envoi en cours…' : 'Envoyer mon inscription agence' }}
+        </button>
+      </div>
+    </form>
+
+    <p class="register-footer">
+      Déjà un compte ?
+      <a routerLink="/login">Se connecter</a>
+    </p>
+  </section>
+</main>
+
