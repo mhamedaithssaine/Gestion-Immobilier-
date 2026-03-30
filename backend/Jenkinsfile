@@ -31,21 +31,21 @@ pipeline {
 
         stage('Verify JaCoCo Report') {
             steps {
-                  dir('backend') {
+                dir('backend') {
                     sh '''
                         ls -la target/site/jacoco/ || echo "Dossier jacoco introuvable"
                         test -f target/site/jacoco/jacoco.xml
                     '''
                 }
             }
+        }
 
         stage('Package') {
             steps {
-                steps {
-                    dir('backend') {
-                        sh 'mvn package -DskipTests'
-                    }
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                dir('backend') {
+                    sh 'mvn package -DskipTests'
+                }
+                archiveArtifacts artifacts: 'backend/target/*.jar', fingerprint: true
             }
         }
     }
@@ -54,7 +54,11 @@ pipeline {
         always {
             junit testResults: 'backend/target/surefire-reports/*.xml', allowEmptyResults: true
             echo "Build ${currentBuild.result} - ${env.JOB_NAME} #${env.BUILD_NUMBER}"
-            cleanWs()
+            script {
+                if (env.WORKSPACE?.trim()) {
+                    cleanWs(deleteDirs: true, disableDeferredWipeout: true, notFailBuild: true)
+                }
+            }
         }
         success {
             echo 'Pipeline exécuté avec succès !'
