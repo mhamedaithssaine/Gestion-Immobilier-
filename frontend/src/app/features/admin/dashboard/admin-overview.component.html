@@ -45,6 +45,13 @@
     <p class="admin-loading">Chargement des statistiques…</p>
   } @else {
     <div class="admin-kpi-grid">
+      @if (isAdmin()) {
+        <article class="admin-kpi" [class.admin-kpi--alert]="pendingCount() > 0">
+          <span class="admin-kpi__label">Comptes à activer</span>
+          <strong class="admin-kpi__value">{{ pendingCount() }}</strong>
+          <span class="admin-kpi__hint">Inscriptions locataire / propriétaire</span>
+        </article>
+      }
       <article class="admin-kpi">
         <span class="admin-kpi__label">Biens disponibles</span>
         <strong class="admin-kpi__value">{{ nbDispo() ?? '—' }}</strong>
@@ -86,6 +93,55 @@
         }
       </article>
     </div>
+
+    @if (isAdmin()) {
+      <section class="admin-panel">
+        <h2>Comptes en attente d’approbation</h2>
+        <p class="admin-panel__intro">
+          Nouveaux utilisateurs inscrits sur le site (locataire ou propriétaire). Activez le compte pour qu’ils puissent se
+          connecter.
+        </p>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Identifiant</th>
+                <th>Type</th>
+                <th>Rôles</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (u of pendingUsers(); track u.id) {
+                <tr>
+                  <td>{{ u.firstName }} {{ u.lastName }}</td>
+                  <td>{{ u.email }}</td>
+                  <td>{{ u.username }}</td>
+                  <td>{{ u.type }}</td>
+                  <td>{{ rolesLabel(u.roles) }}</td>
+                  <td>
+                    <button
+                      type="button"
+                      class="admin-btn-activate"
+                      [disabled]="approvingId() === u.id"
+                      (click)="activerCompte(u)"
+                    >
+                      {{ approvingId() === u.id ? 'Activation…' : 'Approuver' }}
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6">Aucun compte en attente. Les nouvelles inscriptions apparaîtront ici.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
 
     @if (isAdmin()) {
       <section class="admin-panel">

@@ -1,0 +1,97 @@
+<div class="admin-page">
+  <header class="admin-page__head">
+    <h1>Demandes de modification d’agence</h1>
+    <p class="admin-page__intro">
+      Les agents soumettent leurs changements de fiche ou une demande de clôture ; validez ou refusez ici.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="admin-banner admin-banner--error" role="alert">{{ error() }}</div>
+  }
+
+  <div class="admin-toolbar">
+    <button type="button" class="admin-toolbar__btn" (click)="reload()" [disabled]="loading()">Actualiser</button>
+  </div>
+
+  @if (loading()) {
+    <p class="admin-loading">Chargement…</p>
+  } @else {
+    <div class="admin-table-wrap admin-table-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Agence</th>
+            <th>Type</th>
+            <th>Détail</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.id) {
+            <tr>
+              <td>{{ row.agenceNom }}</td>
+              <td>{{ labelType(row.type) }}</td>
+              <td class="adm-mod__detail">
+                @if (row.type === 'MISE_AJOUR') {
+                  <ul>
+                    @if (row.nomPropose) {
+                      <li><strong>Nom :</strong> {{ row.nomPropose }}</li>
+                    }
+                    @if (row.emailPropose) {
+                      <li><strong>Email :</strong> {{ row.emailPropose }}</li>
+                    }
+                    @if (row.telephonePropose) {
+                      <li><strong>Tél. :</strong> {{ row.telephonePropose }}</li>
+                    }
+                    @if (row.villePropose) {
+                      <li><strong>Ville :</strong> {{ row.villePropose }}</li>
+                    }
+                    @if (row.adressePropose) {
+                      <li><strong>Adresse :</strong> {{ row.adressePropose }}</li>
+                    }
+                  </ul>
+                } @else {
+                  <span class="adm-mod__muted">Suspension agence + désactivation des comptes agents</span>
+                }
+              </td>
+              <td>{{ row.createdAt | date: 'short' }}</td>
+              <td class="admin-actions">
+                <div class="adm-mod__actions">
+                  <input
+                    type="text"
+                    class="adm-mod__comment"
+                    placeholder="Motif du refus (optionnel)"
+                    [ngModel]="getComment(row.id)"
+                    (ngModelChange)="setComment(row.id, $event)"
+                  />
+                  <button
+                    type="button"
+                    class="admin-toolbar__btn"
+                    [disabled]="actionId() === row.id"
+                    (click)="approuver(row)"
+                  >
+                    Approuver
+                  </button>
+                  <button
+                    type="button"
+                    class="admin-toolbar__btn admin-toolbar__btn--danger"
+                    [disabled]="actionId() === row.id"
+                    (click)="rejeter(row)"
+                  >
+                    Rejeter
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5">Aucune demande en attente.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -110,7 +110,35 @@ a.admin-shell__nav-item.is-active {
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.35rem;
+}
+
+.admin-shell__nav-item--toggle .admin-shell__chevron {
+  margin-left: auto;
+}
+
+a.admin-shell__nav-item--sub:not(.admin-shell__nav-item--child) {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.admin-shell__nav-item-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-shell__nav-pill {
+  flex-shrink: 0;
+  min-width: 1.15rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: #e97300;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
 }
 
 /* Section ouverte : léger fond, pas la même pastille orange que la route active (évite chevauchement visuel). */
@@ -152,7 +180,7 @@ a.admin-shell__nav-item.is-active {
 }
 
 .admin-shell__submenu.is-open {
-  max-height: 140px;
+  max-height: 200px;
   margin-top: 0.2rem;
   padding: 0.15rem 0 0.15rem 0.35rem;
   border-left: 2px solid rgba(255, 255, 255, 0.12);

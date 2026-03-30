@@ -1,0 +1,32 @@
+@use '../styles/admin-shared';
+
+.admin-page {
+  max-width: none;
+  width: 100%;
+}
+
+.admin-muted {
+  font-size: 0.75rem;
+  color: #829ab1;
+}
+
+.admin-badge--disponible {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.admin-badge--loue {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.admin-badge--vendu {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.admin-badge--sous_compromis {
+  background: #fef3c7;
+  color: #92400e;
+}
+

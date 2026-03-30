@@ -1,0 +1,344 @@
+<div class="admin-page">
+  <header class="admin-page__head">
+    <h1>Mandats</h1>
+    <p class="admin-page__intro">
+      Création réservée à l’administrateur. Les demandes de résiliation agent / propriétaire sont à valider ici.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="admin-banner admin-banner--error" role="alert">{{ error() }}</div>
+  }
+
+  <section class="admin-toolbar">
+    <div class="admin-toolbar__field">
+      <label for="m-statut">Statut</label>
+      <select id="m-statut" [ngModel]="filterStatut()" (ngModelChange)="filterStatut.set($event); reload()">
+        @for (opt of statutOptions; track opt.value) {
+          <option [ngValue]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+    <div class="admin-toolbar__field admin-toolbar__field--grow">
+      <label for="m-search">Recherche</label>
+      <input
+        id="m-search"
+        type="search"
+        placeholder="Numéro, bien, propriétaire, agent…"
+        [ngModel]="filterQuery()"
+        (ngModelChange)="filterQuery.set($event)"
+      />
+    </div>
+    <button type="button" class="admin-toolbar__btn" (click)="reload()" [disabled]="loading()">Rafraîchir</button>
+    @if (canCreate()) {
+      <button type="button" class="admin-toolbar__btn" (click)="toggleCreate()" [disabled]="creating()">
+        {{ createOpen() ? 'Fermer création' : 'Créer mandat' }}
+      </button>
+    }
+  </section>
+
+  @if (createOpen() && canCreate()) {
+    <section class="m-create">
+      <h3>Nouveau mandat</h3>
+      <div class="m-create__grid">
+        <label>Propriétaire
+          <select [ngModel]="createForm.proprietaireId" (ngModelChange)="onProprietaireChange($event)">
+            <option value="">Sélectionner</option>
+            @for (p of proprietaires(); track p.id) {
+              <option [ngValue]="p.id">{{ p.firstName }} {{ p.lastName }} ({{ p.email }})</option>
+            }
+          </select>
+        </label>
+        <label>Bien
+          <select [(ngModel)]="createForm.bienId" [disabled]="!createForm.proprietaireId || loadingBiens()">
+            <option value="">
+              {{
+                !createForm.proprietaireId
+                  ? 'Choisir d’abord un propriétaire'
+                  : (loadingBiens() ? 'Chargement des biens…' : 'Sélectionner')
+              }}
+            </option>
+            @for (b of biens(); track b.id) {
+              <option [ngValue]="b.id">{{ b.reference }} - {{ b.titre }}</option>
+            }
+          </select>
+        </label>
+        <label>Agent
+          <select [(ngModel)]="createForm.agentId" [disabled]="isAgent()">
+            <option value="">Sélectionner</option>
+            @for (a of agents(); track a.id) {
+              <option [ngValue]="a.id">{{ a.firstName }} {{ a.lastName }} ({{ a.email }})</option>
+            }
+          </select>
+        </label>
+        <label>Date début<input type="date" [min]="minDate" [ngModel]="createForm.dateDebut" (ngModelChange)="onDateDebutChange($event)" /></label>
+        <label>Date fin<input type="date" [min]="createForm.dateDebut || minDate" [(ngModel)]="createForm.dateFin" /></label>
+        <label>Commission %<input type="number" step="0.01" [(ngModel)]="createForm.commissionPct" /></label>
+        <label>Date signature<input type="date" [max]="minDate" [(ngModel)]="createForm.dateSignature" /></label>
+        <label class="m-create__full">Document mandat (PDF)
+          <input type="file" accept="application/pdf,.pdf" (change)="onPdfSelected($event)" />
+        </label>
+      </div>
+      <button
+        type="button"
+        class="admin-toolbar__btn"
+        [disabled]="creating() || !canSubmitCreate()"
+        (click)="createMandat()"
+      >
+        {{ creating() ? 'Création…' : 'Valider mandat' }}
+      </button>
+    </section>
+  }
+
+  @if (loading()) {
+    <p class="admin-loading">Chargement…</p>
+  } @else {
+    <div class="admin-table-wrap admin-table-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>N° mandat</th>
+            <th>Bien</th>
+            <th>Propriétaire</th>
+            <th>Agent</th>
+            <th>Début</th>
+            <th>Fin</th>
+            <th>Commission</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of filteredRows(); track m.id) {
+            <tr>
+              <td>{{ m.numMandat }}</td>
+              <td>{{ m.bienReference }}</td>
+              <td>{{ m.proprietaireNom }}</td>
+              <td>{{ m.agentNom }}</td>
+              <td>{{ m.dateDebut | date: 'shortDate' }}</td>
+              <td>{{ m.dateFin | date: 'shortDate' }}</td>
+              <td>{{ m.commissionPct }}</td>
+              <td>
+                <span class="admin-badge" [class]="'admin-badge admin-badge--' + m.statut.toLowerCase()">
+                  {{ statutLabel(m.statut) }}
+                </span>
+              </td>
+              <td class="admin-actions">
+                <div class="m-actions">
+                  <button
+                    type="button"
+                    class="m-iconbtn"
+                    title="Détail"
+                    aria-label="Voir le détail"
+                    (click)="openDetail(m)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path
+                        fill="currentColor"
+                        d="M12 5c-5 0-9.27 3.11-11 8a11.6 11.6 0 0 0 22 0c-1.73-4.89-6-8-11-8zm0 13a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 .01 6 3 3 0 0 0 0-6z"
+                      />
+                    </svg>
+                  </button>
+                  @if (isAdmin() && m.statut !== 'RESILIE' && m.statut !== 'TERMINE') {
+                    <button
+                      type="button"
+                      class="m-iconbtn m-iconbtn--accent"
+                      title="Modifier"
+                      aria-label="Modifier le mandat"
+                      [disabled]="actionId() === m.id"
+                      (click)="openEdit(m)"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path
+                          fill="currentColor"
+                          d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                        />
+                      </svg>
+                    </button>
+                  }
+                  @if (m.statut === 'EN_ATTENTE_RESILIATION') {
+                    <button
+                      type="button"
+                      class="m-iconbtn m-iconbtn--ok"
+                      title="Approuver la résiliation"
+                      aria-label="Approuver la résiliation"
+                      [disabled]="actionId() === m.id"
+                      (click)="approuverResiliation(m)"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="m-iconbtn m-iconbtn--warn"
+                      title="Rejeter la demande"
+                      aria-label="Rejeter la demande"
+                      [disabled]="actionId() === m.id"
+                      (click)="rejeterDemande(m)"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path
+                          fill="currentColor"
+                          d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                        />
+                      </svg>
+                    </button>
+                  }
+                  @if (m.statut === 'ACTIF') {
+                    <button
+                      type="button"
+                      class="m-iconbtn m-iconbtn--danger"
+                      title="Résilier (admin)"
+                      aria-label="Résilier immédiatement"
+                      [disabled]="actionId() === m.id"
+                      (click)="resilierMandat(m)"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path
+                          fill="currentColor"
+                          d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                        />
+                      </svg>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9">Aucun mandat disponible.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (detail(); as d) {
+  <div class="m-modal-backdrop" (click)="closeDetail()" role="presentation">
+    <div class="m-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="adm-mandat-detail-title">
+      <header class="m-modal__head">
+        <h2 id="adm-mandat-detail-title">Mandat {{ d.numMandat }}</h2>
+        <button type="button" class="m-modal__close" (click)="closeDetail()" aria-label="Fermer">×</button>
+      </header>
+      <dl class="m-modal__dl">
+        <dt>Bien</dt>
+        <dd>{{ d.bienReference }}</dd>
+        <dt>Propriétaire</dt>
+        <dd>{{ d.proprietaireNom }}</dd>
+        <dt>Agent</dt>
+        <dd>{{ d.agentNom }}</dd>
+        <dt>Période</dt>
+        <dd>{{ d.dateDebut | date: 'mediumDate' }} → {{ d.dateFin | date: 'mediumDate' }}</dd>
+        <dt>Commission</dt>
+        <dd>{{ d.commissionPct }} %</dd>
+        <dt>Statut</dt>
+        <dd>
+          <span class="admin-badge" [class]="'admin-badge admin-badge--' + d.statut.toLowerCase()">
+            {{ statutLabel(d.statut) }}
+          </span>
+        </dd>
+        @if (d.documentUrl) {
+          <dt>Document</dt>
+          <dd>
+            <button
+              type="button"
+              class="admin-toolbar__btn m-btn-icon-text"
+              [disabled]="downloadingDocId() === d.id"
+              (click)="telechargerDocument(d)"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="currentColor" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+              </svg>
+              <span>Télécharger le PDF</span>
+            </button>
+          </dd>
+        }
+      </dl>
+      <footer class="m-modal__foot">
+        @if (isAdmin() && d.statut !== 'RESILIE' && d.statut !== 'TERMINE') {
+          <button type="button" class="admin-toolbar__btn m-btn-icon-text" [disabled]="actionId() === d.id" (click)="openEdit(d); closeDetail()">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                fill="currentColor"
+                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+              />
+            </svg>
+            <span>Modifier</span>
+          </button>
+        }
+        @if (d.statut === 'EN_ATTENTE_RESILIATION') {
+          <button type="button" class="admin-toolbar__btn m-btn-icon-text" [disabled]="actionId() === d.id" (click)="approuverResiliation(d)">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg>
+            <span>Approuver la résiliation</span>
+          </button>
+          <button type="button" class="admin-toolbar__btn m-btn-icon-text m-danger" [disabled]="actionId() === d.id" (click)="rejeterDemande(d)">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
+            <span>Rejeter la demande</span>
+          </button>
+        }
+        @if (d.statut === 'ACTIF') {
+          <button type="button" class="admin-toolbar__btn m-btn-icon-text m-danger" [disabled]="actionId() === d.id" (click)="resilierMandat(d)">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+            </svg>
+            <span>Résilier (admin)</span>
+          </button>
+        }
+        <button type="button" class="admin-toolbar__btn m-btn-icon-text" (click)="closeDetail()">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+          </svg>
+          <span>Fermer</span>
+        </button>
+      </footer>
+    </div>
+  </div>
+}
+
+@if (edit(); as e) {
+  <div class="m-modal-backdrop" (click)="closeEdit()" role="presentation">
+    <div class="m-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="adm-mandat-edit-title">
+      <header class="m-modal__head">
+        <h2 id="adm-mandat-edit-title">Modifier {{ e.numMandat }}</h2>
+        <button type="button" class="m-modal__close" (click)="closeEdit()" aria-label="Fermer">×</button>
+      </header>
+      <div class="m-modal__form">
+        <label>Date début<input type="date" [(ngModel)]="editForm.dateDebut" name="ed" /></label>
+        <label>Date fin<input type="date" [(ngModel)]="editForm.dateFin" name="ef" /></label>
+        <label>Commission %<input type="number" step="0.01" [(ngModel)]="editForm.commissionPct" name="ec" /></label>
+        <label>Date signature<input type="date" [(ngModel)]="editForm.dateSignature" name="es" /></label>
+        <label class="m-modal__full"
+          >Nouveau document mandat (PDF, optionnel)
+          <input type="file" accept="application/pdf,.pdf" (change)="onEditPdfSelected($event)" />
+        </label>
+        @if (e.documentUrl && !editSelectedPdf) {
+          <p class="m-modal__hint">Un document est déjà enregistré. Choisissez un fichier pour le remplacer.</p>
+        }
+      </div>
+      <footer class="m-modal__foot">
+        <button type="button" class="admin-toolbar__btn m-btn-icon-text" [disabled]="actionId() === e.id" (click)="saveEdit()">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              fill="currentColor"
+              d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 16a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm2-8H6V5h8v6z"
+            />
+          </svg>
+          <span>Enregistrer</span>
+        </button>
+        <button type="button" class="admin-toolbar__btn m-btn-icon-text" (click)="closeEdit()">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+          </svg>
+          <span>Annuler</span>
+        </button>
+      </footer>
+    </div>
+  </div>
+}

@@ -36,7 +36,52 @@
     <button type="button" class="admin-toolbar__btn" (click)="reload()" [disabled]="loading()">
       Rafraîchir
     </button>
+    <button type="button" class="admin-toolbar__btn" (click)="toggleCreate()" [disabled]="creating()">
+      {{ createOpen() ? 'Fermer création' : 'Créer une agence' }}
+    </button>
   </section>
+
+  @if (createOpen()) {
+    <section class="ag-create-card">
+      <h3>Créer une agence</h3>
+      <p>Cette action utilise l'endpoint backend <code>POST /api/public/agences/inscription</code>.</p>
+
+      <div class="ag-modal__form">
+        <label>Nom agence<input [(ngModel)]="createForm.nom" /></label>
+        <label>Email agence<input type="email" [(ngModel)]="createForm.email" /></label>
+        <label>Téléphone<input [(ngModel)]="createForm.telephone" /></label>
+        <label>Ville<input [(ngModel)]="createForm.ville" /></label>
+        <label class="ag-modal__full">Adresse<input [(ngModel)]="createForm.adresse" /></label>
+      </div>
+
+      <h4>Contact agent principal</h4>
+      <div class="ag-modal__form">
+        <label>Username<input [(ngModel)]="createForm.agentUsername" /></label>
+        <label>Email<input type="email" [(ngModel)]="createForm.agentEmail" /></label>
+        <label>Prénom<input [(ngModel)]="createForm.agentFirstName" /></label>
+        <label>Nom<input [(ngModel)]="createForm.agentLastName" /></label>
+        <label class="ag-modal__full">Mot de passe<input type="password" [(ngModel)]="createForm.agentPassword" /></label>
+      </div>
+
+      <button
+        type="button"
+        class="admin-toolbar__btn"
+        [disabled]="
+          creating() ||
+          !createForm.nom.trim() ||
+          !createForm.email.trim() ||
+          !createForm.agentUsername.trim() ||
+          !createForm.agentEmail.trim() ||
+          !createForm.agentFirstName.trim() ||
+          !createForm.agentLastName.trim() ||
+          !createForm.agentPassword.trim()
+        "
+        (click)="createAgence()"
+      >
+        {{ creating() ? 'Création…' : 'Valider la création' }}
+      </button>
+    </section>
+  }
 
   @if (loading()) {
     <p class="admin-loading">Chargement…</p>
@@ -66,34 +111,81 @@
               </td>
               <td>{{ a.createdAt | date: 'short' }}</td>
               <td class="admin-actions">
-                @if (a.statut === 'PENDING') {
+                <button type="button" class="admin-iconbtn" title="Détails" (click)="openDetail(a)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M12 5c-5 0-9.27 3.11-11 8a11.6 11.6 0 0 0 22 0c-1.73-4.89-6-8-11-8zm0 13a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 .01 6 3 3 0 0 0 0-6z"
+                    />
+                  </svg>
+                </button>
+                <button type="button" class="admin-iconbtn admin-iconbtn--ok" title="Modifier" (click)="openEdit(a)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                    />
+                  </svg>
+                </button>
+                @if (canApprove(a.statut)) {
                   <button
                     type="button"
-                    class="admin-linkbtn admin-linkbtn--ok"
+                    class="admin-iconbtn admin-iconbtn--ok"
+                    [title]="a.statut === 'SUSPENDED' ? 'Réactiver' : 'Approuver'"
                     [disabled]="actionId() === a.id"
-                    (click)="approve(a.id)"
+                    (click)="approve(a)"
                   >
-                    Approuver
-                  </button>
-                  <button
-                    type="button"
-                    class="admin-linkbtn admin-linkbtn--danger"
-                    [disabled]="actionId() === a.id"
-                    (click)="reject(a.id)"
-                  >
-                    Rejeter
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        fill="currentColor"
+                        d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"
+                      />
+                    </svg>
                   </button>
                 }
-                @if (a.statut === 'ACTIVE') {
+                @if (canReject(a.statut)) {
                   <button
                     type="button"
-                    class="admin-linkbtn admin-linkbtn--warn"
+                    class="admin-iconbtn admin-iconbtn--danger"
+                    title="Rejeter"
                     [disabled]="actionId() === a.id"
-                    (click)="suspend(a.id)"
+                    (click)="reject(a)"
                   >
-                    Suspendre
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        fill="currentColor"
+                        d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                      />
+                    </svg>
                   </button>
                 }
+                @if (canSuspend(a.statut)) {
+                  <button
+                    type="button"
+                    class="admin-iconbtn admin-iconbtn--warn"
+                    title="Suspendre"
+                    [disabled]="actionId() === a.id"
+                    (click)="suspend(a)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path fill="currentColor" d="M6 6h4v12H6zm8 0h4v12h-4z" />
+                    </svg>
+                  </button>
+                }
+                <button
+                  type="button"
+                  class="admin-iconbtn admin-iconbtn--danger"
+                  title="Supprimer"
+                  [disabled]="actionId() === a.id"
+                  (click)="deleteAgence(a)"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                    />
+                  </svg>
+                </button>
               </td>
             </tr>
           } @empty {
@@ -106,3 +198,41 @@
     </div>
   }
 </div>
+
+@if (selected(); as a) {
+  <section class="ag-modal">
+    <div class="ag-modal__backdrop" (click)="closeDetail()"></div>
+    <article class="ag-modal__panel">
+      <button type="button" class="ag-modal__close" (click)="closeDetail()">Fermer</button>
+      <h3>{{ a.nom }}</h3>
+      <div class="ag-modal__grid">
+        <p><strong>Email:</strong> {{ a.email }}</p>
+        <p><strong>Téléphone:</strong> {{ a.telephone || '—' }}</p>
+        <p><strong>Ville:</strong> {{ a.ville || '—' }}</p>
+        <p><strong>Adresse:</strong> {{ a.adresse || '—' }}</p>
+        <p><strong>Statut:</strong> {{ labelStatut(a.statut) }}</p>
+        <p><strong>Créée le:</strong> {{ a.createdAt | date: 'short' }}</p>
+      </div>
+    </article>
+  </section>
+}
+
+@if (editing(); as a) {
+  <section class="ag-modal">
+    <div class="ag-modal__backdrop" (click)="closeEdit()"></div>
+    <article class="ag-modal__panel">
+      <button type="button" class="ag-modal__close" (click)="closeEdit()">Fermer</button>
+      <h3>Modifier agence</h3>
+      <div class="ag-modal__form">
+        <label>Nom<input [(ngModel)]="editForm.nom" /></label>
+        <label>Email<input type="email" [(ngModel)]="editForm.email" /></label>
+        <label>Téléphone<input [(ngModel)]="editForm.telephone" /></label>
+        <label>Ville<input [(ngModel)]="editForm.ville" /></label>
+        <label class="ag-modal__full">Adresse<input [(ngModel)]="editForm.adresse" /></label>
+      </div>
+      <button type="button" class="admin-toolbar__btn" [disabled]="saving()" (click)="saveEdit(a.id)">
+        {{ saving() ? 'Enregistrement…' : 'Enregistrer' }}
+      </button>
+    </article>
+  </section>
+}

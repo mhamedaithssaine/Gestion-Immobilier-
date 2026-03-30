@@ -14,15 +14,56 @@
           [routerLinkActiveOptions]="{ exact: true }"
           class="admin-shell__nav-item admin-shell__nav-item--sub"
         >
-          Statistiques &amp; synthèse
+          <span class="admin-shell__nav-item-text">Statistiques &amp; synthèse</span>
+          @if (isAdmin() && pendingBadge.count() > 0) {
+            <span class="admin-shell__nav-pill" aria-label="Comptes à activer">{{ pendingBadge.count() }}</span>
+          }
         </a>
       </div>
 
       @if (isAdmin()) {
         <div class="admin-shell__nav-section">
           <span class="admin-shell__nav-subtitle">Gestion</span>
-          <a routerLink="agences" routerLinkActive="is-active" class="admin-shell__nav-item admin-shell__nav-item--sub">
-            Agences
+          <button
+            type="button"
+            class="admin-shell__nav-item admin-shell__nav-item--sub admin-shell__nav-item--toggle"
+            [class.is-open]="expandedMenu() === 'agences'"
+            [class.has-active-child]="isAgencesRouteActive()"
+            (click)="toggleMenu('agences')"
+            [attr.aria-expanded]="expandedMenu() === 'agences'"
+          >
+            <span>Agences</span>
+            <span class="admin-shell__chevron" [class.is-open]="expandedMenu() === 'agences'">▾</span>
+          </button>
+          <div class="admin-shell__submenu" [class.is-open]="expandedMenu() === 'agences'">
+            <a
+              routerLink="agences/list"
+              routerLinkActive="is-active"
+              class="admin-shell__nav-item admin-shell__nav-item--child"
+            >
+              Agences
+            </a>
+            <a
+              routerLink="agences/agents"
+              routerLinkActive="is-active"
+              class="admin-shell__nav-item admin-shell__nav-item--child"
+            >
+              Agents
+            </a>
+            <a
+              routerLink="agences/demandes"
+              routerLinkActive="is-active"
+              class="admin-shell__nav-item admin-shell__nav-item--child"
+            >
+              Demandes agences
+            </a>
+          </div>
+          <a
+            routerLink="mandats"
+            routerLinkActive="is-active"
+            class="admin-shell__nav-item admin-shell__nav-item--sub"
+          >
+            Mandats
           </a>
           <button
             type="button"
@@ -32,7 +73,10 @@
             (click)="toggleMenu('users')"
             [attr.aria-expanded]="expandedMenu() === 'users'"
           >
-            <span>Utilisateurs</span>
+            <span class="admin-shell__nav-item-text">Utilisateurs</span>
+            @if (pendingBadge.count() > 0) {
+              <span class="admin-shell__nav-pill" aria-label="Comptes à activer">{{ pendingBadge.count() }}</span>
+            }
             <span class="admin-shell__chevron" [class.is-open]="expandedMenu() === 'users'">▾</span>
           </button>
           <div class="admin-shell__submenu" [class.is-open]="expandedMenu() === 'users'">
@@ -56,7 +100,7 @@
     </nav>
 
     <div class="admin-shell__sidebar-foot">
-      <p class="admin-shell__roles" title="Rôles du compte">{{ rolesLabel() }}</p>
+<!--      <p class="admin-shell__roles" title="Rôles du compte">{{ rolesLabel() }}</p>-->
       <button type="button" class="admin-shell__logout" (click)="logout()">Déconnexion</button>
       <a routerLink="/" class="admin-shell__site-link">Retour au site</a>
     </div>

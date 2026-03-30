@@ -1,0 +1,93 @@
+<div class="admin-page">
+  <header class="admin-page__head">
+    <h1>Biens immobiliers</h1>
+    <p class="admin-page__intro">
+      Gestion des biens pour le profil connecté:
+      <code>ROLE_PROPRIETAIRE</code> (ses biens), <code>ROLE_AGENT</code> (biens sous mandat) et
+      <code>ROLE_ADMIN</code> (tous les biens).
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="admin-banner admin-banner--error" role="alert">{{ error() }}</div>
+  }
+
+  <section class="admin-toolbar">
+    <div class="admin-toolbar__field">
+      <label for="bi-statut">Statut</label>
+      <select id="bi-statut" [ngModel]="filterStatut()" (ngModelChange)="filterStatut.set($event)">
+        @for (opt of statutOptions; track opt.value) {
+          <option [ngValue]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+    <div class="admin-toolbar__field admin-toolbar__field--grow">
+      <label for="bi-search">Recherche</label>
+      <input
+        id="bi-search"
+        type="search"
+        placeholder="Référence, titre, propriétaire, ville…"
+        [ngModel]="filterSearch()"
+        (ngModelChange)="filterSearch.set($event)"
+      />
+    </div>
+    <button type="button" class="admin-toolbar__btn" (click)="reload()" [disabled]="loading()">
+      Rafraîchir
+    </button>
+  </section>
+
+  @if (loading()) {
+    <p class="admin-loading">Chargement…</p>
+  } @else {
+    <div class="admin-table-wrap admin-table-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Titre</th>
+            <th>Ville</th>
+            <th>Propriétaire</th>
+            <th>Prix base</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (b of filteredRows(); track b.id) {
+            <tr>
+              <td>{{ b.reference }}</td>
+              <td>{{ b.titre }}</td>
+              <td>{{ b.adresse?.ville || '—' }}</td>
+              <td>{{ b.proprietaireNom || '—' }}</td>
+              <td>{{ b.prixBase | number: '1.0-2' }}</td>
+              <td>
+                <span class="admin-badge" [class]="'admin-badge--' + b.statut.toLowerCase()">
+                  {{ labelStatut(b.statut) }}
+                </span>
+              </td>
+              <td class="admin-actions">
+                @if (isAdmin()) {
+                  <button
+                    type="button"
+                    class="admin-linkbtn admin-linkbtn--danger"
+                    [disabled]="actionId() === b.id"
+                    (click)="deleteBien(b.id, b.reference)"
+                  >
+                    Supprimer
+                  </button>
+                } @else {
+                  <span class="admin-muted">Lecture</span>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7">Aucun bien ne correspond aux filtres.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+

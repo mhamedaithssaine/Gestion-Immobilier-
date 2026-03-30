@@ -64,6 +64,44 @@
   padding: 1.1rem 1.15rem;
 }
 
+.admin-kpi--alert {
+  border-color: #fdba74;
+  background: linear-gradient(135deg, #fffbeb 0%, #fff 55%);
+  box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.12);
+}
+
+.admin-kpi--alert .admin-kpi__value {
+  color: #c2410c;
+}
+
+.admin-panel__intro {
+  margin: 0 0 1rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.admin-btn-activate {
+  border: 0;
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  background: #e97300;
+  color: #fff;
+}
+
+.admin-btn-activate:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.admin-btn-activate:hover:not(:disabled) {
+  filter: brightness(0.95);
+}
+
 .admin-kpi__label {
   display: block;
   font-size: 0.75rem;

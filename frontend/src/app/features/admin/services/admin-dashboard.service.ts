@@ -9,7 +9,9 @@ import {
   LocatairesEnRetardResponse,
   MandatsGestionStatistiqueResponse,
   NombreBiensDisponiblesResponse,
-  RevenusMensuelsResponse
+  NombreComptesEnAttenteActivationResponse,
+  RevenusMensuelsResponse,
+  UtilisateurResponse
 } from '../models/admin-api.types';
 
 @Injectable({ providedIn: 'root' })
@@ -51,5 +53,19 @@ export class AdminDashboardService {
         `${this.base}/agences/stats/mandats-gestion`
       )
       .pipe(map((r) => r.data));
+  }
+
+  nombreComptesEnAttenteActivation(): Observable<NombreComptesEnAttenteActivationResponse> {
+    return this.http
+      .get<ApiRetour<NombreComptesEnAttenteActivationResponse>>(
+        `${this.base}/comptes-en-attente-activation/count`
+      )
+      .pipe(map((r) => r.data));
+  }
+
+  comptesEnAttenteActivation(): Observable<UtilisateurResponse[]> {
+    return this.http
+      .get<ApiRetour<UtilisateurResponse[]>>(`${this.base}/comptes-en-attente-activation`)
+      .pipe(map((r) => r.data ?? []));
   }
 }

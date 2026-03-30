@@ -2,6 +2,11 @@ export interface NombreBiensDisponiblesResponse {
   nombreBiensDisponibles: number;
 }
 
+/** Inscriptions publiques (locataire / propriétaire) non activées dans Keycloak. */
+export interface NombreComptesEnAttenteActivationResponse {
+  nombreComptesEnAttenteActivation: number;
+}
+
 export interface BiensLouesVsLibresResponse {
   disponibles: number;
   loues: number;
@@ -29,6 +34,64 @@ export interface LocatairesEnRetardResponse {
   locataires: LocataireEnRetardLigneResponse[];
 }
 
+/** Synthèse tableau de bord agent (mandats, baux, revenus du mois, retards). */
+export interface AgentDashboardOverviewResponse {
+  mandatsActifs: number;
+  mandatsTotal: number;
+  biensDistinctsSousMandat: number;
+  bauxActifs: number;
+  demandesEnAttenteValidationAgent: number;
+  locatairesActifsDistincts: number;
+  revenusMensuels: number;
+  anneePeriode: number;
+  moisPeriode: number;
+  locatairesEnRetard: LocataireEnRetardLigneResponse[];
+  /** Répartition des biens liés à un mandat actif (périmètre agent). */
+  biensDisponiblesSousMandat: number;
+  biensLouesSousMandat: number;
+  biensVendusSousMandat: number;
+  biensSousCompromisSousMandat: number;
+  demandeModificationAgenceEnAttente: boolean;
+  typeDemandeModificationAgenceEnAttente: string | null;
+  resumeDemandeModificationAgenceEnAttente: string | null;
+  derniereNoteAdminDemandeAgence: string | null;
+  derniereNoteAdminDemandeAgenceLe: string | null;
+}
+
+export type TypeDemandeModificationAgence = 'MISE_AJOUR' | 'SUPPRESSION';
+export type StatutDemandeModificationAgence = 'EN_ATTENTE' | 'APPROUVE' | 'REJETE';
+
+export interface AgenceDemandeEnAttenteResponse {
+  id: string;
+  type: TypeDemandeModificationAgence;
+  nomPropose: string | null;
+  emailPropose: string | null;
+  telephonePropose: string | null;
+  adressePropose: string | null;
+  villePropose: string | null;
+  demandeLe: string;
+}
+
+export interface AgenceEspaceAgentResponse {
+  agence: AgenceResponse;
+  demandeEnAttente: AgenceDemandeEnAttenteResponse | null;
+}
+
+export interface AgenceModificationDemandeAdminResponse {
+  id: string;
+  agenceId: string;
+  agenceNom: string;
+  type: TypeDemandeModificationAgence;
+  statut: StatutDemandeModificationAgence;
+  nomPropose: string | null;
+  emailPropose: string | null;
+  telephonePropose: string | null;
+  adressePropose: string | null;
+  villePropose: string | null;
+  createdAt: string;
+  demandeurKeycloakId: string | null;
+}
+
 export interface MandatsGestionStatistiqueResponse {
   agenceId: string;
   nomAgence: string;
@@ -52,6 +115,79 @@ export interface AgenceResponse {
   createdAt: string;
 }
 
+export type StatutBien = 'DISPONIBLE' | 'LOUE' | 'VENDU' | 'SOUS_COMPROMIS';
+export type StatutBail =
+  | 'ACTIF'
+  | 'RESILIE'
+  | 'TERMINE'
+  | 'EN_ATTENTE'
+  | 'EN_ATTENTE_VALIDATION_AGENT'
+  | 'REFUSE';
+export type StatutMandat =
+  | 'ACTIF'
+  | 'RESILIE'
+  | 'TERMINE'
+  | 'EN_ATTENTE'
+  | 'EN_ATTENTE_RESILIATION';
+
+export interface BienResponse {
+  id: string;
+  reference: string;
+  titre: string;
+  surface: number;
+  prixBase: number;
+  statut: StatutBien;
+  images: string[];
+  proprietaireId: string;
+  proprietaireNom: string;
+  /** Présent quand le backend renvoie le polymorphisme Appartement / Maison */
+  type?: 'APPARTEMENT' | 'MAISON';
+  etage?: number;
+  ascenseur?: boolean;
+  surfaceTerrain?: number;
+  garage?: boolean;
+  adresse?: {
+    rue?: string;
+    ville?: string;
+    codePostal?: string;
+    pays?: string;
+  };
+}
+
+export interface ContratResponse {
+  id: string;
+  numContrat: string;
+  dateSignature: string;
+  dateDebut: string;
+  dateFin: string;
+  loyerHC: number;
+  charges: number;
+  documentUrl: string | null;
+  statut: StatutBail;
+  bien: BienResponse;
+  proprietaire: ProprietaireResponse;
+  locataire: LocataireResponse;
+  agentId: string | null;
+  agentNomComplet: string | null;
+}
+
+export interface MandatResponse {
+  id: string;
+  numMandat: string;
+  proprietaireId: string;
+  proprietaireNom: string;
+  agentId: string;
+  agentNom: string;
+  bienId: string;
+  bienReference: string;
+  dateDebut: string;
+  dateFin: string;
+  commissionPct: number;
+  statut: StatutMandat;
+  dateSignature: string;
+  documentUrl: string | null;
+}
+
 export type RoleEnum =
   | 'ROLE_CLIENT'
   | 'ROLE_PROPRIETAIRE'
@@ -71,7 +207,6 @@ export interface UtilisateurResponse {
   enabled: boolean;
 }
 
-/** Aligné sur `LocataireResponse` backend (sous-classe Client → table `clients` + `utilisateurs`). */
 export type StatutDossier = 'EN_ATTENTE' | 'VALIDE' | 'REFUSE';
 
 export interface LocataireResponse {
@@ -89,7 +224,6 @@ export interface LocataireResponse {
   statutDossier: StatutDossier | null;
 }
 
-/** Aligné sur `ProprietaireResponse` backend (sous-classe → table `proprietaires` + `utilisateurs`). */
 export interface ProprietaireResponse {
   id: string;
   keycloakId: string;

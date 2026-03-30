@@ -1,0 +1,187 @@
+<div class="admin-page">
+  <header class="admin-page__head">
+    <h1>Agents</h1>
+    <p class="admin-page__intro">
+      Espace admin pour superviser les comptes agents (issus de <code>GET /api/admin/users?sync=true</code>).
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="admin-banner admin-banner--error" role="alert">{{ error() }}</div>
+  }
+
+  <section class="admin-toolbar">
+    <div class="admin-toolbar__field">
+      <label for="agt-enabled">État</label>
+      <select id="agt-enabled" [ngModel]="filterEnabled()" (ngModelChange)="filterEnabled.set($event)">
+        <option value="all">Tous</option>
+        <option value="yes">Activés</option>
+        <option value="no">Désactivés</option>
+      </select>
+    </div>
+    <div class="admin-toolbar__field admin-toolbar__field--grow">
+      <label for="agt-search">Recherche</label>
+      <input
+        id="agt-search"
+        type="search"
+        placeholder="Username, email, nom…"
+        [ngModel]="filterSearch()"
+        (ngModelChange)="filterSearch.set($event)"
+      />
+    </div>
+    <button type="button" class="admin-toolbar__btn" (click)="reload()" [disabled]="loading()">Rafraîchir</button>
+    <button type="button" class="admin-toolbar__btn admin-toolbar__btn--alt" (click)="toggleCreate()">
+      {{ createOpen() ? 'Fermer' : 'Ajouter agent' }}
+    </button>
+  </section>
+
+  @if (createOpen()) {
+    <section class="agent-card">
+      <h3>Créer un agent</h3>
+      <div class="agent-card__grid">
+        <label>Username<input [(ngModel)]="createForm.username" /></label>
+        <label>Email<input type="email" [(ngModel)]="createForm.email" /></label>
+        <label>Prénom<input [(ngModel)]="createForm.firstName" /></label>
+        <label>Nom<input [(ngModel)]="createForm.lastName" /></label>
+        <label>Mot de passe<input type="password" [(ngModel)]="createForm.password" /></label>
+      </div>
+      <button type="button" class="admin-toolbar__btn" [disabled]="creating()" (click)="createAgent()">
+        {{ creating() ? 'Création…' : 'Créer agent' }}
+      </button>
+    </section>
+  }
+
+  @if (loading()) {
+    <p class="admin-loading">Chargement…</p>
+  } @else {
+    <div class="admin-table-wrap admin-table-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Agent</th>
+            <th>Email</th>
+            <th>Rôles</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of filteredRows(); track u.id) {
+            <tr>
+              <td>{{ u.firstName }} {{ u.lastName }}<br /><small>{{ u.username }}</small></td>
+              <td>{{ u.email }}</td>
+              <td>{{ u.roles.join(', ') }}</td>
+              <td>
+                <span class="admin-badge" [class.admin-badge--active]="u.enabled" [class.admin-badge--suspended]="!u.enabled">
+                  {{ u.enabled ? 'Activé' : 'Désactivé' }}
+                </span>
+              </td>
+              <td class="admin-actions">
+                <button type="button" class="admin-iconbtn" title="Détails" (click)="openDetail(u)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M12 5c-5 0-9.27 3.11-11 8a11.6 11.6 0 0 0 22 0c-1.73-4.89-6-8-11-8zm0 13a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 .01 6 3 3 0 0 0 0-6z"
+                    />
+                  </svg>
+                </button>
+                <button type="button" class="admin-iconbtn admin-iconbtn--ok" title="Modifier" (click)="startEdit(u)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                    />
+                  </svg>
+                </button>
+                @if (u.enabled) {
+                  <button
+                    type="button"
+                    class="admin-iconbtn admin-iconbtn--warn"
+                    title="Désactiver agent"
+                    [disabled]="actionId() === u.id"
+                    (click)="setEnabled(u, false)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path fill="currentColor" d="M6 6h4v12H6zm8 0h4v12h-4z" />
+                    </svg>
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    class="admin-iconbtn admin-iconbtn--ok"
+                    title="Activer agent"
+                    [disabled]="actionId() === u.id"
+                    (click)="setEnabled(u, true)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        fill="currentColor"
+                        d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"
+                      />
+                    </svg>
+                  </button>
+                }
+                <button
+                  type="button"
+                  class="admin-iconbtn admin-iconbtn--danger"
+                  title="Supprimer agent"
+                  [disabled]="actionId() === u.id"
+                  (click)="deleteAgent(u)"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5">Aucun agent trouvé.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (selected(); as u) {
+  <section class="ag-modal">
+    <div class="ag-modal__backdrop" (click)="closeDetail()"></div>
+    <article class="ag-modal__panel">
+      <button type="button" class="ag-modal__close" (click)="closeDetail()">Fermer</button>
+      <h3>Détail agent</h3>
+      <div class="ag-modal__grid">
+        <p><strong>Nom:</strong> {{ u.firstName }} {{ u.lastName }}</p>
+        <p><strong>Username:</strong> {{ u.username }}</p>
+        <p><strong>Email:</strong> {{ u.email }}</p>
+        <p><strong>Rôles:</strong> {{ u.roles.join(', ') }}</p>
+        <p><strong>Type:</strong> {{ u.type }}</p>
+        <p><strong>Statut:</strong> {{ u.enabled ? 'Activé' : 'Désactivé' }}</p>
+      </div>
+    </article>
+  </section>
+}
+
+@if (editing(); as u) {
+  <section class="ag-modal">
+    <div class="ag-modal__backdrop" (click)="closeEdit()"></div>
+    <article class="ag-modal__panel">
+      <button type="button" class="ag-modal__close" (click)="closeEdit()">Fermer</button>
+      <h3>Modifier agent</h3>
+      <div class="agent-card__grid">
+        <label>Username<input [(ngModel)]="editForm.username" /></label>
+        <label>Email<input type="email" [(ngModel)]="editForm.email" /></label>
+        <label>Prénom<input [(ngModel)]="editForm.firstName" /></label>
+        <label>Nom<input [(ngModel)]="editForm.lastName" /></label>
+      </div>
+      <button type="button" class="admin-toolbar__btn" [disabled]="saving()" (click)="saveEdit(u)">
+        {{ saving() ? 'Enregistrement…' : 'Enregistrer' }}
+      </button>
+    </article>
+  </section>
+}
+

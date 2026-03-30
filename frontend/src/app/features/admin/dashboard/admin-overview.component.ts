@@ -2,16 +2,19 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { finalize, map, switchMap } from 'rxjs/operators';
 import { getApiErrorMessage } from '../../../core/http/error-message.util';
 import { AuthService } from '../../../core/services/auth.service';
 import {
   BiensLouesVsLibresResponse,
   MandatsGestionStatistiqueResponse,
   RevenusMensuelsResponse,
-  LocatairesEnRetardResponse
+  LocatairesEnRetardResponse,
+  UtilisateurResponse
 } from '../models/admin-api.types';
 import { AdminDashboardService } from '../services/admin-dashboard.service';
+import { AdminPendingActivationBadgeService } from '../services/admin-pending-activation-badge.service';
+import { AdminUserService } from '../services/admin-user.service';
 
 @Component({
   selector: 'app-admin-overview',
@@ -23,9 +26,12 @@ import { AdminDashboardService } from '../services/admin-dashboard.service';
 export class AdminOverviewComponent implements OnInit {
   private readonly dashboard = inject(AdminDashboardService);
   private readonly auth = inject(AuthService);
+  private readonly adminUsers = inject(AdminUserService);
+  private readonly pendingBadge = inject(AdminPendingActivationBadgeService);
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly approvingId = signal<string | null>(null);
 
   annee = signal(new Date().getFullYear());
   mois = signal(new Date().getMonth() + 1);
@@ -36,6 +42,9 @@ export class AdminOverviewComponent implements OnInit {
   readonly retard = signal<LocatairesEnRetardResponse | null>(null);
   readonly mandats = signal<MandatsGestionStatistiqueResponse[]>([]);
   readonly filterMandats = signal('');
+
+  readonly pendingUsers = signal<UtilisateurResponse[]>([]);
+  readonly pendingCount = signal(0);
 
   readonly isAdmin = computed(() => this.auth.hasRole('ROLE_ADMIN'));
 
@@ -71,12 +80,27 @@ export class AdminOverviewComponent implements OnInit {
       .pipe(
         switchMap((base) => {
           if (!this.auth.hasRole('ROLE_ADMIN')) {
-            return of({ ...base, mandats: [] as MandatsGestionStatistiqueResponse[] });
+            return of({
+              ...base,
+              mandats: [] as MandatsGestionStatistiqueResponse[],
+              pending: [] as UtilisateurResponse[],
+              pendingCount: 0
+            });
           }
-          return this.dashboard.mandatsToutesAgences().pipe(
-            map((mandats) => ({ ...base, mandats }))
+          return forkJoin({
+            mandats: this.dashboard.mandatsToutesAgences(),
+            pending: this.dashboard.comptesEnAttenteActivation(),
+            pendingCount: this.dashboard.nombreComptesEnAttenteActivation()
+          }).pipe(
+            map((extra) => ({
+              ...base,
+              mandats: extra.mandats,
+              pending: extra.pending,
+              pendingCount: extra.pendingCount.nombreComptesEnAttenteActivation
+            }))
           );
-        })
+        }),
+        finalize(() => this.loading.set(false))
       )
       .subscribe({
         next: (res) => {
@@ -85,16 +109,36 @@ export class AdminOverviewComponent implements OnInit {
           this.revenus.set(res.rev);
           this.retard.set(res.retard);
           this.mandats.set(res.mandats);
+          this.pendingUsers.set(res.pending);
+          this.pendingCount.set(res.pendingCount);
+          this.pendingBadge.setCount(res.pendingCount);
         },
         error: (err: unknown) => {
           this.error.set(getApiErrorMessage(err, 'Impossible de charger le tableau de bord.'));
-        },
-        complete: () => this.loading.set(false)
+        }
       });
   }
 
   appliquerPeriode(): void {
     this.load();
+  }
+
+  activerCompte(u: UtilisateurResponse): void {
+    this.approvingId.set(u.id);
+    this.adminUsers
+      .setEnabled(u.id, true)
+      .pipe(finalize(() => this.approvingId.set(null)))
+      .subscribe({
+        next: () => this.load(),
+        error: (err: unknown) => {
+          this.error.set(getApiErrorMessage(err, "Impossible d'activer le compte."));
+        }
+      });
+  }
+
+  rolesLabel(roles: string[] | undefined): string {
+    if (!roles?.length) return '—';
+    return roles.join(', ');
   }
 
   totalBiens(r: BiensLouesVsLibresResponse | null): number {
