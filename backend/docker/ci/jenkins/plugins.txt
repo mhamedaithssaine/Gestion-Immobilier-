@@ -1,0 +1,6 @@
+git
+github
+junit
+ws-cleanup
+workflow-aggregator
+pipeline-model-definition
