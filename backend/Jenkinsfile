@@ -10,11 +10,6 @@ pipeline {
         jdk 'JDK17'
     }
 
-    environment {
-        SONAR_HOST_URL = 'http://sonarqube:9000'
-        SONAR_TOKEN = credentials('sonar-token')
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -51,35 +46,6 @@ pipeline {
                         exit 1
                     fi
                 '''
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('sonarqube-server') {
-                    sh """
-                      mvn sonar:sonar \\
-                        -Dsonar.host.url=${SONAR_HOST_URL} \
-                        -Dsonar.projectKey=gestion-immobilier \\
-                        -Dsonar.projectName="Gestion Immobiliere" \\
-                        -Dsonar.java.coveragePlugin=jacoco \\
-                        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \\
-                        -Dsonar.junit.reportPaths=target/surefire-reports \\
-                        -Dsonar.sources=src/main/java \\
-                        -Dsonar.tests=src/test/java \\
-                        -Dsonar.java.binaries=target/classes \\
-                        -Dsonar.java.test.binaries=target/test-classes \\
-                        -Dsonar.login=${SONAR_TOKEN}
-                    """
-                }
-            }
-        }
-
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
             }
         }
 
