@@ -1,0 +1,124 @@
+// =============================================================================
+// SKNA — design tokens (single source of truth)
+// =============================================================================
+
+// --- Breakpoints ---
+$bp-mobile: 480px;
+$bp-tablet: 768px;
+
+// --- Colors ---
+$color-brand-navy: #0c2340;
+$color-brand-navy-mid: #102a43;
+$color-brand-navy-deep: #061428;
+$color-accent: #c45c26;
+$color-accent-hover: #a84d1f;
+$color-link-blue: #1e5f8c;
+$color-link-blue-hover: #164a6e;
+
+$color-text-primary: #102a43;
+$color-text-secondary: #486581;
+$color-text-muted: #627d98;
+$color-text-inverse: #ffffff;
+$color-text-inverse-muted: rgba(255, 255, 255, 0.82);
+
+$color-surface-page: #f6f8fb;
+$color-surface-elevated: #ffffff;
+$color-surface-hero-light: #f1f4f8;
+$color-surface-faq: #eef2f7;
+$color-surface-cta: $color-brand-navy-deep;
+
+$color-border-subtle: #e2e8f0;
+$color-border-medium: #cbd5e1;
+$color-border-strong: #94a3b8;
+
+$color-overlay-dark: rgba(12, 35, 64, 0.88);
+$color-image-placeholder-bg: #e2e8f0;
+
+// --- Agence finder (style carte / Foncia) ---
+$color-agency-finder-bg: #f8f8f8;
+$color-agency-kicker: #c9a227;
+$color-agency-kicker-hover: #b8941f;
+$color-map-silhouette: #e4e7ec;
+$color-map-marker: #e8b923;
+$color-map-marker-soft: rgba(232, 185, 35, 0.35);
+$shadow-agency-pill: 0 4px 24px rgba(12, 35, 64, 0.08);
+$size-agency-pill-submit: 3rem;
+$fs-agency-kicker: 0.6875rem;
+$fs-agency-title: clamp(1.75rem, 3vw, 2.5rem);
+$letter-spacing-agency-kicker: 0.14em;
+
+// --- Spacing scale ---
+$space-3xs: 0.125rem;
+$space-2xs: 0.25rem;
+$space-xs: 0.5rem;
+$space-sm: 0.75rem;
+$space-md: 1rem;
+$space-lg: 1.5rem;
+$space-xl: 2rem;
+$space-2xl: 2.5rem;
+$space-3xl: 3rem;
+$space-4xl: 4rem;
+
+// --- Radius ---
+$radius-sm: 0.5rem;
+$radius-md: 0.75rem;
+$radius-lg: 1rem;
+$radius-xl: 1.25rem;
+$radius-pill: 999px;
+
+// --- Shadows ---
+$shadow-sm: 0 1px 2px rgba(12, 35, 64, 0.06);
+$shadow-md: 0 4px 16px rgba(12, 35, 64, 0.08);
+$shadow-lg: 0 8px 32px rgba(12, 35, 64, 0.12);
+$shadow-search: 0 12px 40px rgba(12, 35, 64, 0.1);
+$shadow-card-hover: 0 16px 40px rgba(12, 35, 64, 0.14);
+
+// --- Typography (families — weights loaded via index.html) ---
+$font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+$font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+
+$fw-regular: 400;
+$fw-medium: 500;
+$fw-semibold: 600;
+$fw-bold: 700;
+
+$fs-hero-kicker: 0.75rem;
+$fs-caption: 0.8125rem;
+$fs-body-sm: 0.875rem;
+$fs-body: 1rem;
+$fs-body-lg: 1.0625rem;
+$fs-h3: 1.125rem;
+$fs-h2: clamp(1.375rem, 2.2vw, 1.75rem);
+$fs-h1: clamp(1.75rem, 3.5vw, 2.75rem);
+$fs-display: clamp(1.5rem, 2.8vw, 2rem);
+
+$lh-tight: 1.15;
+$lh-snug: 1.25;
+$lh-normal: 1.5;
+$lh-relaxed: 1.6;
+
+// --- Layout ---
+$container-max-width: 72rem;
+$container-padding-x: $space-lg;
+$faq-max-width: 47.5rem;
+$hero-min-height: 580px;
+$home-search-overlap: -$space-2xl;
+$z-search: 20;
+$z-slider-nav: 2;
+
+// --- Motion ---
+$transition-fast: 0.15s ease;
+$transition-base: 0.25s ease;
+$transition-slow: 0.4s ease;
+
+// --- FAQ ---
+$faq-panel-max-height: 24rem;
+$faq-icon-size: 1.25rem;
+
+// --- Ratios ---
+$ratio-bien-w: 4;
+$ratio-bien-h: 3;
+
+// --- Sizes ---
+$size-img-nav: 2rem;
+$size-icon-input: 1.125rem;

@@ -1,0 +1,22 @@
+@use 'variables' as *;
+
+:root {
+  --skna-font-display: #{$font-display};
+  --skna-font-body: #{$font-body};
+}
+
+body {
+  font-family: $font-body;
+  font-weight: $fw-regular;
+  font-size: $fs-body;
+  line-height: $lh-normal;
+  color: $color-text-primary;
+}
+
+h1,
+h2,
+.skna-type-display {
+  font-family: $font-display;
+  font-weight: $fw-bold;
+  letter-spacing: -0.02em;
+}

@@ -12,15 +12,7 @@ import { SpaceModalService } from '../../services/space-modal.service';
 export class SknaHeaderComponent {
   private readonly spaceModal = inject(SpaceModalService);
 
-  readonly navLinks = [
-    'Acheter',
-    'Louer',
-    'Vendre',
-    'Gestion locative',
-    'Syndic',
-    'Location vacances',
-    'Actualités'
-  ] as const;
+  readonly navLinks = ['Louer', 'Gestion locative', 'Location vacances', 'Actualités'] as const;
 
   openMonEspace(): void {
     this.spaceModal.open();

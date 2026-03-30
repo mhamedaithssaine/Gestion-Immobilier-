@@ -1,44 +1,358 @@
-<section class="skna-hero">
-  <div class="skna-hero__light">
-    <h1 class="skna-hero__title">
-      L’agence immobilière à vos côtés, en ligne et dans votre quartier
-    </h1>
-    <p class="skna-hero__lead">
-      Skna vous accompagne pour acheter, louer ou confier la gestion de votre bien avec des outils
-      simples et une équipe à l’écoute.
-    </p>
-    <div class="skna-hero__actions">
-      <button type="button" class="skna-hero__btn skna-hero__btn--primary" (click)="openMonEspace()">
-        Mon Espace
-      </button>
-      <a routerLink="/register" class="skna-hero__btn skna-hero__btn--outline">Créer un compte</a>
-    </div>
-  </div>
-  <div class="skna-hero__dark">
-    <div class="skna-hero__dark-inner">
-      <p class="skna-hero__dark-kicker">Skna</p>
-      <h2 class="skna-hero__dark-title">Votre projet immobilier, simplifié.</h2>
-      <p class="skna-hero__dark-text">
-        Tableau de bord, dossiers et suivi : tout ce dont vous avez besoin au même endroit.
+<main class="home">
+  <!-- HERO -->
+  <section class="home-hero" aria-labelledby="home-hero-title">
+    <div class="home-hero__col home-hero__col--light">
+      <h1 id="home-hero-title" class="home-hero__title">
+        L’agence immobilière à vos côtés, en ligne et dans votre quartier
+      </h1>
+      <p class="home-hero__subtitle">
+        Skna vous accompagne pour acheter, louer ou confier la gestion de votre bien avec des outils simples et une
+        équipe à l’écoute.
       </p>
+      <div class="home-hero__actions">
+        <button type="button" class="home-hero__cta home-hero__cta--primary" (click)="openMonEspace()">
+          Mon Espace
+        </button>
+        <a routerLink="/register" class="home-hero__cta home-hero__cta--outline">Créer un compte</a>
+      </div>
     </div>
+    <div class="home-hero__col home-hero__col--dark">
+      <svg
+        class="home-hero__deco"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 400 320"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          opacity="0.12"
+          stroke="currentColor"
+          stroke-width="1.2"
+          d="M40 260V120l80-48 80 48v140M200 260V140l80-52 80 52v120"
+        />
+        <rect x="52" y="160" width="56" height="100" rx="2" stroke="currentColor" stroke-width="1" opacity="0.18" />
+        <rect x="228" y="148" width="48" height="112" rx="2" stroke="currentColor" stroke-width="1" opacity="0.18" />
+        <path d="M0 268h400" stroke="currentColor" stroke-width="0.8" opacity="0.15" />
+      </svg>
+      <div class="home-hero__dark-content">
+        <p class="home-hero__kicker">Skna</p>
+        <h2 class="home-hero__heading">Votre projet immobilier, simplifié.</h2>
+        <p class="home-hero__text">
+          Tableau de bord, dossiers et suivi : tout ce dont vous avez besoin au même endroit.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECHERCHE (flottante) -->
+  <div class="home-search-wrap">
+    <section class="home-search" aria-label="Recherche de biens">
+      <div class="home-search__bar">
+        <div class="home-search__field home-search__field--query">
+          <span class="home-search__icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm10 2-4.35-4.35"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </span>
+          <input
+            class="home-search__input"
+            type="search"
+            name="q"
+            placeholder="Rechercher un bien"
+            [(ngModel)]="query"
+            (keydown.enter)="searchBiens()"
+          />
+        </div>
+        <span class="home-search__sep" aria-hidden="true"></span>
+        <div class="home-search__field home-search__field--ville">
+          <span class="home-search__icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M12 21s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="2" />
+            </svg>
+          </span>
+          <input class="home-search__input" type="text" name="ville" placeholder="Ville" [(ngModel)]="ville" />
+        </div>
+        <span class="home-search__sep" aria-hidden="true"></span>
+        <button type="button" class="home-search__submit" (click)="searchBiens()">Rechercher</button>
+      </div>
+    </section>
   </div>
-</section>
 
-<section class="skna-welcome" aria-labelledby="welcome-title">
-  <div class="skna-welcome__card">
-    <h2 id="welcome-title" class="skna-welcome__title">Bienvenue chez Skna</h2>
+  <!-- LISTING -->
+  <section class="home-listing" id="catalogue" aria-labelledby="home-listing-title">
+    <div class="home-listing__inner">
+      <header class="home-listing__head">
+        <h2 id="home-listing-title" class="home-listing__title">Biens disponibles</h2>
+        <a routerLink="/login" class="home-listing__more">Voir plus →</a>
+      </header>
 
-    <div class="skna-welcome__block">
-      <p class="skna-welcome__label">Je suis locataire ou propriétaire client</p>
-      <a routerLink="/login" class="skna-welcome__link-btn">Me connecter</a>
+      @if (loading()) {
+        <p class="home-listing__state">Chargement…</p>
+      } @else {
+        <div class="home-listing__grid">
+          @for (b of biens(); track b.id) {
+            <article class="home-bien-card">
+              <div class="home-bien-card__media">
+                @if (b.images.length) {
+                  <img class="home-bien-card__img" [src]="currentImage(b)!" [alt]="b.titre" />
+                  @if (b.images.length > 1) {
+                    <button
+                      type="button"
+                      class="home-bien-card__nav home-bien-card__nav--prev"
+                      (click)="prevImage(b); $event.stopPropagation()"
+                      aria-label="Photo précédente"
+                    >
+                      ‹
+                    </button>
+                    <button
+                      type="button"
+                      class="home-bien-card__nav home-bien-card__nav--next"
+                      (click)="nextImage(b); $event.stopPropagation()"
+                      aria-label="Photo suivante"
+                    >
+                      ›
+                    </button>
+                    <span class="home-bien-card__count" aria-live="polite">
+                      {{ imageIndexByBien()[b.id] + 1 }} / {{ b.images.length }}
+                    </span>
+                  }
+                } @else {
+                  <div class="home-bien-card__placeholder">Skna</div>
+                }
+              </div>
+              <div class="home-bien-card__body">
+                <h3 class="home-bien-card__price">{{ b.prixBase | number: '1.0-0' }} €</h3>
+                <p class="home-bien-card__titre">{{ b.titre }}</p>
+                <div class="home-bien-card__meta">
+                  <span class="home-bien-card__meta-item">
+                    <span class="home-bien-card__meta-icon" aria-hidden="true">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M12 21s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        />
+                      </svg>
+                    </span>
+                    {{ b.adresse?.ville || 'Ville non définie' }}
+                  </span>
+                  <span class="home-bien-card__meta-item">
+                    <span class="home-bien-card__meta-icon" aria-hidden="true">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="2" />
+                        <path d="M4 10h16M10 4v16" stroke="currentColor" stroke-width="2" />
+                      </svg>
+                    </span>
+                    {{ b.surface }} m²
+                  </span>
+                </div>
+              </div>
+            </article>
+          } @empty {
+            <p class="home-listing__state home-listing__state--empty">Aucun bien disponible.</p>
+          }
+        </div>
+
+        <nav class="home-listing__pager" aria-label="Pagination des biens">
+          <button type="button" class="home-listing__pager-btn" (click)="prev()" [disabled]="page() === 0">
+            Précédent
+          </button>
+          <span class="home-listing__pager-info">Page {{ page() + 1 }} / {{ totalPages() || 1 }}</span>
+          <button
+            type="button"
+            class="home-listing__pager-btn"
+            (click)="next()"
+            [disabled]="page() + 1 >= totalPages()"
+          >
+            Suivant
+          </button>
+        </nav>
+      }
     </div>
+  </section>
 
-    <hr class="skna-welcome__rule" />
-
-    <div class="skna-welcome__block">
-      <p class="skna-welcome__label">Je souhaite créer mon compte</p>
-      <a routerLink="/register" class="skna-welcome__link-btn">M’inscrire</a>
+  <!-- FAQ -->
+  <section class="home-faq" aria-labelledby="home-faq-title">
+    <div class="home-faq__inner">
+      <h2 id="home-faq-title" class="home-faq__title">Questions fréquentes</h2>
+      <div class="home-faq__list" role="list">
+        @for (item of faqItems; track $index; let i = $index) {
+          <div class="home-faq__item" [class.home-faq__item--open]="isFaqOpen(i)" role="listitem">
+            <button
+              type="button"
+              class="home-faq__question"
+              [attr.aria-expanded]="isFaqOpen(i)"
+              [attr.aria-controls]="'home-faq-panel-' + i"
+              [id]="'home-faq-trigger-' + i"
+              (click)="toggleFaq(i)"
+            >
+              <span class="home-faq__question-text">{{ item.question }}</span>
+              <span class="home-faq__toggle" aria-hidden="true"></span>
+            </button>
+            <div
+              class="home-faq__panel"
+              [id]="'home-faq-panel-' + i"
+              role="region"
+              [attr.aria-labelledby]="'home-faq-trigger-' + i"
+            >
+              <p class="home-faq__answer">{{ item.answer }}</p>
+            </div>
+          </div>
+        }
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <!-- TROUVER UNE AGENCE (style Foncia — Skna / Maroc) -->
+  <section class="home-agency-finder" aria-labelledby="home-agency-finder-title">
+    <div class="home-agency-finder__inner">
+      <div class="home-agency-finder__content">
+        <p class="home-agency-finder__kicker">Trouver une agence Skna</p>
+        <div class="home-agency-finder__intro">
+          <h2 id="home-agency-finder-title" class="home-agency-finder__title">
+            {{ agencyCount }} agences au {{ agencyCountry }}
+          </h2>
+          <p class="home-agency-finder__lead">{{ agencyFinderLead }}</p>
+        </div>
+
+        <div class="search-pill" role="search">
+          <button
+            type="button"
+            class="search-pill__geo"
+            (click)="detectAgenceLocation()"
+            aria-label="Utiliser ma position"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
+              <path
+                d="M12 5V2M12 22v-3M5 12H2M22 12h-3M6.34 6.34 4.22 4.22M19.78 19.78l-2.12-2.12M6.34 17.66l-2.12 2.12M19.78 4.22l-2.12 2.12"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+
+          <div class="search-pill__field search-pill__field--loc">
+            <label class="search-pill__label" for="agency-loc">Localisation</label>
+            <input
+              id="agency-loc"
+              class="search-pill__input"
+              type="text"
+              name="agencyLocalisation"
+              placeholder="Où cherchez-vous ?"
+              [(ngModel)]="agencyLocalisation"
+              (keydown.enter)="searchAgences()"
+            />
+          </div>
+
+          <span class="search-pill__sep" aria-hidden="true"></span>
+
+          <div class="search-pill__field search-pill__field--act">
+            <label class="search-pill__label" for="agency-act">Activités</label>
+            <input
+              id="agency-act"
+              class="search-pill__input"
+              type="text"
+              name="agencyActivites"
+              placeholder="Achat, location…"
+              [(ngModel)]="agencyActivites"
+              (keydown.enter)="searchAgences()"
+            />
+          </div>
+
+          <button type="button" class="search-pill__submit" (click)="searchAgences()" aria-label="Lancer la recherche">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm10 2-4.35-4.35"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="home-agency-finder__aside">
+        <div class="home-agency-finder__map-wrap" role="img" aria-label="Carte stylisée du Maroc et densité du réseau Skna">
+          <svg
+            class="home-agency-finder__morocco"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 140 150"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <path
+              class="home-agency-finder__land"
+              d="M8 42 L22 28 L38 22 L58 18 L78 20 L96 28 L108 38 L118 52 L122 68 L120 86 L112 102 L98 118 L82 128 L62 132 L44 128 L28 116 L16 98 L10 78 L6 58 Z"
+            />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--md" cx="32" cy="38" r="2.2" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="48" cy="32" r="1.4" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="58" cy="28" r="1.8" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--lg" cx="72" cy="34" r="2.8" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="88" cy="42" r="1.6" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--md" cx="98" cy="52" r="2.4" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="108" cy="64" r="1.5" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="102" cy="78" r="2" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="92" cy="88" r="1.3" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--lg" cx="78" cy="96" r="2.6" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="62" cy="102" r="1.7" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="48" cy="94" r="1.2" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--md" cx="36" cy="82" r="2.2" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="28" cy="66" r="1.5" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="24" cy="52" r="1.9" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="42" cy="48" r="1.1" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--lg" cx="54" cy="56" r="2.5" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="66" cy="50" r="1.4" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="82" cy="58" r="1.8" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="94" cy="70" r="1.2" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--md" cx="56" cy="72" r="2" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="70" cy="68" r="1.3" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="44" cy="64" r="1.6" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="38" cy="54" r="1" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="52" cy="40" r="1.2" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="64" cy="36" r="1.5" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--md" cx="76" cy="44" r="2.1" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="90" cy="54" r="1.4" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="100" cy="44" r="1.7" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="112" cy="56" r="1.2" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="104" cy="92" r="1.8" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="88" cy="108" r="1.4" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--lg" cx="72" cy="114" r="2.3" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="54" cy="108" r="1.1" />
+            <circle class="home-agency-finder__dot home-agency-finder__dot--sm" cx="34" cy="96" r="1.6" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="home-welcome" aria-labelledby="home-welcome-title">
+    <div class="home-welcome__inner">
+      <h2 id="home-welcome-title" class="home-welcome__title">Bienvenue chez Skna</h2>
+      <div class="home-welcome__cols">
+        <div class="home-welcome__col">
+          <p class="home-welcome__label">Je suis locataire ou propriétaire client</p>
+          <a routerLink="/login" class="home-welcome__btn home-welcome__btn--outline">Me connecter</a>
+        </div>
+        <div class="home-welcome__rule" aria-hidden="true"></div>
+        <div class="home-welcome__col">
+          <p class="home-welcome__label">Je souhaite créer mon compte</p>
+          <a routerLink="/register" class="home-welcome__btn home-welcome__btn--solid">M’inscrire</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

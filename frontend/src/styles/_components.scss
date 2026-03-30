@@ -1,0 +1,7 @@
+@use 'variables' as *;
+
+// Réutilisables globaux légers (boutons hors page home si besoin)
+.skna-focus-ring:focus-visible {
+  outline: 2px solid $color-link-blue;
+  outline-offset: 2px;
+}
