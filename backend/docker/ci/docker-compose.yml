@@ -1,43 +1,26 @@
 services:
   jenkins:
-    image: jenkins/jenkins:lts-jdk17
+    build:
+      context: ./jenkins
     container_name: jenkins
     privileged: true
     user: root
+    restart: unless-stopped
     ports:
-      - "8083:8080"
-      - "50001:50001"
+      - "8088:8080"
+      - "50000:50000"
     environment:
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+      - JENKINS_OPTS=--httpPort=8080
     volumes:
-      - jenkins_data:/var/jenkins_home
+      - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-      - shared_workspace:/var/jenkins_home/workspace
     networks:
-      - jenkins-net
-
-  sonarqube:
-    image: sonarqube:community
-    container_name: sonarqube
-    ports:
-      - "9000:9000"
-    environment:
-      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
-    volumes:
-      - sonarqube_data:/opt/sonarqube/data
-      - sonarqube_extensions:/opt/sonarqube/extensions
-      - sonarqube_logs:/opt/sonarqube/logs
-      - shared_workspace:/workspace
-    networks:
-      - jenkins-net
+      - school-network
 
 volumes:
-  jenkins_data:
-  shared_workspace:
-  sonarqube_data:
-  sonarqube_extensions:
-  sonarqube_logs:
+  jenkins_home:
 
 networks:
-  jenkins-net:
+  school-network:
     driver: bridge
