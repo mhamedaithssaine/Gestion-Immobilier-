@@ -191,3 +191,5 @@ Projet académique / interne — préciser ici la licence (MIT, Apache 2.0, prop
 ---
 
 *Dernière mise à jour du README : mars 2026.*
+
+test
