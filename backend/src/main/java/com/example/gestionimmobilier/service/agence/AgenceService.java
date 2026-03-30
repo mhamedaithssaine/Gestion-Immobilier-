@@ -2,11 +2,13 @@ package com.example.gestionimmobilier.service.agence;
 
 import com.example.gestionimmobilier.dto.agence.AgenceResponse;
 import com.example.gestionimmobilier.dto.agence.CreateAgenceRequest;
+import com.example.gestionimmobilier.dto.agence.UpdateAgenceRequest;
 import com.example.gestionimmobilier.exception.ErrorMessages;
 import com.example.gestionimmobilier.exception.ResourceNotFoundException;
 import com.example.gestionimmobilier.exception.ValidationException;
 import com.example.gestionimmobilier.models.entity.agence.Agence;
 import com.example.gestionimmobilier.models.entity.user.Agent;
+import com.example.gestionimmobilier.models.entity.user.Utilisateur;
 import com.example.gestionimmobilier.models.enums.Role;
 import com.example.gestionimmobilier.models.enums.StatutAgence;
 import com.example.gestionimmobilier.repository.AgenceRepository;
@@ -143,6 +145,102 @@ public class AgenceService {
         agence.setStatut(StatutAgence.SUSPENDED);
         agence = agenceRepository.save(agence);
         return toResponse(agence);
+    }
+
+    @Transactional
+    public AgenceResponse mettreAJourAgenceAdmin(UUID id, UpdateAgenceRequest request) {
+        Agence agence = agenceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.AGENCE_INTROUVABLE));
+
+        if (request.nom() != null && !request.nom().isBlank()) {
+            agence.setNom(request.nom().trim());
+        }
+        if (request.email() != null && !request.email().isBlank()) {
+            String newEmail = request.email().trim();
+            if (!newEmail.equalsIgnoreCase(agence.getEmail())
+                    && agenceRepository.existsByEmailAndIdNot(newEmail, agence.getId())) {
+                throw new ValidationException(ErrorMessages.AGENCE_EMAIL_DEJA_UTILISE);
+            }
+            agence.setEmail(newEmail);
+        }
+        if (request.telephone() != null) {
+            agence.setTelephone(request.telephone().isBlank() ? null : request.telephone().trim());
+        }
+        if (request.adresse() != null) {
+            agence.setAdresse(request.adresse().isBlank() ? null : request.adresse().trim());
+        }
+        if (request.ville() != null) {
+            agence.setVille(request.ville().isBlank() ? resolveVille(null, agence.getAdresse()) : request.ville().trim());
+        }
+
+        agence = agenceRepository.save(agence);
+        for (Agent a : agentRepository.findByAgence_Id(agence.getId())) {
+            a.setAgenceNom(agence.getNom());
+            utilisateurRepository.save(a);
+        }
+        return toResponse(agence);
+    }
+
+    @Transactional
+    public void supprimerAgenceAdmin(UUID id) {
+        Agence agence = agenceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.AGENCE_INTROUVABLE));
+        if (agentRepository.existsByAgence_Id(id)) {
+            throw new ValidationException(ErrorMessages.AGENCE_SUPPRESSION_IMPOSSIBLE);
+        }
+        agenceRepository.delete(agence);
+    }
+
+    @Transactional
+    public AgenceResponse getAgencePourAgentConnecte(String keycloakId) {
+        return toResponse(requireAgenceEntityPourAgent(keycloakId));
+    }
+
+    /**
+     * Agence résolue pour un agent (FK ou rétrocompatibilité {@code agenceNom}).
+     */
+    @Transactional
+    public Agence requireAgenceEntityPourAgent(String keycloakId) {
+        Agent agent = getAgentOuErreur(keycloakId);
+        Agence agence = resolveAgencePourAgent(agent);
+        if (agence == null) {
+            throw new ResourceNotFoundException(ErrorMessages.AGENT_SANS_AGENCE);
+        }
+        return agence;
+    }
+
+    /**
+     * Backward-compatibilité:
+     * certains agents historiques n'ont pas la FK `agence` renseignée mais ont `agenceNom`.
+     * On tente de relier automatiquement par nom d'agence.
+     */
+    private Agence resolveAgencePourAgent(Agent agent) {
+        if (agent.getAgence() != null) {
+            return agent.getAgence();
+        }
+        String agenceNom = agent.getAgenceNom();
+        if (agenceNom == null || agenceNom.isBlank()) {
+            return null;
+        }
+        return agenceRepository.findTopByNomIgnoreCaseOrderByCreatedAtDesc(agenceNom.trim())
+                .map(found -> {
+                    agent.setAgence(found);
+                    if (agent.getAgenceNom() == null || agent.getAgenceNom().isBlank()) {
+                        agent.setAgenceNom(found.getNom());
+                    }
+                    utilisateurRepository.save(agent);
+                    return found;
+                })
+                .orElse(null);
+    }
+
+    private Agent getAgentOuErreur(String keycloakId) {
+        Utilisateur u = utilisateurRepository.findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.COMPTE_NON_AGENT));
+        if (!(u instanceof Agent found)) {
+            throw new ResourceNotFoundException(ErrorMessages.COMPTE_NON_AGENT);
+        }
+        return found;
     }
 
     private AgenceResponse toResponse(Agence agence) {

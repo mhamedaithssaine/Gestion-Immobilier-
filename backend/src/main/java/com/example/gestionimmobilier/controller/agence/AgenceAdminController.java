@@ -2,7 +2,9 @@ package com.example.gestionimmobilier.controller.agence;
 
 import com.example.gestionimmobilier.dto.api.response.ApiRetour;
 import com.example.gestionimmobilier.dto.agence.AgenceResponse;
+import com.example.gestionimmobilier.dto.agence.UpdateAgenceRequest;
 import com.example.gestionimmobilier.service.agence.AgenceService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -55,5 +57,17 @@ public class AgenceAdminController {
     public ResponseEntity<ApiRetour<AgenceResponse>> suspendre(@PathVariable UUID id) {
         AgenceResponse agence = agenceService.suspendre(id);
         return ResponseEntity.ok(ApiRetour.success("Agence suspendue", agence));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiRetour<AgenceResponse>> modifier(@PathVariable UUID id, @RequestBody @Valid UpdateAgenceRequest request) {
+        AgenceResponse agence = agenceService.mettreAJourAgenceAdmin(id, request);
+        return ResponseEntity.ok(ApiRetour.success("Agence modifiée avec succès", agence));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiRetour<Void>> supprimer(@PathVariable UUID id) {
+        agenceService.supprimerAgenceAdmin(id);
+        return ResponseEntity.ok(ApiRetour.success("Agence supprimée avec succès", null));
     }
 }
